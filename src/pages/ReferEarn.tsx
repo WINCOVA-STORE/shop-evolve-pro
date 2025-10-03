@@ -125,83 +125,98 @@ const ReferEarn = () => {
 
       <main className="container mx-auto px-4 py-16">
         {/* Hero Section */}
-        <div className="max-w-4xl mx-auto text-center mb-12">
-          <Badge className="mb-4" variant="secondary">
+        <div className="max-w-4xl mx-auto text-center mb-16 relative">
+          <div className="absolute inset-0 bg-[var(--gradient-hero)] rounded-3xl blur-3xl opacity-30 -z-10" />
+          <Badge className="mb-6 animate-fade-in" variant="secondary">
+            <Gift className="h-3 w-3 mr-1" />
             Programa de Referidos
           </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Invita y Gana Recompensas
+          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 animate-fade-in">
+            Invita y Gana <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Recompensas</span>
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in">
             Comparte tu link de referido y gana recompensas cuando tus amigos realicen compras.
             ¡Todos ganan!
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-5xl mx-auto">
+          <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
+            <div className="absolute inset-0 bg-[var(--gradient-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Total Referidos</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <div className="p-2 rounded-lg bg-primary/10 group-hover:scale-110 transition-transform duration-300">
+                <Users className="h-5 w-5 text-primary" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalReferrals}</div>
-              <p className="text-xs text-muted-foreground">Amigos invitados</p>
+            <CardContent className="relative z-10">
+              <div className="text-4xl font-bold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">{stats.totalReferrals}</div>
+              <p className="text-sm text-muted-foreground mt-1">Amigos invitados</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
+            <div className="absolute inset-0 bg-[var(--gradient-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Total Ganado</CardTitle>
-              <Gift className="h-4 w-4 text-muted-foreground" />
+              <div className="p-2 rounded-lg bg-primary/10 group-hover:scale-110 transition-transform duration-300">
+                <Gift className="h-5 w-5 text-primary" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalEarned.toLocaleString()} pts</div>
-              <p className="text-xs text-muted-foreground">En recompensas</p>
+            <CardContent className="relative z-10">
+              <div className="text-4xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent">{stats.totalEarned.toLocaleString()} <span className="text-lg">pts</span></div>
+              <p className="text-sm text-muted-foreground mt-1">En recompensas</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
+            <div className="absolute inset-0 bg-[var(--gradient-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Disponible</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <div className="p-2 rounded-lg bg-primary/10 group-hover:scale-110 transition-transform duration-300">
+                <TrendingUp className="h-5 w-5 text-primary" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.pendingRewards.toLocaleString()} pts</div>
-              <p className="text-xs text-muted-foreground">Listos para usar</p>
+            <CardContent className="relative z-10">
+              <div className="text-4xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent">{stats.pendingRewards.toLocaleString()} <span className="text-lg">pts</span></div>
+              <p className="text-sm text-muted-foreground mt-1">Listos para usar</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Referral Link Section */}
-        <div className="max-w-2xl mx-auto mb-12">
-          <Card>
-            <CardHeader>
-              <CardTitle>Tu Link de Referido</CardTitle>
-              <CardDescription>
+        <div className="max-w-3xl mx-auto mb-16">
+          <Card className="border-2 shadow-xl">
+            <CardHeader className="text-center pb-4">
+              <CardTitle className="text-2xl">Tu Link de Referido</CardTitle>
+              <CardDescription className="text-base">
                 Comparte este link con tus amigos para ganar recompensas
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex gap-3">
-                <Input value={referralLink} readOnly className="flex-1" />
-                <Button onClick={copyToClipboard} variant="outline">
+            <CardContent className="space-y-6">
+              <div className="flex gap-3 p-4 bg-muted/50 rounded-lg">
+                <Input 
+                  value={referralLink} 
+                  readOnly 
+                  className="flex-1 border-0 bg-transparent text-base font-mono" 
+                />
+                <Button onClick={copyToClipboard} size="lg" className="bg-[var(--gradient-primary)] hover:opacity-90">
                   <Copy className="h-4 w-4 mr-2" />
                   Copiar
                 </Button>
               </div>
 
-              <div className="flex flex-wrap gap-3 justify-center">
-                <Button onClick={shareViaWhatsApp} variant="outline">
+              <div className="flex flex-wrap gap-3 justify-center pt-2">
+                <Button onClick={shareViaWhatsApp} variant="outline" size="lg" className="hover:border-primary hover:text-primary transition-colors">
                   <Share2 className="h-4 w-4 mr-2" />
                   WhatsApp
                 </Button>
-                <Button onClick={shareViaEmail} variant="outline">
+                <Button onClick={shareViaEmail} variant="outline" size="lg" className="hover:border-primary hover:text-primary transition-colors">
                   <Mail className="h-4 w-4 mr-2" />
                   Email
                 </Button>
-                <Button onClick={shareViaFacebook} variant="outline">
+                <Button onClick={shareViaFacebook} variant="outline" size="lg" className="hover:border-primary hover:text-primary transition-colors">
                   <Share2 className="h-4 w-4 mr-2" />
                   Facebook
                 </Button>
@@ -211,46 +226,46 @@ const ReferEarn = () => {
         </div>
 
         {/* How it Works */}
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8">¿Cómo Funciona?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card>
+        <div className="max-w-5xl mx-auto mb-16">
+          <h2 className="text-4xl font-bold text-center mb-12">¿Cómo Funciona?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2">
               <CardHeader>
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <Share2 className="h-6 w-6 text-primary" />
+                <div className="w-16 h-16 rounded-2xl bg-[var(--gradient-primary)] flex items-center justify-center mb-6 mx-auto shadow-lg">
+                  <Share2 className="h-8 w-8 text-white" />
                 </div>
-                <CardTitle>1. Comparte</CardTitle>
+                <CardTitle className="text-xl">1. Comparte</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground leading-relaxed">
                   Envía tu link único a tus amigos y familiares por WhatsApp, email o redes sociales.
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2">
               <CardHeader>
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <Users className="h-6 w-6 text-primary" />
+                <div className="w-16 h-16 rounded-2xl bg-[var(--gradient-primary)] flex items-center justify-center mb-6 mx-auto shadow-lg">
+                  <Users className="h-8 w-8 text-white" />
                 </div>
-                <CardTitle>2. Ellos Compran</CardTitle>
+                <CardTitle className="text-xl">2. Ellos Compran</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground leading-relaxed">
                   Cuando tus referidos hagan su primera compra, ambos ganan 1% del valor en puntos.
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2">
               <CardHeader>
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <Gift className="h-6 w-6 text-primary" />
+                <div className="w-16 h-16 rounded-2xl bg-[var(--gradient-primary)] flex items-center justify-center mb-6 mx-auto shadow-lg">
+                  <Gift className="h-8 w-8 text-white" />
                 </div>
-                <CardTitle>3. Todos Ganan</CardTitle>
+                <CardTitle className="text-xl">3. Todos Ganan</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground leading-relaxed">
                   Gana puntos con cada compra (1% del valor). 1,000 puntos = $1 USD para usar en tus próximas compras.
                 </p>
               </CardContent>
@@ -259,44 +274,54 @@ const ReferEarn = () => {
         </div>
 
         {/* Benefits */}
-        <div className="max-w-4xl mx-auto mt-12">
-          <Card className="bg-gradient-to-br from-primary/10 to-primary/5">
-            <CardHeader>
-              <CardTitle className="text-center text-2xl">Beneficios del Programa</CardTitle>
+        <div className="max-w-5xl mx-auto">
+          <Card className="bg-[var(--gradient-accent)] border-2 shadow-xl overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+            <CardHeader className="relative z-10">
+              <CardTitle className="text-center text-3xl mb-2">Beneficios del Programa</CardTitle>
+              <CardDescription className="text-center text-base">Todo lo que necesitas saber sobre nuestras recompensas</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-primary mt-0.5" />
+            <CardContent className="relative z-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-background/50 transition-colors">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <CheckCircle className="h-6 w-6 text-primary" />
+                  </div>
                   <div>
-                    <h4 className="font-semibold">Recompensas Ilimitadas</h4>
+                    <h4 className="font-semibold text-lg mb-1">Recompensas Ilimitadas</h4>
                     <p className="text-sm text-muted-foreground">
                       No hay límite en cuánto puedes ganar
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-primary mt-0.5" />
+                <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-background/50 transition-colors">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <CheckCircle className="h-6 w-6 text-primary" />
+                  </div>
                   <div>
-                    <h4 className="font-semibold">Bonos Instantáneos</h4>
+                    <h4 className="font-semibold text-lg mb-1">Bonos Instantáneos</h4>
                     <p className="text-sm text-muted-foreground">
                       Recibe tus recompensas inmediatamente
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-primary mt-0.5" />
+                <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-background/50 transition-colors">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <CheckCircle className="h-6 w-6 text-primary" />
+                  </div>
                   <div>
-                    <h4 className="font-semibold">Fácil de Usar</h4>
+                    <h4 className="font-semibold text-lg mb-1">Fácil de Usar</h4>
                     <p className="text-sm text-muted-foreground">
                       Solo comparte tu link y listo
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-primary mt-0.5" />
+                <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-background/50 transition-colors">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <CheckCircle className="h-6 w-6 text-primary" />
+                  </div>
                   <div>
-                    <h4 className="font-semibold">Seguimiento en Tiempo Real</h4>
+                    <h4 className="font-semibold text-lg mb-1">Seguimiento en Tiempo Real</h4>
                     <p className="text-sm text-muted-foreground">
                       Ve tus estadísticas actualizadas
                     </p>
