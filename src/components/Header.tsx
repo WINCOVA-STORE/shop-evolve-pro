@@ -2,6 +2,7 @@ import { Search, ShoppingCart, Heart, User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
+import logoWhite from "@/assets/logo-white.png";
 
 export const Header = () => {
   return (
@@ -14,10 +15,11 @@ export const Header = () => {
           </Button>
 
           <Link to="/" className="flex items-center gap-2">
-            <div className="text-2xl font-bold text-primary">
-              <span className="text-secondary-foreground">Win</span>
-              <span className="text-primary">Cova</span>
-            </div>
+            <img 
+              src={logoWhite} 
+              alt="Wincova" 
+              className="h-10 w-auto object-contain"
+            />
           </Link>
 
           <div className="hidden lg:flex items-center flex-1 max-w-2xl mx-8">

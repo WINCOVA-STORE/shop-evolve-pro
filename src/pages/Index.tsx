@@ -2,36 +2,9 @@ import { Header } from "@/components/Header";
 import { ProductCard } from "@/components/ProductCard";
 import { CategoryCard } from "@/components/CategoryCard";
 import { Button } from "@/components/ui/button";
-import {
-  Home,
-  Shirt,
-  Footprints,
-  Briefcase,
-  Baby,
-  Dog,
-  Sparkles,
-  Dumbbell,
-  Wrench,
-  Laptop,
-  Palette,
-  Car,
-} from "lucide-react";
+import { mainCategories } from "@/data/categories";
 
 const Index = () => {
-  const categories = [
-    { name: "Home & Kitchen", icon: Home, href: "/home-kitchen" },
-    { name: "Fashion", icon: Shirt, href: "/fashion" },
-    { name: "Shoes", icon: Footprints, href: "/shoes" },
-    { name: "Bags", icon: Briefcase, href: "/bags" },
-    { name: "Kids", icon: Baby, href: "/kids" },
-    { name: "Pets", icon: Dog, href: "/pets" },
-    { name: "Beauty", icon: Sparkles, href: "/beauty" },
-    { name: "Wellness", icon: Dumbbell, href: "/wellness" },
-    { name: "Tools & DIY", icon: Wrench, href: "/tools" },
-    { name: "Electronics", icon: Laptop, href: "/electronics" },
-    { name: "Crafts", icon: Palette, href: "/crafts" },
-    { name: "Vehicles", icon: Car, href: "/vehicles" },
-  ];
 
   const featuredProducts = [
     {
@@ -128,13 +101,14 @@ const Index = () => {
 
       {/* Categories */}
       <section className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-4">
-          {categories.map((category) => (
+        <h2 className="text-3xl font-bold text-foreground mb-8">Shop by Category</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {mainCategories.map((category) => (
             <CategoryCard
               key={category.name}
               name={category.name}
               icon={category.icon}
-              href={category.href}
+              href={`/category/${category.slug}`}
             />
           ))}
         </div>
