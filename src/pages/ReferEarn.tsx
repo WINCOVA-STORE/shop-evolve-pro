@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Mail, Share2, Users, Gift, TrendingUp, CheckCircle, Loader2 } from "lucide-react";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Copy, Mail, Share2, Users, Gift, TrendingUp, CheckCircle, Loader2, ExternalLink, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { useRewards } from "@/hooks/useRewards";
 
 interface ReferralStats {
   totalReferrals: number;
@@ -17,10 +18,27 @@ interface ReferralStats {
   pendingRewards: number;
 }
 
+interface ReferralDetail {
+  id: string;
+  referral_code: string;
+  reward_earned: number;
+  created_at: string;
+  referred_id: string;
+}
+
+interface OrderDetail {
+  id: string;
+  order_number: string;
+  total: number;
+  created_at: string;
+  points_earned: number;
+}
+
 const ReferEarn = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
+  const { rewards, availablePoints } = useRewards();
   const [loading, setLoading] = useState(true);
   const [referralCode, setReferralCode] = useState("");
   const [stats, setStats] = useState<ReferralStats>({
@@ -28,6 +46,15 @@ const ReferEarn = () => {
     totalEarned: 0,
     pendingRewards: 0,
   });
+  
+  // Sheets state
+  const [referralsSheetOpen, setReferralsSheetOpen] = useState(false);
+  const [earnedSheetOpen, setEarnedSheetOpen] = useState(false);
+  const [availableSheetOpen, setAvailableSheetOpen] = useState(false);
+  
+  // Details data
+  const [referralDetails, setReferralDetails] = useState<ReferralDetail[]>([]);
+  const [orderDetails, setOrderDetails] = useState<OrderDetail[]>([]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -43,41 +70,63 @@ const ReferEarn = () => {
 
   const fetchReferralData = async () => {
     try {
-      // Generate or get referral code
       const code = `REF-${user!.id.substring(0, 8).toUpperCase()}`;
       setReferralCode(code);
 
-      // Get referral stats
+      // Get referrals with details
       const { data: referrals, error: referralsError } = await supabase
         .from("referrals")
         .select("*")
-        .eq("referrer_id", user!.id);
+        .eq("referrer_id", user!.id)
+        .order('created_at', { ascending: false });
 
       if (referralsError) throw referralsError;
 
-      // Total earned is in points now (1000 points = $1)
+      setReferralDetails(referrals || []);
       const totalEarnedPoints = referrals?.reduce((sum, ref) => sum + Number(ref.reward_earned), 0) || 0;
 
-      // Get pending rewards
-      const { data: rewards, error: rewardsError } = await supabase
+      // Get orders with points earned
+      const { data: orders, error: ordersError } = await supabase
+        .from("orders")
+        .select(`
+          id,
+          order_number,
+          total,
+          created_at
+        `)
+        .eq("user_id", user!.id)
+        .eq("payment_status", "completed")
+        .order('created_at', { ascending: false });
+
+      if (ordersError) throw ordersError;
+
+      // Get rewards for these orders to show points earned
+      const { data: rewardsData } = await supabase
         .from("rewards")
         .select("*")
-        .eq("user_id", user!.id);
+        .eq("user_id", user!.id)
+        .eq("type", "purchase");
 
-      if (rewardsError) throw rewardsError;
+      const ordersWithPoints = orders?.map(order => {
+        const orderReward = rewardsData?.find(r => r.order_id === order.id);
+        return {
+          ...order,
+          points_earned: orderReward ? Number(orderReward.amount) : 0
+        };
+      }) || [];
 
-      const pendingRewardsPoints = rewards?.filter(r => r.type === "referral").reduce((sum, r) => sum + Number(r.amount), 0) || 0;
+      setOrderDetails(ordersWithPoints);
 
       setStats({
         totalReferrals: referrals?.length || 0,
         totalEarned: totalEarnedPoints,
-        pendingRewards: pendingRewardsPoints,
+        pendingRewards: availablePoints,
       });
     } catch (error) {
       console.error("Error fetching referral data:", error);
       toast({
         title: "Error",
-        description: "No se pudieron cargar los datos de referidos",
+        description: "No se pudieron cargar los datos",
         variant: "destructive",
       });
     } finally {
@@ -90,19 +139,23 @@ const ReferEarn = () => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
     toast({
-      title: "¡Copiado!",
-      description: "El link de referido se copió al portapapeles",
+      title: "¡Link copiado!",
+      description: "Ahora puedes compartirlo con tus amigos",
     });
   };
 
+  const handleShare = () => {
+    copyToClipboard();
+  };
+
   const shareViaEmail = () => {
-    window.location.href = `mailto:?subject=¡Te invito a Wincova!&body=Usa mi código de referido para obtener descuentos: ${referralLink}`;
+    window.location.href = `mailto:?subject=¡Únete a Wincova!&body=Descubre productos increíbles en Wincova. Usa mi link: ${referralLink}`;
   };
 
   const shareViaWhatsApp = () => {
     window.open(
       `https://wa.me/?text=${encodeURIComponent(
-        `¡Mira esta tienda increíble! Usa mi link de referido: ${referralLink}`
+        `¡Descubre Wincova! Usa mi link de referido: ${referralLink}`
       )}`
     );
   };
@@ -135,14 +188,16 @@ const ReferEarn = () => {
             Invita y Gana <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Recompensas</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in">
-            Comparte tu link de referido y gana recompensas cuando tus amigos realicen compras.
-            ¡Todos ganan!
+            Comparte tu link y gana puntos cuando tus amigos compren. ¡Es simple y todos ganan!
           </p>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats Cards - Now Clickable */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-5xl mx-auto">
-          <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
+          <Card 
+            className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 cursor-pointer"
+            onClick={() => setReferralsSheetOpen(true)}
+          >
             <div className="absolute inset-0 bg-[var(--gradient-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Total Referidos</CardTitle>
@@ -152,11 +207,16 @@ const ReferEarn = () => {
             </CardHeader>
             <CardContent className="relative z-10">
               <div className="text-4xl font-bold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">{stats.totalReferrals}</div>
-              <p className="text-sm text-muted-foreground mt-1">Amigos invitados</p>
+              <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                Amigos invitados <ExternalLink className="h-3 w-3" />
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
+          <Card 
+            className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 cursor-pointer"
+            onClick={() => setEarnedSheetOpen(true)}
+          >
             <div className="absolute inset-0 bg-[var(--gradient-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Total Ganado</CardTitle>
@@ -165,12 +225,19 @@ const ReferEarn = () => {
               </div>
             </CardHeader>
             <CardContent className="relative z-10">
-              <div className="text-4xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent">{stats.totalEarned.toLocaleString()} <span className="text-lg">pts</span></div>
-              <p className="text-sm text-muted-foreground mt-1">En recompensas</p>
+              <div className="text-4xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent">
+                {(orderDetails.reduce((sum, order) => sum + order.points_earned, 0) + stats.totalEarned).toLocaleString()} <span className="text-lg">pts</span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                En todas tus compras <ExternalLink className="h-3 w-3" />
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
+          <Card 
+            className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 cursor-pointer"
+            onClick={() => setAvailableSheetOpen(true)}
+          >
             <div className="absolute inset-0 bg-[var(--gradient-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Disponible</CardTitle>
@@ -179,35 +246,45 @@ const ReferEarn = () => {
               </div>
             </CardHeader>
             <CardContent className="relative z-10">
-              <div className="text-4xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent">{stats.pendingRewards.toLocaleString()} <span className="text-lg">pts</span></div>
-              <p className="text-sm text-muted-foreground mt-1">Listos para usar</p>
+              <div className="text-4xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent">{availablePoints.toLocaleString()} <span className="text-lg">pts</span></div>
+              <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                Listos para usar <ExternalLink className="h-3 w-3" />
+              </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Referral Link Section */}
+        {/* Referral Link Section - Simplified */}
         <div className="max-w-3xl mx-auto mb-16">
           <Card className="border-2 shadow-xl">
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="text-2xl">Tu Link de Referido</CardTitle>
+            <CardHeader className="text-center pb-6">
+              <CardTitle className="text-2xl">Comparte y Gana</CardTitle>
               <CardDescription className="text-base">
-                Comparte este link con tus amigos para ganar recompensas
+                Haz click en "Compartir" para copiar tu link automáticamente
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex gap-3 p-4 bg-muted/50 rounded-lg">
-                <Input 
-                  value={referralLink} 
-                  readOnly 
-                  className="flex-1 border-0 bg-transparent text-base font-mono" 
-                />
-                <Button onClick={copyToClipboard} size="lg" className="bg-[var(--gradient-primary)] hover:opacity-90">
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copiar
+              <div className="flex justify-center">
+                <Button 
+                  onClick={handleShare} 
+                  size="lg" 
+                  className="bg-[var(--gradient-primary)] hover:opacity-90 text-lg px-12 py-6 h-auto"
+                >
+                  <Copy className="h-5 w-5 mr-2" />
+                  Compartir Link
                 </Button>
               </div>
 
-              <div className="flex flex-wrap gap-3 justify-center pt-2">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">o comparte en</span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3 justify-center">
                 <Button onClick={shareViaWhatsApp} variant="outline" size="lg" className="hover:border-primary hover:text-primary transition-colors">
                   <Share2 className="h-4 w-4 mr-2" />
                   WhatsApp
@@ -220,6 +297,10 @@ const ReferEarn = () => {
                   <Share2 className="h-4 w-4 mr-2" />
                   Facebook
                 </Button>
+              </div>
+
+              <div className="mt-4 p-3 bg-muted/30 rounded-lg">
+                <p className="text-xs text-muted-foreground text-center font-mono break-all">{referralLink}</p>
               </div>
             </CardContent>
           </Card>
@@ -238,7 +319,7 @@ const ReferEarn = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed">
-                  Envía tu link único a tus amigos y familiares por WhatsApp, email o redes sociales.
+                  Envía tu link único a amigos y familiares. Es simple y rápido.
                 </p>
               </CardContent>
             </Card>
@@ -252,7 +333,7 @@ const ReferEarn = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed">
-                  Cuando tus referidos hagan su primera compra, ambos ganan 1% del valor en puntos.
+                  Cuando tus amigos compren usando tu link, ambos reciben puntos de recompensa.
                 </p>
               </CardContent>
             </Card>
@@ -266,7 +347,7 @@ const ReferEarn = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed">
-                  Gana puntos con cada compra (1% del valor). 1,000 puntos = $1 USD para usar en tus próximas compras.
+                  Acumula puntos con cada compra y úsalos como descuento en futuras órdenes.
                 </p>
               </CardContent>
             </Card>
@@ -299,9 +380,9 @@ const ReferEarn = () => {
                     <CheckCircle className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-lg mb-1">Bonos Instantáneos</h4>
+                    <h4 className="font-semibold text-lg mb-1">Recompensas Inmediatas</h4>
                     <p className="text-sm text-muted-foreground">
-                      Recibe tus recompensas inmediatamente
+                      Los puntos se acreditan al instante
                     </p>
                   </div>
                 </div>
@@ -334,6 +415,152 @@ const ReferEarn = () => {
       </main>
 
       <Footer />
+
+      {/* Referrals Details Sheet */}
+      <Sheet open={referralsSheetOpen} onOpenChange={setReferralsSheetOpen}>
+        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Tus Referidos</SheetTitle>
+            <SheetDescription>
+              Amigos que se han unido usando tu link
+            </SheetDescription>
+          </SheetHeader>
+          <div className="mt-6 space-y-4">
+            {referralDetails.length === 0 ? (
+              <div className="text-center py-8">
+                <Users className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                <p className="text-muted-foreground">Aún no tienes referidos</p>
+                <p className="text-sm text-muted-foreground mt-1">Comparte tu link para empezar</p>
+              </div>
+            ) : (
+              referralDetails.map((referral) => (
+                <Card key={referral.id}>
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-medium">Referido #{referral.id.substring(0, 8)}</p>
+                        <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {new Date(referral.created_at).toLocaleDateString('es', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                      <Badge variant="secondary" className="bg-primary/10 text-primary">
+                        +{referral.reward_earned.toLocaleString()} pts
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Earned Points Details Sheet */}
+      <Sheet open={earnedSheetOpen} onOpenChange={setEarnedSheetOpen}>
+        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Puntos Ganados</SheetTitle>
+            <SheetDescription>
+              Historial de puntos por tus compras
+            </SheetDescription>
+          </SheetHeader>
+          <div className="mt-6 space-y-4">
+            {orderDetails.length === 0 ? (
+              <div className="text-center py-8">
+                <Gift className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                <p className="text-muted-foreground">No hay compras aún</p>
+                <p className="text-sm text-muted-foreground mt-1">Realiza tu primera compra para ganar puntos</p>
+              </div>
+            ) : (
+              orderDetails.map((order) => (
+                <Card key={order.id}>
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="font-medium">Orden {order.order_number}</p>
+                        <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {new Date(order.created_at).toLocaleDateString('es', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                      <Badge variant="secondary" className="bg-primary/10 text-primary">
+                        +{order.points_earned.toLocaleString()} pts
+                      </Badge>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Total: {order.total.toLocaleString()} puntos
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Available Points Details Sheet */}
+      <Sheet open={availableSheetOpen} onOpenChange={setAvailableSheetOpen}>
+        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Puntos Disponibles</SheetTitle>
+            <SheetDescription>
+              Puntos listos para usar en tu próxima compra
+            </SheetDescription>
+          </SheetHeader>
+          <div className="mt-6">
+            <Card className="bg-[var(--gradient-accent)] border-2">
+              <CardContent className="p-6 text-center">
+                <div className="text-5xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent mb-2">
+                  {availablePoints.toLocaleString()}
+                </div>
+                <p className="text-sm text-muted-foreground">puntos disponibles</p>
+              </CardContent>
+            </Card>
+            
+            <div className="mt-6 space-y-4">
+              <h3 className="font-semibold">Historial de Recompensas</h3>
+              {rewards.length === 0 ? (
+                <div className="text-center py-8">
+                  <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground">No hay recompensas aún</p>
+                </div>
+              ) : (
+                rewards.map((reward) => (
+                  <Card key={reward.id}>
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-medium">{reward.description}</p>
+                          <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {new Date(reward.created_at).toLocaleDateString('es', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </p>
+                        </div>
+                        <Badge variant="secondary" className="bg-primary/10 text-primary">
+                          +{reward.amount.toLocaleString()} pts
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
