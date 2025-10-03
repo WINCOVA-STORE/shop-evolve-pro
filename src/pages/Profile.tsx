@@ -255,7 +255,7 @@ const Profile = () => {
               </CardHeader>
               <CardContent>
                 <div className="mb-6 p-4 bg-primary/10 rounded-lg border-2 border-primary">
-                  <div className="flex justify-between items-start mb-2">
+                  <div className="flex justify-between items-center">
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">
                         Balance Total de Recompensas
@@ -264,16 +264,8 @@ const Profile = () => {
                         {totalRewards.toLocaleString()} pts
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-xs text-muted-foreground mb-1">
-                        Equivalente en USD
-                      </p>
-                      <p className="text-2xl font-bold text-primary">
-                        ${pointsToDollars(totalRewards)}
-                      </p>
-                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">
+                  <p className="text-xs text-muted-foreground mt-3">
                     1,000 puntos = $1 USD • Máximo 2% por compra
                   </p>
                 </div>
@@ -300,9 +292,6 @@ const Profile = () => {
                           <Badge variant="default" className="text-base">
                             +{Number(reward.amount).toLocaleString()} pts
                           </Badge>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            ${pointsToDollars(Number(reward.amount))}
-                          </p>
                         </div>
                       </div>
                     ))}

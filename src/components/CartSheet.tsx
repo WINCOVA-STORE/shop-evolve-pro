@@ -196,7 +196,7 @@ export const CartSheet = () => {
                         <Label className="text-sm font-medium">Usar Puntos</Label>
                       </div>
                       <span className="text-xs text-muted-foreground">
-                        Disponible: {availablePoints.toLocaleString()} pts (${pointsToDollars(availablePoints).toFixed(2)})
+                        Disponible: {availablePoints.toLocaleString()} pts
                       </span>
                     </div>
                     
@@ -259,9 +259,6 @@ export const CartSheet = () => {
                       <div className="text-right">
                         <p className="text-lg font-bold text-primary">
                           +{pointsToEarn.toLocaleString()} pts
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          ${(pointsToEarn / 1000).toFixed(2)}
                         </p>
                       </div>
                     </div>

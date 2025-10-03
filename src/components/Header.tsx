@@ -114,9 +114,6 @@ export const Header = () => {
               >
                 <Gift className="h-4 w-4" />
                 <span className="text-sm">{availablePoints.toLocaleString()} pts</span>
-                <Badge variant="secondary" className="text-xs px-1.5 py-0">
-                  ${pointsToDollars(availablePoints).toFixed(2)}
-                </Badge>
               </Button>
             )}
             

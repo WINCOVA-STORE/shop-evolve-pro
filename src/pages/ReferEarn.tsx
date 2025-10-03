@@ -158,7 +158,7 @@ const ReferEarn = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalEarned.toLocaleString()} pts</div>
-              <p className="text-xs text-muted-foreground">${(stats.totalEarned / 1000).toFixed(2)} en recompensas</p>
+              <p className="text-xs text-muted-foreground">En recompensas</p>
             </CardContent>
           </Card>
 
@@ -169,7 +169,7 @@ const ReferEarn = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.pendingRewards.toLocaleString()} pts</div>
-              <p className="text-xs text-muted-foreground">${(stats.pendingRewards / 1000).toFixed(2)} listos para usar</p>
+              <p className="text-xs text-muted-foreground">Listos para usar</p>
             </CardContent>
           </Card>
         </div>

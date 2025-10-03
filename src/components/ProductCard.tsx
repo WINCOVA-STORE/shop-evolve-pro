@@ -106,7 +106,6 @@ export const ProductCard = (product: ProductCardProps) => {
           <div className="flex items-center gap-1 text-xs text-primary font-medium">
             <Gift className="h-3 w-3" />
             <span>+{pointsToEarn.toLocaleString()} pts</span>
-            <span className="text-muted-foreground">(${(pointsToEarn / 1000).toFixed(2)})</span>
           </div>
         </div>
 

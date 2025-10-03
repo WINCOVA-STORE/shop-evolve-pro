@@ -193,10 +193,7 @@ const ProductDetail = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-bold text-primary">
-                      {pointsToEarn.toLocaleString()} pts
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      = ${(pointsToEarn / 1000).toFixed(2)}
+                      +{pointsToEarn.toLocaleString()} pts
                     </p>
                   </div>
                 </div>
