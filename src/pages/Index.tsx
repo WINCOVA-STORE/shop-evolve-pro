@@ -3,85 +3,11 @@ import { ProductCard } from "@/components/ProductCard";
 import { CategoryCard } from "@/components/CategoryCard";
 import { Button } from "@/components/ui/button";
 import { mainCategories } from "@/data/categories";
+import { useFeaturedProducts } from "@/hooks/useProducts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
-
-  const featuredProducts = [
-    {
-      id: "1",
-      title: "Duke Cannon Supply Co. Men'S Shampoo Puck, Gold Rush – over 175 Washes, Sulfate-Free, 4.5 Oz (Pack of 1)",
-      price: 186.99,
-      image: "https://images.unsplash.com/photo-1564221710304-0b37c8b9d729?w=500&h=500&fit=crop",
-      rating: 4.5,
-      reviews: 234,
-    },
-    {
-      id: "2",
-      title: "K56Pro Smart Watch for Men Heart Rate Blood Bluetooth Sport 400Mah Long Standby 1.39 Inch 360*360 HD Screen Outdoors Smartwatch",
-      price: 28.78,
-      originalPrice: 35.63,
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop",
-      rating: 4,
-      reviews: 89,
-      badge: "sale" as const,
-    },
-    {
-      id: "3",
-      title: "Medifrida Accu-Dose Baby Medicine Syringe with Pacifier Tip",
-      price: 22.99,
-      image: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=500&h=500&fit=crop",
-      rating: 5,
-      reviews: 456,
-      badge: "new" as const,
-    },
-    {
-      id: "4",
-      title: "prueba Towel Keep",
-      price: 16.99,
-      originalPrice: 29.99,
-      image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=500&h=500&fit=crop",
-      rating: 4.5,
-      reviews: 123,
-      badge: "sale" as const,
-    },
-    {
-      id: "5",
-      title: "Towel Keep Premium Cotton Beach Towel Set",
-      price: 16.99,
-      originalPrice: 26.99,
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop",
-      rating: 4,
-      reviews: 167,
-    },
-    {
-      id: "6",
-      title: "Wireless Bluetooth Headphones with Noise Cancellation",
-      price: 89.99,
-      originalPrice: 129.99,
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop",
-      rating: 4.5,
-      reviews: 342,
-      badge: "sale" as const,
-    },
-    {
-      id: "7",
-      title: "Stainless Steel Water Bottle 32oz - Keeps Drinks Cold 24hrs",
-      price: 24.99,
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop",
-      rating: 5,
-      reviews: 891,
-      badge: "new" as const,
-    },
-    {
-      id: "8",
-      title: "Organic Cotton T-Shirt - Comfortable All-Day Wear",
-      price: 19.99,
-      originalPrice: 34.99,
-      image: "https://images.unsplash.com/photo-1564221710304-0b37c8b9d729?w=500&h=500&fit=crop",
-      rating: 4.5,
-      reviews: 567,
-    },
-  ];
+  const { data: products, isLoading } = useFeaturedProducts(8);
 
   return (
     <div className="min-h-screen bg-background">
@@ -116,10 +42,25 @@ const Index = () => {
 
       {/* Featured Products */}
       <section className="container mx-auto px-4 py-12">
+        <h2 className="text-3xl font-bold text-foreground mb-8">Productos Destacados</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} {...product} />
-          ))}
+          {isLoading ? (
+            [...Array(8)].map((_, i) => (
+              <div key={i} className="space-y-3">
+                <Skeleton className="aspect-square w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            ))
+          ) : products && products.length > 0 ? (
+            products.map((product) => (
+              <ProductCard key={product.id} {...product} />
+            ))
+          ) : (
+            <div className="col-span-full text-center text-muted-foreground py-12">
+              No hay productos disponibles
+            </div>
+          )}
         </div>
       </section>
 

@@ -6,25 +6,26 @@ import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
   id: string;
-  title: string;
+  name: string;
   price: number;
-  originalPrice?: number;
-  image: string;
-  rating: number;
-  reviews: number;
-  badge?: "sale" | "new";
+  compare_at_price?: number | null;
+  images: string[];
+  tags?: string[];
 }
 
 export const ProductCard = ({
-  title,
+  name,
   price,
-  originalPrice,
-  image,
-  rating,
-  reviews,
-  badge,
+  compare_at_price,
+  images,
+  tags = [],
 }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  
+  const image = images[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop";
+  const hasDiscount = compare_at_price && compare_at_price > price;
+  const isNew = tags.includes('new');
+  const badge = hasDiscount ? 'sale' : isNew ? 'new' : undefined;
 
   return (
     <div
@@ -36,7 +37,7 @@ export const ProductCard = ({
       <div className="relative aspect-square overflow-hidden bg-muted">
         <img
           src={image}
-          alt={title}
+          alt={name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
         />
         
@@ -74,35 +75,17 @@ export const ProductCard = ({
       <div className="p-4 space-y-3">
         {/* Title */}
         <h3 className="font-medium text-sm line-clamp-3 min-h-[60px] text-foreground hover:text-primary transition-colors cursor-pointer">
-          {title}
+          {name}
         </h3>
-
-        {/* Rating */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={cn(
-                  "h-3 w-3",
-                  i < Math.floor(rating)
-                    ? "fill-primary text-primary"
-                    : "fill-muted text-muted"
-                )}
-              />
-            ))}
-          </div>
-          <span className="text-xs text-muted-foreground">({reviews})</span>
-        </div>
 
         {/* Price */}
         <div className="flex items-center gap-2 min-h-[24px]">
           <span className="text-lg font-bold text-foreground">
             ${price.toFixed(2)}
           </span>
-          {originalPrice && (
+          {compare_at_price && compare_at_price > price && (
             <span className="text-sm text-muted-foreground line-through">
-              ${originalPrice.toFixed(2)}
+              ${compare_at_price.toFixed(2)}
             </span>
           )}
         </div>
