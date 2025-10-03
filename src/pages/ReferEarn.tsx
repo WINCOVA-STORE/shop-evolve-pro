@@ -418,27 +418,89 @@ const ReferEarn = () => {
 
       {/* Referrals Details Sheet */}
       <Sheet open={referralsSheetOpen} onOpenChange={setReferralsSheetOpen}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>Tus Referidos</SheetTitle>
+        <SheetContent className="w-full sm:max-w-lg overflow-y-auto bg-background">
+          <SheetHeader className="pb-6 border-b">
+            <SheetTitle className="text-2xl flex items-center gap-2">
+              <Users className="h-6 w-6 text-primary" />
+              Tus Referidos
+            </SheetTitle>
             <SheetDescription>
-              Amigos que se han unido usando tu link
+              Lista de amigos que se unieron con tu link
             </SheetDescription>
           </SheetHeader>
+          
           <div className="mt-6 space-y-4">
             {referralDetails.length === 0 ? (
-              <div className="text-center py-8">
-                <Users className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-                <p className="text-muted-foreground">Aún no tienes referidos</p>
-                <p className="text-sm text-muted-foreground mt-1">Comparte tu link para empezar</p>
+              <div className="space-y-6">
+                {/* Estado vacío con ejemplo visual */}
+                <div className="text-center py-8 px-4 bg-muted/30 rounded-lg border-2 border-dashed">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <Users className="h-8 w-8 text-primary" />
+                  </div>
+                  <p className="font-semibold text-lg mb-2">Aún no tienes referidos</p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Comparte tu link para empezar a ganar puntos
+                  </p>
+                  <Button onClick={() => setReferralsSheetOpen(false)} variant="outline" size="sm">
+                    Compartir ahora
+                  </Button>
+                </div>
+
+                {/* Vista previa de cómo se verá */}
+                <div className="pt-4 border-t">
+                  <p className="text-xs text-muted-foreground mb-3 text-center">Vista previa de cómo se verá:</p>
+                  
+                  <Card className="opacity-60">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-medium flex items-center gap-2">
+                            <Users className="h-4 w-4 text-primary" />
+                            María González
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            15 de marzo, 2025
+                          </p>
+                        </div>
+                        <Badge variant="secondary" className="bg-primary/10 text-primary">
+                          +2,500 pts
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="opacity-40 mt-3">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-medium flex items-center gap-2">
+                            <Users className="h-4 w-4 text-primary" />
+                            Juan Pérez
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            10 de marzo, 2025
+                          </p>
+                        </div>
+                        <Badge variant="secondary" className="bg-primary/10 text-primary">
+                          +3,000 pts
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             ) : (
               referralDetails.map((referral) => (
-                <Card key={referral.id}>
+                <Card key={referral.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-medium">Referido #{referral.id.substring(0, 8)}</p>
+                        <p className="font-medium flex items-center gap-2">
+                          <Users className="h-4 w-4 text-primary" />
+                          Referido #{referral.id.substring(0, 8)}
+                        </p>
                         <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           {new Date(referral.created_at).toLocaleDateString('es', {
@@ -462,28 +524,101 @@ const ReferEarn = () => {
 
       {/* Earned Points Details Sheet */}
       <Sheet open={earnedSheetOpen} onOpenChange={setEarnedSheetOpen}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>Puntos Ganados</SheetTitle>
+        <SheetContent className="w-full sm:max-w-lg overflow-y-auto bg-background">
+          <SheetHeader className="pb-6 border-b">
+            <SheetTitle className="text-2xl flex items-center gap-2">
+              <Gift className="h-6 w-6 text-primary" />
+              Puntos Ganados
+            </SheetTitle>
             <SheetDescription>
-              Historial de puntos por tus compras
+              Historial completo de puntos ganados en compras
             </SheetDescription>
           </SheetHeader>
+          
           <div className="mt-6 space-y-4">
             {orderDetails.length === 0 ? (
-              <div className="text-center py-8">
-                <Gift className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-                <p className="text-muted-foreground">No hay compras aún</p>
-                <p className="text-sm text-muted-foreground mt-1">Realiza tu primera compra para ganar puntos</p>
+              <div className="space-y-6">
+                {/* Estado vacío con ejemplo visual */}
+                <div className="text-center py-8 px-4 bg-muted/30 rounded-lg border-2 border-dashed">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <Gift className="h-8 w-8 text-primary" />
+                  </div>
+                  <p className="font-semibold text-lg mb-2">No hay compras aún</p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Cada compra que realices te dará puntos de recompensa
+                  </p>
+                  <Button onClick={() => {
+                    setEarnedSheetOpen(false);
+                    navigate('/');
+                  }} variant="outline" size="sm">
+                    Ir a comprar
+                  </Button>
+                </div>
+
+                {/* Vista previa de cómo se verá */}
+                <div className="pt-4 border-t">
+                  <p className="text-xs text-muted-foreground mb-3 text-center">Vista previa de cómo se verá:</p>
+                  
+                  <Card className="opacity-60">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-medium">Orden #WIN-2025-001</p>
+                            <Badge variant="outline" className="text-xs">Completada</Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            20 de marzo, 2025
+                          </p>
+                        </div>
+                        <Badge variant="secondary" className="bg-primary/10 text-primary">
+                          +4,500 pts
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between pt-2 border-t text-sm">
+                        <span className="text-muted-foreground">Total de orden:</span>
+                        <span className="font-medium">450,000 pts</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="opacity-40 mt-3">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-medium">Orden #WIN-2025-002</p>
+                            <Badge variant="outline" className="text-xs">Completada</Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            18 de marzo, 2025
+                          </p>
+                        </div>
+                        <Badge variant="secondary" className="bg-primary/10 text-primary">
+                          +2,800 pts
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between pt-2 border-t text-sm">
+                        <span className="text-muted-foreground">Total de orden:</span>
+                        <span className="font-medium">280,000 pts</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             ) : (
               orderDetails.map((order) => (
-                <Card key={order.id}>
+                <Card key={order.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <p className="font-medium">Orden {order.order_number}</p>
-                        <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-medium">Orden {order.order_number}</p>
+                          <Badge variant="outline" className="text-xs">Completada</Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           {new Date(order.created_at).toLocaleDateString('es', {
                             year: 'numeric',
@@ -496,8 +631,9 @@ const ReferEarn = () => {
                         +{order.points_earned.toLocaleString()} pts
                       </Badge>
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                      Total: {order.total.toLocaleString()} puntos
+                    <div className="flex items-center justify-between pt-2 border-t text-sm">
+                      <span className="text-muted-foreground">Total de orden:</span>
+                      <span className="font-medium">{order.total.toLocaleString()} pts</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -509,53 +645,170 @@ const ReferEarn = () => {
 
       {/* Available Points Details Sheet */}
       <Sheet open={availableSheetOpen} onOpenChange={setAvailableSheetOpen}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>Puntos Disponibles</SheetTitle>
+        <SheetContent className="w-full sm:max-w-lg overflow-y-auto bg-background">
+          <SheetHeader className="pb-6 border-b">
+            <SheetTitle className="text-2xl flex items-center gap-2">
+              <TrendingUp className="h-6 w-6 text-primary" />
+              Balance Disponible
+            </SheetTitle>
             <SheetDescription>
-              Puntos listos para usar en tu próxima compra
+              Tus puntos listos para usar en cualquier compra
             </SheetDescription>
           </SheetHeader>
+          
           <div className="mt-6">
-            <Card className="bg-[var(--gradient-accent)] border-2">
-              <CardContent className="p-6 text-center">
-                <div className="text-5xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent mb-2">
+            {/* Balance principal */}
+            <Card className="bg-gradient-to-br from-primary/10 to-accent/5 border-2 border-primary/20 shadow-lg">
+              <CardContent className="p-8 text-center">
+                <p className="text-sm font-medium text-muted-foreground mb-2">Tu balance actual</p>
+                <div className="text-6xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent mb-3">
                   {availablePoints.toLocaleString()}
                 </div>
-                <p className="text-sm text-muted-foreground">puntos disponibles</p>
+                <p className="text-lg text-muted-foreground">puntos disponibles</p>
+                
+                {availablePoints > 0 && (
+                  <div className="mt-4 pt-4 border-t border-primary/20">
+                    <p className="text-sm text-muted-foreground">
+                      Puedes usar estos puntos como descuento en tu próxima compra
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
             
-            <div className="mt-6 space-y-4">
-              <h3 className="font-semibold">Historial de Recompensas</h3>
+            {/* Historial de recompensas */}
+            <div className="mt-8">
+              <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                <Gift className="h-5 w-5 text-primary" />
+                Historial de Recompensas
+              </h3>
+              
               {rewards.length === 0 ? (
-                <div className="text-center py-8">
-                  <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground">No hay recompensas aún</p>
+                <div className="space-y-6">
+                  <div className="text-center py-8 px-4 bg-muted/30 rounded-lg border-2 border-dashed">
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                      <TrendingUp className="h-8 w-8 text-primary" />
+                    </div>
+                    <p className="font-semibold text-lg mb-2">No hay recompensas aún</p>
+                    <p className="text-sm text-muted-foreground">
+                      Gana puntos comprando, refiriendo amigos o en tu cumpleaños
+                    </p>
+                  </div>
+
+                  {/* Vista previa */}
+                  <div className="pt-4 border-t">
+                    <p className="text-xs text-muted-foreground mb-3 text-center">Ejemplo de recompensas:</p>
+                    
+                    <Card className="opacity-60 mb-3">
+                      <CardContent className="p-4">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <Gift className="h-4 w-4 text-primary" />
+                              </div>
+                              <p className="font-medium">Bono de bienvenida</p>
+                            </div>
+                            <p className="text-sm text-muted-foreground ml-10 flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              Al registrarte
+                            </p>
+                          </div>
+                          <Badge variant="secondary" className="bg-primary/10 text-primary">
+                            +2,000 pts
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="opacity-40 mb-3">
+                      <CardContent className="p-4">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <Users className="h-4 w-4 text-primary" />
+                              </div>
+                              <p className="font-medium">Por referir a María</p>
+                            </div>
+                            <p className="text-sm text-muted-foreground ml-10 flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              15 de marzo, 2025
+                            </p>
+                          </div>
+                          <Badge variant="secondary" className="bg-primary/10 text-primary">
+                            +2,500 pts
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="opacity-30">
+                      <CardContent className="p-4">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <Gift className="h-4 w-4 text-primary" />
+                              </div>
+                              <p className="font-medium">Puntos por compra</p>
+                            </div>
+                            <p className="text-sm text-muted-foreground ml-10 flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              Orden #WIN-2025-001
+                            </p>
+                          </div>
+                          <Badge variant="secondary" className="bg-primary/10 text-primary">
+                            +4,500 pts
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </div>
               ) : (
-                rewards.map((reward) => (
-                  <Card key={reward.id}>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="font-medium">{reward.description}</p>
-                          <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            {new Date(reward.created_at).toLocaleDateString('es', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })}
-                          </p>
-                        </div>
-                        <Badge variant="secondary" className="bg-primary/10 text-primary">
-                          +{reward.amount.toLocaleString()} pts
-                        </Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
+                <div className="space-y-3">
+                  {rewards.map((reward) => {
+                    const rewardIcon = reward.type === 'welcome' ? Gift :
+                                     reward.type === 'referral' ? Users :
+                                     reward.type === 'purchase' ? Gift :
+                                     reward.type === 'birthday' ? Gift : TrendingUp;
+                    const RewardIcon = rewardIcon;
+                    
+                    return (
+                      <Card key={reward.id} className="hover:shadow-md transition-shadow">
+                        <CardContent className="p-4">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                                  <RewardIcon className="h-4 w-4 text-primary" />
+                                </div>
+                                <p className="font-medium">{reward.description}</p>
+                              </div>
+                              <p className="text-sm text-muted-foreground ml-10 flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                {new Date(reward.created_at).toLocaleDateString('es', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                })}
+                              </p>
+                              {reward.expires_at && (
+                                <p className="text-xs text-muted-foreground ml-10 mt-1">
+                                  Expira: {new Date(reward.expires_at).toLocaleDateString('es')}
+                                </p>
+                              )}
+                            </div>
+                            <Badge variant="secondary" className="bg-primary/10 text-primary shrink-0">
+                              +{reward.amount.toLocaleString()} pts
+                            </Badge>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
               )}
             </div>
           </div>
