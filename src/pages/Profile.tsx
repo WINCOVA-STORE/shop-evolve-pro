@@ -7,10 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Package, Gift, Users, ArrowLeft } from "lucide-react";
+import { Loader2, Package, Gift, Users, ArrowLeft, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { RewardsBalance } from "@/components/RewardsBalance";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface Order {
   id: string;
@@ -37,6 +40,16 @@ interface Reward {
   created_at: string;
 }
 
+interface Profile {
+  full_name: string;
+  email: string;
+  phone: string | null;
+  birthday: string | null;
+  address: string | null;
+  city: string | null;
+  country: string | null;
+}
+
 const Profile = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -44,7 +57,9 @@ const Profile = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [rewards, setRewards] = useState<Reward[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -60,19 +75,22 @@ const Profile = () => {
 
   const fetchUserData = async () => {
     try {
-      const [ordersRes, referralsRes, rewardsRes] = await Promise.all([
+      const [ordersRes, referralsRes, rewardsRes, profileRes] = await Promise.all([
         supabase.from("orders").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
         supabase.from("referrals").select("*").eq("referrer_id", user!.id).order("created_at", { ascending: false }),
         supabase.from("rewards").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
+        supabase.from("profiles").select("*").eq("id", user!.id).single(),
       ]);
 
       if (ordersRes.error) throw ordersRes.error;
       if (referralsRes.error) throw referralsRes.error;
       if (rewardsRes.error) throw rewardsRes.error;
+      if (profileRes.error) throw profileRes.error;
 
       setOrders(ordersRes.data || []);
       setReferrals(referralsRes.data || []);
       setRewards(rewardsRes.data || []);
+      setProfile(profileRes.data);
     } catch (error) {
       console.error("Error fetching user data:", error);
       toast({
@@ -82,6 +100,41 @@ const Profile = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    if (!profile || !user) return;
+    
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: profile.full_name,
+          phone: profile.phone,
+          birthday: profile.birthday,
+          address: profile.address,
+          city: profile.city,
+          country: profile.country,
+        })
+        .eq("id", user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Perfil actualizado",
+        description: "Tus datos se han guardado correctamente",
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar el perfil",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -246,59 +299,7 @@ const Profile = () => {
           </TabsContent>
 
           <TabsContent value="rewards" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Mis Recompensas</CardTitle>
-                <CardDescription>
-                  Recompensas acumuladas por tus compras y referidos
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="mb-6 p-4 bg-primary/10 rounded-lg border-2 border-primary">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">
-                        Balance Total de Recompensas
-                      </p>
-                      <p className="text-4xl font-bold text-primary">
-                        {totalRewards.toLocaleString()} pts
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-3">
-                    1,000 puntos = $1 USD • Máximo 2% por compra
-                  </p>
-                </div>
-
-                {rewards.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Gift className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No tienes recompensas aún</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {rewards.map((reward) => (
-                      <div key={reward.id} className="flex justify-between items-center p-3 border rounded">
-                        <div className="flex-1">
-                          <p className="font-medium capitalize">{reward.type}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {reward.description}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(reward.created_at).toLocaleDateString('es-ES')}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant="default" className="text-base">
-                            +{Number(reward.amount).toLocaleString()} pts
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <RewardsBalance />
           </TabsContent>
         </Tabs>
       </div>

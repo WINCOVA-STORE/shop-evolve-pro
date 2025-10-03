@@ -12,6 +12,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ArrowLeft, ShoppingCart, Heart, Share2, Minus, Plus, Star, Package, Shield, Truck, Gift } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { ProductReviews } from "@/components/ProductReviews";
 import { Product } from "@/hooks/useProducts";
 
 const ProductDetail = () => {
@@ -302,6 +303,11 @@ const ProductDetail = () => {
             </Card>
           </div>
         </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="container py-12">
+        <ProductReviews productId={product.id} />
       </div>
 
       <Footer />
