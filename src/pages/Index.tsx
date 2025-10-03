@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { mainCategories } from "@/data/categories";
 import { useFeaturedProducts } from "@/hooks/useProducts";
+import { useReferral } from "@/hooks/useReferral";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
 import { Truck, Shield, Package, Gift, Star, TrendingUp } from "lucide-react";
@@ -14,6 +15,9 @@ import { Truck, Shield, Package, Gift, Star, TrendingUp } from "lucide-react";
 const Index = () => {
   const { data: products, isLoading } = useFeaturedProducts(8);
   const { t } = useTranslation();
+  
+  // Capture referral code from URL
+  useReferral();
 
   return (
     <div className="min-h-screen bg-background">

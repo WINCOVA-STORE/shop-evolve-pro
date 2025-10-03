@@ -32,13 +32,17 @@ export const useAuth = () => {
   const signUp = async (email: string, password: string, fullName?: string) => {
     const redirectUrl = `${window.location.origin}/`;
     
+    // Get referral code from localStorage if exists
+    const referralCode = localStorage.getItem("referral_code");
+    
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
         data: {
-          full_name: fullName
+          full_name: fullName,
+          referral_code: referralCode || null
         }
       }
     });
@@ -50,6 +54,11 @@ export const useAuth = () => {
         description: error.message,
       });
       return { error };
+    }
+
+    // Clear referral code after successful signup
+    if (referralCode) {
+      localStorage.removeItem("referral_code");
     }
 
     toast({

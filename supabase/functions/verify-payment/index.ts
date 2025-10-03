@@ -83,6 +83,35 @@ serve(async (req) => {
 
       if (itemsError) throw itemsError;
 
+      // Process referral if this is the user's first order
+      if (userId && userId !== 'guest') {
+        try {
+          // Check if this is the first order
+          const { count } = await supabaseClient
+            .from('orders')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', userId);
+
+          // Only process referral for first order
+          if (count === 1) {
+            await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/process-referral`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+              },
+              body: JSON.stringify({
+                order_id: order.id,
+                user_id: userId,
+              }),
+            });
+          }
+        } catch (refError) {
+          console.error('Error processing referral:', refError);
+          // Don't fail the order if referral processing fails
+        }
+      }
+
       return new Response(
         JSON.stringify({ 
           success: true, 
