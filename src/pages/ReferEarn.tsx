@@ -418,7 +418,7 @@ const ReferEarn = () => {
 
       {/* Referrals Details Sheet */}
       <Sheet open={referralsSheetOpen} onOpenChange={setReferralsSheetOpen}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto bg-background">
+        <SheetContent className="w-full sm:max-w-xl overflow-y-auto bg-background">{/* ... keep existing code */}
           <SheetHeader className="pb-6 border-b">
             <SheetTitle className="text-2xl flex items-center gap-2">
               <Users className="h-6 w-6 text-primary" />
@@ -524,7 +524,7 @@ const ReferEarn = () => {
 
       {/* Earned Points Details Sheet */}
       <Sheet open={earnedSheetOpen} onOpenChange={setEarnedSheetOpen}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto bg-background">
+        <SheetContent className="w-full sm:max-w-xl overflow-y-auto bg-background">{/* ... keep existing code */}
           <SheetHeader className="pb-6 border-b">
             <SheetTitle className="text-2xl flex items-center gap-2">
               <Gift className="h-6 w-6 text-primary" />
@@ -645,7 +645,7 @@ const ReferEarn = () => {
 
       {/* Available Points Details Sheet */}
       <Sheet open={availableSheetOpen} onOpenChange={setAvailableSheetOpen}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto bg-background">
+        <SheetContent className="w-full sm:max-w-xl overflow-y-auto bg-background">{/* ... keep existing code */}
           <SheetHeader className="pb-6 border-b">
             <SheetTitle className="text-2xl flex items-center gap-2">
               <TrendingUp className="h-6 w-6 text-primary" />
