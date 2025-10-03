@@ -23,7 +23,7 @@ serve(async (req) => {
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
     
-    const { cartItems, total } = await req.json();
+    const { cartItems, total, pointsUsed, pointsDiscount } = await req.json();
     
     if (!cartItems || cartItems.length === 0) {
       throw new Error("Cart is empty");
@@ -63,6 +63,8 @@ serve(async (req) => {
       cancel_url: `${req.headers.get("origin")}/`,
       metadata: {
         user_id: user?.id || 'guest',
+        points_used: pointsUsed?.toString() || '0',
+        points_discount: pointsDiscount?.toString() || '0',
       },
     });
 

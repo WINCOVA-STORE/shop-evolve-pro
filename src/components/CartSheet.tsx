@@ -1,4 +1,4 @@
-import { ShoppingCart, Minus, Plus, X, Loader2 } from "lucide-react";
+import { ShoppingCart, Minus, Plus, X, Loader2, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -17,18 +17,32 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useRewards } from "@/hooks/useRewards";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/useAuth";
 
 export const CartSheet = () => {
   const { items, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
   const { formatPrice } = useCurrency();
   const { t } = useTranslation();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { availablePoints, getMaxUsablePoints, pointsToDollars } = useRewards();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [pointsToUse, setPointsToUse] = useState(0);
 
   const taxRate = 0.0975; // Tennessee state tax (9.75%)
   const taxAmount = cartTotal * taxRate;
   const shippingCost = cartTotal > 50 ? 0 : 8.99;
-  const total = cartTotal + taxAmount + shippingCost;
+  const subtotalWithShipping = cartTotal + taxAmount + shippingCost;
+  
+  // Calculate discount from points (1000 points = $1)
+  const pointsDiscount = pointsToDollars(pointsToUse);
+  const total = Math.max(0, subtotalWithShipping - pointsDiscount);
+  
+  // Calculate max usable points (2% of purchase amount)
+  const maxUsablePoints = getMaxUsablePoints(subtotalWithShipping);
 
   const handleCheckout = async () => {
     setIsCheckingOut(true);
@@ -42,7 +56,12 @@ export const CartSheet = () => {
       }));
 
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { cartItems, total },
+        body: { 
+          cartItems, 
+          total,
+          pointsUsed: pointsToUse,
+          pointsDiscount: pointsDiscount,
+        },
       });
 
       if (error) throw error;
@@ -146,25 +165,85 @@ export const CartSheet = () => {
 
             <Separator className="my-4" />
 
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t('cart.subtotal')}</span>
-                <span className="font-medium">{formatPrice(cartTotal)}</span>
+            <div className="space-y-4">
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t('cart.subtotal')}</span>
+                  <span className="font-medium">{formatPrice(cartTotal)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t('cart.tax')} (9.75%)</span>
+                  <span className="font-medium">{formatPrice(taxAmount)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t('cart.shipping')}</span>
+                  <span className="font-medium">
+                    {shippingCost === 0 ? 'FREE' : formatPrice(shippingCost)}
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t('cart.tax')} (9.75%)</span>
-                <span className="font-medium">{formatPrice(taxAmount)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t('cart.shipping')}</span>
-                <span className="font-medium">
-                  {shippingCost === 0 ? 'FREE' : formatPrice(shippingCost)}
-                </span>
-              </div>
+
+              {user && availablePoints > 0 && (
+                <>
+                  <Separator />
+                  <div className="space-y-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Gift className="h-4 w-4 text-primary" />
+                        <Label className="text-sm font-medium">Usar Puntos</Label>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        Disponible: {availablePoints.toLocaleString()} pts (${pointsToDollars(availablePoints).toFixed(2)})
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Input
+                        type="number"
+                        min="0"
+                        max={maxUsablePoints}
+                        value={pointsToUse}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value) || 0;
+                          setPointsToUse(Math.min(value, maxUsablePoints));
+                        }}
+                        placeholder="0"
+                        className="h-9"
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Máximo: {maxUsablePoints.toLocaleString()} pts (2%)</span>
+                        {pointsToUse > 0 && (
+                          <span className="text-primary font-medium">
+                            -${pointsDiscount.toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full h-8"
+                        onClick={() => setPointsToUse(maxUsablePoints)}
+                      >
+                        Usar Máximo
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              )}
+
               <Separator />
-              <div className="flex justify-between text-lg font-bold">
-                <span>{t('cart.total')}</span>
-                <span>{formatPrice(total)}</span>
+              
+              <div className="space-y-2">
+                {pointsDiscount > 0 && (
+                  <div className="flex justify-between text-sm text-primary">
+                    <span>Descuento por puntos</span>
+                    <span className="font-medium">-{formatPrice(pointsDiscount)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-lg font-bold">
+                  <span>{t('cart.total')}</span>
+                  <span>{formatPrice(total)}</span>
+                </div>
               </div>
             </div>
 

@@ -86,6 +86,9 @@ const Profile = () => {
   };
 
   const totalRewards = rewards.reduce((sum, reward) => sum + Number(reward.amount), 0);
+  
+  // Convert points to dollars (1000 points = $1)
+  const pointsToDollars = (points: number) => (points / 1000).toFixed(2);
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -252,11 +255,26 @@ const Profile = () => {
               </CardHeader>
               <CardContent>
                 <div className="mb-6 p-4 bg-primary/10 rounded-lg border-2 border-primary">
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Balance Total de Recompensas
-                  </p>
-                  <p className="text-4xl font-bold text-primary">
-                    ${totalRewards.toFixed(2)}
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">
+                        Balance Total de Recompensas
+                      </p>
+                      <p className="text-4xl font-bold text-primary">
+                        {totalRewards.toLocaleString()} pts
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Equivalente en USD
+                      </p>
+                      <p className="text-2xl font-bold text-primary">
+                        ${pointsToDollars(totalRewards)}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    1,000 puntos = $1 USD • Máximo 2% por compra
                   </p>
                 </div>
 
@@ -269,8 +287,8 @@ const Profile = () => {
                   <div className="space-y-2">
                     {rewards.map((reward) => (
                       <div key={reward.id} className="flex justify-between items-center p-3 border rounded">
-                        <div>
-                          <p className="font-medium">{reward.type}</p>
+                        <div className="flex-1">
+                          <p className="font-medium capitalize">{reward.type}</p>
                           <p className="text-sm text-muted-foreground">
                             {reward.description}
                           </p>
@@ -279,9 +297,12 @@ const Profile = () => {
                           </p>
                         </div>
                         <div className="text-right">
-                          <Badge variant="default" className="text-lg">
-                            +${Number(reward.amount).toFixed(2)}
+                          <Badge variant="default" className="text-base">
+                            +{Number(reward.amount).toLocaleString()} pts
                           </Badge>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            ${pointsToDollars(Number(reward.amount))}
+                          </p>
                         </div>
                       </div>
                     ))}

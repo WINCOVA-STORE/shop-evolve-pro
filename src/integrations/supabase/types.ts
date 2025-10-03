@@ -356,6 +356,7 @@ export type Database = {
           phone: string | null
           postal_code: string | null
           updated_at: string
+          welcome_bonus_claimed: boolean | null
         }
         Insert: {
           address?: string | null
@@ -369,6 +370,7 @@ export type Database = {
           phone?: string | null
           postal_code?: string | null
           updated_at?: string
+          welcome_bonus_claimed?: boolean | null
         }
         Update: {
           address?: string | null
@@ -382,6 +384,7 @@ export type Database = {
           phone?: string | null
           postal_code?: string | null
           updated_at?: string
+          welcome_bonus_claimed?: boolean | null
         }
         Relationships: []
       }
@@ -442,6 +445,7 @@ export type Database = {
           amount: number
           created_at: string
           description: string | null
+          expires_at: string | null
           id: string
           order_id: string | null
           type: string
@@ -451,6 +455,7 @@ export type Database = {
           amount: number
           created_at?: string
           description?: string | null
+          expires_at?: string | null
           id?: string
           order_id?: string | null
           type: string
@@ -460,6 +465,7 @@ export type Database = {
           amount?: number
           created_at?: string
           description?: string | null
+          expires_at?: string | null
           id?: string
           order_id?: string | null
           type?: string

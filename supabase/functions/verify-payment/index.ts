@@ -83,32 +83,88 @@ serve(async (req) => {
 
       if (itemsError) throw itemsError;
 
-      // Process referral if this is the user's first order
+      // Deduct points if used
+      const pointsUsed = parseInt(session.metadata?.points_used || '0');
+      if (pointsUsed > 0 && userId && userId !== 'guest') {
+        const { error: pointsError } = await supabaseClient
+          .from('rewards')
+          .insert({
+            user_id: userId,
+            type: 'redemption',
+            amount: -pointsUsed,
+            description: `Puntos usados en orden ${orderNumber}`,
+            order_id: order.id,
+          });
+
+        if (pointsError) {
+          console.error('Error deducting points:', pointsError);
+        } else {
+          console.log(`Deducted ${pointsUsed} points for order ${orderNumber}`);
+        }
+      }
+
+      // Process rewards: Welcome bonus + Purchase rewards
       if (userId && userId !== 'guest') {
         try {
-          // Check if this is the first order
+          // Check if this is the user's first order
           const { count } = await supabaseClient
             .from('orders')
             .select('id', { count: 'exact', head: true })
             .eq('user_id', userId);
 
-          // Only process referral for first order
+          const orderTotal = Number(session.amount_total! / 100);
+          const rewards = [];
+
+          // Welcome bonus: 2000 points on first purchase (only if not claimed)
           if (count === 1) {
-            await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/process-referral`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
-              },
-              body: JSON.stringify({
-                order_id: order.id,
+            const { data: profile } = await supabaseClient
+              .from('profiles')
+              .select('welcome_bonus_claimed')
+              .eq('id', userId)
+              .single();
+
+            if (profile && !profile.welcome_bonus_claimed) {
+              rewards.push({
                 user_id: userId,
-              }),
-            });
+                type: 'welcome',
+                amount: 2000,
+                description: 'Bono de bienvenida',
+                order_id: order.id,
+              });
+
+              // Mark welcome bonus as claimed
+              await supabaseClient
+                .from('profiles')
+                .update({ welcome_bonus_claimed: true })
+                .eq('id', userId);
+            }
           }
-        } catch (refError) {
-          console.error('Error processing referral:', refError);
-          // Don't fail the order if referral processing fails
+
+          // Purchase reward: 1% of purchase amount in points (1000 points = $1)
+          const purchasePoints = Math.floor(orderTotal * 10); // 1% = orderTotal * 0.01 * 1000
+          rewards.push({
+            user_id: userId,
+            type: 'purchase',
+            amount: purchasePoints,
+            description: `Recompensa por compra de $${orderTotal.toFixed(2)}`,
+            order_id: order.id,
+          });
+
+          // Insert all rewards
+          if (rewards.length > 0) {
+            const { error: rewardsError } = await supabaseClient
+              .from('rewards')
+              .insert(rewards);
+
+            if (rewardsError) {
+              console.error('Error creating rewards:', rewardsError);
+            } else {
+              console.log(`Created ${rewards.length} rewards totaling ${rewards.reduce((sum, r) => sum + r.amount, 0)} points`);
+            }
+          }
+        } catch (rewardError) {
+          console.error('Error processing rewards:', rewardError);
+          // Don't fail the order if reward processing fails
         }
       }
 
