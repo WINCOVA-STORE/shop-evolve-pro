@@ -39,10 +39,10 @@
   --transition-speed: 0.3s;
   --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
   
-  /* Sombras */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+  /* Sombras - suaves sin efecto doble cuadro */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 6px 12px rgba(0, 0, 0, 0.10);
 }
 
 /* ====================================================================
@@ -70,14 +70,15 @@ ul.products {
   border-radius: 8px;
   overflow: hidden;
   transition: all var(--transition-speed) var(--transition-timing);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
-/* Hover en tarjeta completa */
+/* Hover en tarjeta completa - sin doble cuadro */
 .product:hover,
 .product-inner:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* ====================================================================
@@ -198,15 +199,15 @@ ul.products {
   margin: 0 0 8px 0 !important;
   color: #2c3e50 !important;
   
-  /* Limitar a 2 líneas */
+  /* Limitar a 3 líneas */
   display: -webkit-box !important;
-  -webkit-line-clamp: 2 !important;
+  -webkit-line-clamp: 3 !important;
   -webkit-box-orient: vertical !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   
   /* Altura mínima para mantener alineación */
-  min-height: 40px;
+  min-height: 60px;
 }
 
 .product .woocommerce-loop-product__title:hover,
