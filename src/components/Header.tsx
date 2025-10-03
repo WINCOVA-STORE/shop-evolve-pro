@@ -1,9 +1,12 @@
-import { Search, ShoppingCart, Heart, User, Menu, LogOut } from "lucide-react";
+import { Search, Heart, User, Menu, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import logoWhite from "@/assets/logo-white.png";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
+import { CartSheet } from "@/components/CartSheet";
+import { LanguageCurrencySelector } from "@/components/LanguageCurrencySelector";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +19,7 @@ import {
 export const Header = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSignOut = async () => {
     await signOut();
@@ -43,31 +47,27 @@ export const Header = () => {
             <div className="relative w-full">
               <Input
                 type="search"
-                placeholder="I'm shopping for..."
+                placeholder={t('header.search_placeholder')}
                 className="pr-10 bg-background"
               />
               <Button
                 size="sm"
                 className="absolute right-0 top-0 h-full rounded-l-none"
               >
-                Search
+                {t('header.search_button')}
               </Button>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            <LanguageCurrencySelector />
             <Button variant="ghost" size="icon" className="text-secondary-foreground hover:bg-secondary/80">
               <Heart className="h-5 w-5" />
               <span className="absolute top-0 right-0 bg-primary text-xs rounded-full h-5 w-5 flex items-center justify-center">
                 0
               </span>
             </Button>
-            <Button variant="ghost" size="icon" className="text-secondary-foreground hover:bg-secondary/80">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="absolute top-0 right-0 bg-primary text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
-            </Button>
+            <CartSheet />
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -76,15 +76,15 @@ export const Header = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
+                  <DropdownMenuLabel>{t('header.my_account')}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <User className="mr-2 h-4 w-4" />
-                    Perfil
+                    {t('header.profile')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    Cerrar Sesión
+                    {t('header.logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -104,22 +104,22 @@ export const Header = () => {
         {/* Navigation */}
         <nav className="hidden lg:flex items-center gap-6 py-3 border-t border-secondary-foreground/10">
           <Link to="/" className="text-secondary-foreground hover:text-primary transition-colors font-medium">
-            Home
+            {t('nav.home')}
           </Link>
           <Link to="/men" className="text-secondary-foreground hover:text-primary transition-colors">
-            Men
+            {t('nav.men')}
           </Link>
           <Link to="/women" className="text-secondary-foreground hover:text-primary transition-colors">
-            Women
+            {t('nav.women')}
           </Link>
           <Link to="/kids" className="text-secondary-foreground hover:text-primary transition-colors">
-            Kids
+            {t('nav.kids')}
           </Link>
           <Link to="/electronics" className="text-secondary-foreground hover:text-primary transition-colors">
-            Electronics
+            {t('nav.electronics')}
           </Link>
           <Link to="/refer-earn" className="text-primary hover:text-primary/80 transition-colors font-semibold">
-            Refer & Earn
+            {t('nav.refer_earn')}
           </Link>
         </nav>
       </div>

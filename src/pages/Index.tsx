@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { mainCategories } from "@/data/categories";
 import { useFeaturedProducts } from "@/hooks/useProducts";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 const Index = () => {
   const { data: products, isLoading } = useFeaturedProducts(8);
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-background">
@@ -17,17 +19,17 @@ const Index = () => {
       <section className="bg-gradient-to-r from-secondary to-secondary/80 text-secondary-foreground py-16">
         <div className="container mx-auto px-4 text-center space-y-6">
           <h1 className="text-4xl md:text-5xl font-bold">
-            Explore our categories — find what suits you best
+            {t('hero.title')}
           </h1>
           <Button size="lg" className="text-lg px-8">
-            See How You Win
+            {t('hero.cta')}
           </Button>
         </div>
       </section>
 
       {/* Categories */}
       <section className="container mx-auto px-4 py-12">
-        <h2 className="text-3xl font-bold text-foreground mb-8">Shop by Category</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-8">{t('categories.title')}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {mainCategories.map((category) => (
             <CategoryCard
@@ -42,7 +44,7 @@ const Index = () => {
 
       {/* Featured Products */}
       <section className="container mx-auto px-4 py-12">
-        <h2 className="text-3xl font-bold text-foreground mb-8">Productos Destacados</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-8">{t('products.featured')}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {isLoading ? (
             [...Array(8)].map((_, i) => (
@@ -58,7 +60,7 @@ const Index = () => {
             ))
           ) : (
             <div className="col-span-full text-center text-muted-foreground py-12">
-              No hay productos disponibles
+              {t('products.no_products')}
             </div>
           )}
         </div>
@@ -68,7 +70,7 @@ const Index = () => {
       <footer className="bg-secondary text-secondary-foreground py-12 mt-16">
         <div className="container mx-auto px-4">
           <div className="text-center space-y-4">
-            <h3 className="text-xl font-semibold">Contact us — we're here 24/7</h3>
+            <h3 className="text-xl font-semibold">{t('footer.contact_title')}</h3>
             <div className="flex flex-col items-center gap-2 text-sm">
               <a href="tel:+16157289932" className="hover:text-primary transition-colors">
                 📞 +1 615 728 9932
@@ -77,7 +79,7 @@ const Index = () => {
                 📧 ventas@wincova.com
               </a>
               <a href="https://wa.me/16157289932" className="hover:text-primary transition-colors">
-                💬 Chat with us on WhatsApp
+                💬 {t('footer.whatsapp')}
               </a>
             </div>
           </div>

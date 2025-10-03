@@ -1,31 +1,31 @@
-import { Star, Heart, ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useCart } from "@/contexts/CartContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { useTranslation } from "react-i18next";
+import { Product } from "@/hooks/useProducts";
 
-interface ProductCardProps {
-  id: string;
-  name: string;
-  price: number;
-  compare_at_price?: number | null;
-  images: string[];
-  tags?: string[];
-}
+interface ProductCardProps extends Product {}
 
-export const ProductCard = ({
-  name,
-  price,
-  compare_at_price,
-  images,
-  tags = [],
-}: ProductCardProps) => {
+export const ProductCard = (product: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { addToCart } = useCart();
+  const { formatPrice } = useCurrency();
+  const { t } = useTranslation();
+
+  const { name, price, compare_at_price, images, tags = [] } = product;
   
   const image = images[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop";
   const hasDiscount = compare_at_price && compare_at_price > price;
   const isNew = tags.includes('new');
   const badge = hasDiscount ? 'sale' : isNew ? 'new' : undefined;
+
+  const handleAddToCart = () => {
+    addToCart(product, 1);
+  };
 
   return (
     <div
@@ -50,7 +50,7 @@ export const ProductCard = ({
               badge === "new" && "bg-primary text-primary-foreground"
             )}
           >
-            {badge === "sale" ? "SALE" : "NEW"}
+            {badge === "sale" ? t('products.sale') : t('products.new')}
           </Badge>
         )}
 
@@ -81,19 +81,22 @@ export const ProductCard = ({
         {/* Price */}
         <div className="flex items-center gap-2 min-h-[24px]">
           <span className="text-lg font-bold text-foreground">
-            ${price.toFixed(2)}
+            {formatPrice(price)}
           </span>
           {compare_at_price && compare_at_price > price && (
             <span className="text-sm text-muted-foreground line-through">
-              ${compare_at_price.toFixed(2)}
+              {formatPrice(compare_at_price)}
             </span>
           )}
         </div>
 
         {/* Add to Cart Button */}
-        <Button className="w-full group-hover:shadow-lg transition-all">
+        <Button 
+          className="w-full group-hover:shadow-lg transition-all"
+          onClick={handleAddToCart}
+        >
           <ShoppingCart className="h-4 w-4 mr-2" />
-          Add to Cart
+          {t('products.add_to_cart')}
         </Button>
       </div>
     </div>

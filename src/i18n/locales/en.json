@@ -1,0 +1,74 @@
+{
+  "header": {
+    "search_placeholder": "I'm shopping for...",
+    "search_button": "Search",
+    "my_account": "My Account",
+    "profile": "Profile",
+    "logout": "Logout",
+    "login": "Login"
+  },
+  "nav": {
+    "home": "Home",
+    "men": "Men",
+    "women": "Women",
+    "kids": "Kids",
+    "electronics": "Electronics",
+    "refer_earn": "Refer & Earn"
+  },
+  "hero": {
+    "title": "Explore our categories — find what suits you best",
+    "cta": "See How You Win"
+  },
+  "categories": {
+    "title": "Shop by Category"
+  },
+  "products": {
+    "featured": "Featured Products",
+    "no_products": "No products available",
+    "add_to_cart": "Add to Cart",
+    "sale": "SALE",
+    "new": "NEW",
+    "reviews": "reviews"
+  },
+  "footer": {
+    "contact_title": "Contact us — we're here 24/7",
+    "phone": "Phone",
+    "email": "Email",
+    "whatsapp": "Chat with us on WhatsApp"
+  },
+  "auth": {
+    "login_tab": "Login",
+    "signup_tab": "Sign Up",
+    "login_title": "Login",
+    "login_description": "Enter your credentials to access your account",
+    "signup_title": "Create Account",
+    "signup_description": "Sign up to start shopping",
+    "email": "Email",
+    "password": "Password",
+    "full_name": "Full Name",
+    "login_button": "Login",
+    "signup_button": "Create Account",
+    "logging_in": "Logging in...",
+    "creating_account": "Creating account...",
+    "back_to_store": "Back to store",
+    "password_min": "Minimum 6 characters"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "shipping": "Shipping",
+    "total": "Total",
+    "checkout": "Checkout",
+    "continue_shopping": "Continue Shopping",
+    "remove": "Remove",
+    "quantity": "Quantity"
+  },
+  "currency": {
+    "usd": "USD - US Dollar",
+    "eur": "EUR - Euro",
+    "gbp": "GBP - British Pound",
+    "mxn": "MXN - Mexican Peso"
+  }
+}
