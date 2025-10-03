@@ -23,6 +23,7 @@ export const Header = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -53,6 +54,14 @@ export const Header = () => {
     navigate("/");
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+    }
+  };
+
   return (
     <header className="border-b bg-secondary sticky top-0 z-50">
       <div className="container mx-auto px-4">
@@ -71,19 +80,22 @@ export const Header = () => {
           </Link>
 
           <div className="hidden lg:flex items-center flex-1 max-w-2xl mx-8">
-            <div className="relative w-full">
+            <form onSubmit={handleSearch} className="relative w-full">
               <Input
                 type="search"
                 placeholder={t('header.search_placeholder')}
                 className="pr-10 bg-background"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Button
+                type="submit"
                 size="sm"
                 className="absolute right-0 top-0 h-full rounded-l-none"
               >
                 {t('header.search_button')}
               </Button>
-            </div>
+            </form>
           </div>
 
           <div className="flex items-center gap-2">
