@@ -5,8 +5,8 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Copy, Mail, Share2, Users, Gift, TrendingUp, CheckCircle, Loader2, ExternalLink, Calendar } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Copy, Mail, Share2, Users, Gift, TrendingUp, CheckCircle, Loader2, ExternalLink, Calendar, ShoppingBag, User, Clock, Cake } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -416,18 +416,15 @@ const ReferEarn = () => {
 
       <Footer />
 
-      {/* Referrals Details Sheet */}
-      <Sheet open={referralsSheetOpen} onOpenChange={setReferralsSheetOpen}>
-        <SheetContent className="w-full sm:max-w-xl overflow-y-auto bg-background">{/* ... keep existing code */}
-          <SheetHeader className="pb-6 border-b">
-            <SheetTitle className="text-2xl flex items-center gap-2">
+      {/* Referrals Details Dialog */}
+      <Dialog open={referralsSheetOpen} onOpenChange={setReferralsSheetOpen}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
               <Users className="h-6 w-6 text-primary" />
               Tus Referidos
-            </SheetTitle>
-            <SheetDescription>
-              Lista de amigos que se unieron con tu link
-            </SheetDescription>
-          </SheetHeader>
+            </DialogTitle>
+          </DialogHeader>
           
           <div className="mt-6 space-y-4">
             {referralDetails.length === 0 ? (
@@ -455,7 +452,7 @@ const ReferEarn = () => {
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="font-medium flex items-center gap-2">
-                            <Users className="h-4 w-4 text-primary" />
+                            <User className="h-4 w-4 text-primary" />
                             María González
                           </p>
                           <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
@@ -475,7 +472,7 @@ const ReferEarn = () => {
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="font-medium flex items-center gap-2">
-                            <Users className="h-4 w-4 text-primary" />
+                            <User className="h-4 w-4 text-primary" />
                             Juan Pérez
                           </p>
                           <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
@@ -498,7 +495,7 @@ const ReferEarn = () => {
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-medium flex items-center gap-2">
-                          <Users className="h-4 w-4 text-primary" />
+                          <User className="h-4 w-4 text-primary" />
                           Referido #{referral.id.substring(0, 8)}
                         </p>
                         <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
@@ -519,21 +516,18 @@ const ReferEarn = () => {
               ))
             )}
           </div>
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
 
-      {/* Earned Points Details Sheet */}
-      <Sheet open={earnedSheetOpen} onOpenChange={setEarnedSheetOpen}>
-        <SheetContent className="w-full sm:max-w-xl overflow-y-auto bg-background">{/* ... keep existing code */}
-          <SheetHeader className="pb-6 border-b">
-            <SheetTitle className="text-2xl flex items-center gap-2">
+      {/* Earned Points Details Dialog */}
+      <Dialog open={earnedSheetOpen} onOpenChange={setEarnedSheetOpen}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
               <Gift className="h-6 w-6 text-primary" />
               Puntos Ganados
-            </SheetTitle>
-            <SheetDescription>
-              Historial completo de puntos ganados en compras
-            </SheetDescription>
-          </SheetHeader>
+            </DialogTitle>
+          </DialogHeader>
           
           <div className="mt-6 space-y-4">
             {orderDetails.length === 0 ? (
@@ -610,12 +604,17 @@ const ReferEarn = () => {
               </div>
             ) : (
               orderDetails.map((order) => (
-                <Card key={order.id} className="hover:shadow-md transition-shadow">
+                <Card 
+                  key={order.id} 
+                  className="hover:shadow-lg transition-all cursor-pointer group"
+                  onClick={() => navigate('/profile?tab=orders')}
+                >
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <p className="font-medium">Orden {order.order_number}</p>
+                          <p className="font-medium group-hover:text-primary transition-colors">Orden {order.order_number}</p>
+                          <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                           <Badge variant="outline" className="text-xs">Completada</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground flex items-center gap-1">
@@ -633,28 +632,45 @@ const ReferEarn = () => {
                     </div>
                     <div className="flex items-center justify-between pt-2 border-t text-sm">
                       <span className="text-muted-foreground">Total de orden:</span>
-                      <span className="font-medium">{order.total.toLocaleString()} pts</span>
+                      <span className="font-medium">${order.total.toLocaleString()}</span>
+                    </div>
+                    
+                    <div className="mt-4 pt-4 border-t bg-muted/30 -mx-4 -mb-4 px-4 py-3 rounded-b-lg">
+                      <p className="text-sm text-muted-foreground mb-2">¿Te gustó tu compra?</p>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" className="flex-1" onClick={(e) => {
+                          e.stopPropagation();
+                          setEarnedSheetOpen(false);
+                          navigate('/');
+                        }}>
+                          <ShoppingBag className="h-3 w-3 mr-1" />
+                          Comprar de nuevo
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={(e) => {
+                          e.stopPropagation();
+                          navigate('/profile?tab=orders');
+                        }}>
+                          Ver detalles
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               ))
             )}
           </div>
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
 
-      {/* Available Points Details Sheet */}
-      <Sheet open={availableSheetOpen} onOpenChange={setAvailableSheetOpen}>
-        <SheetContent className="w-full sm:max-w-xl overflow-y-auto bg-background">{/* ... keep existing code */}
-          <SheetHeader className="pb-6 border-b">
-            <SheetTitle className="text-2xl flex items-center gap-2">
+      {/* Available Points Details Dialog */}
+      <Dialog open={availableSheetOpen} onOpenChange={setAvailableSheetOpen}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
               <TrendingUp className="h-6 w-6 text-primary" />
               Balance Disponible
-            </SheetTitle>
-            <SheetDescription>
-              Tus puntos listos para usar en cualquier compra
-            </SheetDescription>
-          </SheetHeader>
+            </DialogTitle>
+          </DialogHeader>
           
           <div className="mt-6">
             {/* Balance principal */}
@@ -727,7 +743,7 @@ const ReferEarn = () => {
                           <div>
                             <div className="flex items-center gap-2 mb-1">
                               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                                <Users className="h-4 w-4 text-primary" />
+                                <User className="h-4 w-4 text-primary" />
                               </div>
                               <p className="font-medium">Por referir a María</p>
                             </div>
@@ -749,7 +765,7 @@ const ReferEarn = () => {
                           <div>
                             <div className="flex items-center gap-2 mb-1">
                               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                                <Gift className="h-4 w-4 text-primary" />
+                                <ShoppingBag className="h-4 w-4 text-primary" />
                               </div>
                               <p className="font-medium">Puntos por compra</p>
                             </div>
@@ -770,9 +786,9 @@ const ReferEarn = () => {
                 <div className="space-y-3">
                   {rewards.map((reward) => {
                     const rewardIcon = reward.type === 'welcome' ? Gift :
-                                     reward.type === 'referral' ? Users :
-                                     reward.type === 'purchase' ? Gift :
-                                     reward.type === 'birthday' ? Gift : TrendingUp;
+                                     reward.type === 'referral' ? User :
+                                     reward.type === 'purchase' ? ShoppingBag :
+                                     reward.type === 'birthday' ? Cake : TrendingUp;
                     const RewardIcon = rewardIcon;
                     
                     return (
@@ -795,7 +811,8 @@ const ReferEarn = () => {
                                 })}
                               </p>
                               {reward.expires_at && (
-                                <p className="text-xs text-muted-foreground ml-10 mt-1">
+                                <p className="text-xs text-amber-600 ml-10 mt-1 flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
                                   Expira: {new Date(reward.expires_at).toLocaleDateString('es')}
                                 </p>
                               )}
@@ -812,8 +829,8 @@ const ReferEarn = () => {
               )}
             </div>
           </div>
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
