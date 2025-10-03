@@ -1,0 +1,635 @@
+/**
+ * ====================================================================
+ * WINCOVA - CSS OPTIMIZADO PARA WORDPRESS MARTFURY
+ * ====================================================================
+ * 
+ * INSTRUCCIONES DE INSTALACIÓN:
+ * 1. Ve a WordPress Admin → Apariencia → Personalizar
+ * 2. Click en "CSS Adicional"
+ * 3. Copia y pega TODO este código
+ * 4. Click en "Publicar"
+ * 
+ * Compatible con:
+ * - Tema MartFury
+ * - WooCommerce
+ * - WPML
+ * - WP LOYALTY
+ * - 100% Responsivo
+ * ====================================================================
+ */
+
+/* ====================================================================
+   VARIABLES CSS - Personaliza fácilmente los colores y tamaños
+   ==================================================================== */
+:root {
+  /* Colores principales */
+  --wincova-primary: #ffc107;
+  --wincova-primary-hover: #ffb300;
+  --wincova-dark: #0d3b4d;
+  --wincova-dark-hover: #0a2f3d;
+  
+  /* Espaciados */
+  --product-gap: 20px;
+  --product-padding: 15px;
+  
+  /* Tamaños de imagen */
+  --product-image-ratio: 1 / 1; /* Cuadrado perfecto */
+  
+  /* Transiciones */
+  --transition-speed: 0.3s;
+  --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Sombras */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+}
+
+/* ====================================================================
+   GRID DE PRODUCTOS - Layout moderno y responsivo
+   ==================================================================== */
+
+/* Contenedor principal de productos */
+.products.woocommerce.columns-4,
+ul.products {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--product-gap);
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+/* Producto individual */
+.product,
+.product-inner {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all var(--transition-speed) var(--transition-timing);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Hover en tarjeta completa */
+.product:hover,
+.product-inner:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ====================================================================
+   IMÁGENES DE PRODUCTO - Tamaño uniforme y zoom
+   ==================================================================== */
+
+/* Contenedor de imagen */
+.product .mf-product-thumbnail,
+.product .woocommerce-loop-product__link,
+.product .product-thumbnail,
+.product-inner .mf-product-thumbnail {
+  position: relative !important;
+  width: 100% !important;
+  aspect-ratio: var(--product-image-ratio) !important;
+  overflow: hidden !important;
+  border-radius: 8px 8px 0 0;
+  background: #f8f9fa;
+}
+
+/* Imagen dentro del contenedor */
+.product .mf-product-thumbnail img,
+.product .woocommerce-loop-product__link img,
+.product .product-thumbnail img,
+.product-inner .mf-product-thumbnail img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  transition: transform var(--transition-speed) var(--transition-timing);
+}
+
+/* Zoom en hover */
+.product:hover .mf-product-thumbnail img,
+.product:hover .woocommerce-loop-product__link img,
+.product:hover .product-thumbnail img {
+  transform: scale(1.08);
+}
+
+/* Segunda imagen en hover (si existe) */
+.product .mf-product-thumbnail .image-second,
+.product-inner .mf-product-thumbnail .image-second {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity var(--transition-speed) var(--transition-timing);
+}
+
+.product:hover .image-second {
+  opacity: 1;
+  z-index: 1;
+}
+
+/* ====================================================================
+   BADGES Y ETIQUETAS (Sale, New, etc.)
+   ==================================================================== */
+
+.product .mf-product-thumbnail .badges,
+.product-inner .mf-product-thumbnail .badges {
+  position: absolute !important;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.product .badges span,
+.product-inner .badges span {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 4px;
+  box-shadow: var(--shadow-sm);
+}
+
+.product .badges .onsale {
+  background: #ff4444;
+  color: #fff;
+}
+
+.product .badges .new {
+  background: var(--wincova-primary);
+  color: #000;
+}
+
+/* ====================================================================
+   CONTENIDO DEL PRODUCTO (título, precio, botones)
+   ==================================================================== */
+
+/* Contenedor de contenido */
+.product .mf-product-content,
+.product .product-content,
+.product-inner .mf-product-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--product-padding);
+  gap: 8px;
+}
+
+/* ====================================================================
+   TÍTULO DEL PRODUCTO - Altura uniforme
+   ==================================================================== */
+
+.product .woocommerce-loop-product__title,
+.product h2.woocommerce-loop-product__title,
+.product .product-title,
+.product-inner .woocommerce-loop-product__title {
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  font-weight: 500 !important;
+  margin: 0 0 8px 0 !important;
+  color: #2c3e50 !important;
+  
+  /* Limitar a 2 líneas */
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  
+  /* Altura mínima para mantener alineación */
+  min-height: 40px;
+}
+
+.product .woocommerce-loop-product__title:hover,
+.product-inner .woocommerce-loop-product__title:hover {
+  color: var(--wincova-primary) !important;
+}
+
+/* ====================================================================
+   PRECIO - Siempre alineado
+   ==================================================================== */
+
+.product .price,
+.product-inner .price {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-weight: 600 !important;
+  margin: 0 0 12px 0 !important;
+  min-height: 24px; /* Altura mínima para alineación */
+}
+
+/* Precio regular */
+.product .price .amount,
+.product .price ins .amount {
+  font-size: 18px !important;
+  color: var(--wincova-dark) !important;
+  font-weight: 700 !important;
+}
+
+/* Precio tachado (antes) */
+.product .price del {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+.product .price del .amount {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+}
+
+/* Precio de oferta */
+.product .price ins {
+  text-decoration: none !important;
+  color: #ff4444 !important;
+}
+
+/* Rango de precios para productos variables */
+.product .price .woocommerce-Price-amount {
+  color: var(--wincova-dark) !important;
+}
+
+/* ====================================================================
+   PUNTOS DE RECOMPENSA (WP LOYALTY)
+   ==================================================================== */
+
+.product .wlr-points-message,
+.product-inner .wlr-points-message {
+  font-size: 12px !important;
+  color: #666 !important;
+  margin: 0 0 10px 0 !important;
+  padding: 6px 10px !important;
+  background: #fff3cd !important;
+  border-radius: 4px !important;
+  border-left: 3px solid var(--wincova-primary) !important;
+}
+
+/* ====================================================================
+   BOTONES DE ACCIÓN
+   ==================================================================== */
+
+/* Botón principal (Add to cart, Select options) */
+.product .button,
+.product .add_to_cart_button,
+.product .product_type_variable,
+.product-inner .button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  padding: 10px 16px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  color: #000 !important;
+  background: var(--wincova-primary) !important;
+  border: none !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: all var(--transition-speed) var(--transition-timing) !important;
+  box-shadow: var(--shadow-sm) !important;
+  text-decoration: none !important;
+}
+
+.product .button:hover,
+.product .add_to_cart_button:hover,
+.product-inner .button:hover {
+  background: var(--wincova-primary-hover) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.product .button:active {
+  transform: translateY(0) !important;
+}
+
+/* ====================================================================
+   BOTONES SECUNDARIOS (Wishlist, Compare, Quick View)
+   ==================================================================== */
+
+.product .product-actions,
+.product .mf-product-actions,
+.product-inner .product-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all var(--transition-speed) var(--transition-timing);
+}
+
+.product:hover .product-actions,
+.product:hover .mf-product-actions {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.product .product-actions a,
+.product .mf-product-actions a {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  background: #fff !important;
+  border-radius: 50% !important;
+  box-shadow: var(--shadow-md) !important;
+  transition: all var(--transition-speed) var(--transition-timing) !important;
+}
+
+.product .product-actions a:hover {
+  background: var(--wincova-primary) !important;
+  transform: scale(1.1);
+}
+
+.product .product-actions a i {
+  font-size: 16px;
+  color: #333;
+}
+
+/* ====================================================================
+   RATING DE ESTRELLAS
+   ==================================================================== */
+
+.product .star-rating,
+.product-inner .star-rating {
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 0 8px 0 !important;
+  font-size: 12px !important;
+}
+
+.product .star-rating span {
+  color: var(--wincova-primary) !important;
+}
+
+/* ====================================================================
+   RESPONSIVE - Breakpoints de MartFury
+   ==================================================================== */
+
+/* Tablets grandes (3 columnas) */
+@media (max-width: 1199px) {
+  .products.woocommerce.columns-4,
+  ul.products {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+/* Tablets (2 columnas) */
+@media (max-width: 991px) {
+  .products.woocommerce.columns-4,
+  ul.products {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 15px;
+  }
+  
+  :root {
+    --product-padding: 12px;
+  }
+  
+  .product .woocommerce-loop-product__title {
+    font-size: 13px !important;
+  }
+  
+  .product .price .amount {
+    font-size: 16px !important;
+  }
+}
+
+/* Móviles grandes (2 columnas ajustadas) */
+@media (max-width: 767px) {
+  .products.woocommerce.columns-4,
+  ul.products {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px;
+  }
+  
+  .product .product-actions,
+  .product .mf-product-actions {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  .product .button {
+    font-size: 12px !important;
+    padding: 8px 12px !important;
+  }
+}
+
+/* Móviles pequeños (1 columna) */
+@media (max-width: 480px) {
+  .products.woocommerce.columns-4,
+  ul.products {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+  
+  .product .woocommerce-loop-product__title {
+    font-size: 15px !important;
+    -webkit-line-clamp: 3 !important;
+    min-height: 60px;
+  }
+  
+  .product .price .amount {
+    font-size: 18px !important;
+  }
+}
+
+/* ====================================================================
+   FILTROS Y TOOLBAR - Mejoras visuales
+   ==================================================================== */
+
+#mf-catalog-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.woocommerce-ordering select,
+.mf-filter-mobile {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.woocommerce-ordering select:hover,
+.mf-filter-mobile:hover {
+  border-color: var(--wincova-primary);
+}
+
+/* ====================================================================
+   PÁGINA DE REFER & EARN - Simplificación
+   ==================================================================== */
+
+/* Ocultar todo excepto el link de referido en Refer & Earn */
+body.page-id-36213 .wlr-earning-options {
+  display: none !important;
+}
+
+/* Mostrar solo la sección de compartir */
+body.page-id-36213 .wlr-myaccount-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+body.page-id-36213 h2.wp-block-heading {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+/* Contenedor del link de referido */
+.wlr-referral-url-container {
+  display: flex;
+  gap: 12px;
+  margin: 24px 0;
+  flex-wrap: wrap;
+}
+
+.wlr-referral-url-container input {
+  flex: 1;
+  min-width: 250px;
+  padding: 12px 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.wlr-referral-url-container button {
+  padding: 12px 24px !important;
+  background: var(--wincova-primary) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s !important;
+}
+
+.wlr-referral-url-container button:hover {
+  background: var(--wincova-primary-hover) !important;
+  transform: translateY(-2px);
+}
+
+/* Botones de redes sociales */
+.wlr-social-share-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.wlr-social-share-buttons a {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px 20px !important;
+  background: var(--wincova-primary) !important;
+  color: #000 !important;
+  text-decoration: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  transition: all 0.3s !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.wlr-social-share-buttons a:hover {
+  background: var(--wincova-primary-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* ====================================================================
+   ANIMACIONES SUAVES
+   ==================================================================== */
+
+/* Fade in para productos al cargar */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.product {
+  animation: fadeInUp 0.4s var(--transition-timing) backwards;
+}
+
+.product:nth-child(1) { animation-delay: 0.05s; }
+.product:nth-child(2) { animation-delay: 0.1s; }
+.product:nth-child(3) { animation-delay: 0.15s; }
+.product:nth-child(4) { animation-delay: 0.2s; }
+
+/* ====================================================================
+   OPTIMIZACIONES DE RENDIMIENTO
+   ==================================================================== */
+
+/* Mejora de rendering para transformaciones */
+.product,
+.product img,
+.product .button {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ====================================================================
+   FIN DEL CSS PERSONALIZADO
+   ==================================================================== */
+
+/**
+ * NOTAS IMPORTANTES:
+ * 
+ * 1. Este CSS usa !important solo donde es necesario para sobrescribir
+ *    los estilos del tema MartFury sin modificar archivos core.
+ * 
+ * 2. Todas las modificaciones son compatibles con:
+ *    - WooCommerce
+ *    - WPML
+ *    - WP LOYALTY
+ *    - Plugins de zoom de imagen
+ * 
+ * 3. Para personalizar colores, modifica solo las variables en :root
+ *    al inicio del archivo.
+ * 
+ * 4. El CSS es 100% responsivo y optimizado para:
+ *    - Desktop (4 columnas)
+ *    - Tablet grande (3 columnas)
+ *    - Tablet (2 columnas)
+ *    - Móvil (2 columnas → 1 columna)
+ * 
+ * 5. Si necesitas ajustar algo específico, busca la sección
+ *    correspondiente usando los comentarios de cabecera.
+ * 
+ * SOPORTE: Si algo no funciona correctamente, verifica que:
+ *    - Limpiaste la caché de WordPress y del navegador
+ *    - No hay otros CSS personalizados que entren en conflicto
+ *    - Los plugins están actualizados
+ */
