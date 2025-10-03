@@ -43,6 +43,9 @@ export const CartSheet = () => {
   
   // Calculate max usable points (2% of purchase amount)
   const maxUsablePoints = getMaxUsablePoints(subtotalWithShipping);
+  
+  // Calculate points that will be earned from this purchase (1% = 10 points per dollar)
+  const pointsToEarn = Math.floor(total * 10);
 
   const handleCheckout = async () => {
     setIsCheckingOut(true);
@@ -233,7 +236,7 @@ export const CartSheet = () => {
 
               <Separator />
               
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {pointsDiscount > 0 && (
                   <div className="flex justify-between text-sm text-primary">
                     <span>Descuento por puntos</span>
@@ -244,6 +247,26 @@ export const CartSheet = () => {
                   <span>{t('cart.total')}</span>
                   <span>{formatPrice(total)}</span>
                 </div>
+                
+                {/* Points to earn with this purchase */}
+                {user && pointsToEarn > 0 && (
+                  <div className="p-3 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Gift className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium text-primary">Ganarás con esta compra</span>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-primary">
+                          +{pointsToEarn.toLocaleString()} pts
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          ${(pointsToEarn / 1000).toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

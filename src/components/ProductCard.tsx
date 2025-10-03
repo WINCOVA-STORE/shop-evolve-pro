@@ -1,4 +1,4 @@
-import { Heart, ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
@@ -24,6 +24,9 @@ export const ProductCard = (product: ProductCardProps) => {
   const hasDiscount = compare_at_price && compare_at_price > price;
   const isNew = tags.includes('new');
   const badge = hasDiscount ? 'sale' : isNew ? 'new' : undefined;
+  
+  // Calculate points to earn (1% = 10 points per dollar, 1000 points = $1)
+  const pointsToEarn = Math.floor(price * 10);
 
   const handleAddToCart = () => {
     addToCart(product, 1);
@@ -87,15 +90,24 @@ export const ProductCard = (product: ProductCardProps) => {
         </h3>
 
         {/* Price */}
-        <div className="flex items-center gap-2 min-h-[24px]">
-          <span className="text-lg font-bold text-foreground">
-            {formatPrice(price)}
-          </span>
-          {compare_at_price && compare_at_price > price && (
-            <span className="text-sm text-muted-foreground line-through">
-              {formatPrice(compare_at_price)}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 min-h-[24px]">
+            <span className="text-lg font-bold text-foreground">
+              {formatPrice(price)}
             </span>
-          )}
+            {compare_at_price && compare_at_price > price && (
+              <span className="text-sm text-muted-foreground line-through">
+                {formatPrice(compare_at_price)}
+              </span>
+            )}
+          </div>
+          
+          {/* Points Badge */}
+          <div className="flex items-center gap-1 text-xs text-primary font-medium">
+            <Gift className="h-3 w-3" />
+            <span>+{pointsToEarn.toLocaleString()} pts</span>
+            <span className="text-muted-foreground">(${(pointsToEarn / 1000).toFixed(2)})</span>
+          </div>
         </div>
 
         {/* Add to Cart Button */}

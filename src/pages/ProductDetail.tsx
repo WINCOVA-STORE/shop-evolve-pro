@@ -80,6 +80,9 @@ const ProductDetail = () => {
   const discount = product?.compare_at_price 
     ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
     : 0;
+  
+  // Calculate points to earn (1% = 10 points per dollar, 1000 points = $1)
+  const pointsToEarn = product ? Math.floor(product.price * quantity * 10) : 0;
 
   if (loading) {
     return (
@@ -167,7 +170,7 @@ const ProductDetail = () => {
             </div>
 
             <div>
-              <div className="flex items-baseline gap-3 mb-2">
+              <div className="flex items-baseline gap-3 mb-3">
                 <span className="text-4xl font-bold">{formatPrice(product.price)}</span>
                 {product.compare_at_price && (
                   <span className="text-xl text-muted-foreground line-through">
@@ -175,10 +178,29 @@ const ProductDetail = () => {
                   </span>
                 )}
               </div>
-              <Badge variant="secondary" className="gap-1">
-                <Gift className="h-3 w-3" />
-                Gana {product.reward_percentage}% en recompensas
-              </Badge>
+              
+              {/* Points Reward Card */}
+              <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-full bg-primary/20">
+                      <Gift className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Ganas con esta compra</p>
+                      <p className="text-xs text-muted-foreground">1% en puntos de recompensa</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-primary">
+                      {pointsToEarn.toLocaleString()} pts
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      = ${(pointsToEarn / 1000).toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              </Card>
             </div>
 
             <Separator />

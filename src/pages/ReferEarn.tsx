@@ -55,7 +55,8 @@ const ReferEarn = () => {
 
       if (referralsError) throw referralsError;
 
-      const totalEarned = referrals?.reduce((sum, ref) => sum + Number(ref.reward_earned), 0) || 0;
+      // Total earned is in points now (1000 points = $1)
+      const totalEarnedPoints = referrals?.reduce((sum, ref) => sum + Number(ref.reward_earned), 0) || 0;
 
       // Get pending rewards
       const { data: rewards, error: rewardsError } = await supabase
@@ -65,12 +66,12 @@ const ReferEarn = () => {
 
       if (rewardsError) throw rewardsError;
 
-      const pendingRewards = rewards?.filter(r => r.type === "referral").reduce((sum, r) => sum + Number(r.amount), 0) || 0;
+      const pendingRewardsPoints = rewards?.filter(r => r.type === "referral").reduce((sum, r) => sum + Number(r.amount), 0) || 0;
 
       setStats({
         totalReferrals: referrals?.length || 0,
-        totalEarned,
-        pendingRewards,
+        totalEarned: totalEarnedPoints,
+        pendingRewards: pendingRewardsPoints,
       });
     } catch (error) {
       console.error("Error fetching referral data:", error);
@@ -156,19 +157,19 @@ const ReferEarn = () => {
               <Gift className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${stats.totalEarned.toFixed(2)}</div>
-              <p className="text-xs text-muted-foreground">En recompensas</p>
+              <div className="text-2xl font-bold">{stats.totalEarned.toLocaleString()} pts</div>
+              <p className="text-xs text-muted-foreground">${(stats.totalEarned / 1000).toFixed(2)} en recompensas</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pendiente</CardTitle>
+              <CardTitle className="text-sm font-medium">Disponible</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${stats.pendingRewards.toFixed(2)}</div>
-              <p className="text-xs text-muted-foreground">Por recibir</p>
+              <div className="text-2xl font-bold">{stats.pendingRewards.toLocaleString()} pts</div>
+              <p className="text-xs text-muted-foreground">${(stats.pendingRewards / 1000).toFixed(2)} listos para usar</p>
             </CardContent>
           </Card>
         </div>
@@ -236,7 +237,7 @@ const ReferEarn = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Cuando tus referidos realicen su primera compra, ambos recibirán un descuento.
+                  Cuando tus referidos hagan su primera compra, ambos ganan 1% del valor en puntos.
                 </p>
               </CardContent>
             </Card>
@@ -246,11 +247,11 @@ const ReferEarn = () => {
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <Gift className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>3. Tú Ganas</CardTitle>
+                <CardTitle>3. Todos Ganan</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Gana hasta 10% del valor de la compra en recompensas que puedes usar en tus próximas compras.
+                  Gana puntos con cada compra (1% del valor). 1,000 puntos = $1 USD para usar en tus próximas compras.
                 </p>
               </CardContent>
             </Card>

@@ -1,4 +1,4 @@
-import { Search, Heart, User, Menu, LogOut, Shield } from "lucide-react";
+import { Search, Heart, User, Menu, LogOut, Shield, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,6 +9,8 @@ import { CartSheet } from "@/components/CartSheet";
 import { LanguageCurrencySelector } from "@/components/LanguageCurrencySelector";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useRewards } from "@/hooks/useRewards";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +26,7 @@ export const Header = () => {
   const { t } = useTranslation();
   const [isAdmin, setIsAdmin] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { availablePoints, pointsToDollars } = useRewards();
 
   useEffect(() => {
     if (user) {
@@ -100,6 +103,23 @@ export const Header = () => {
 
           <div className="flex items-center gap-2">
             <LanguageCurrencySelector />
+            
+            {/* Points Display for logged in users */}
+            {user && availablePoints > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/30 hover:border-primary/50 text-primary font-semibold"
+                onClick={() => navigate("/profile")}
+              >
+                <Gift className="h-4 w-4" />
+                <span className="text-sm">{availablePoints.toLocaleString()} pts</span>
+                <Badge variant="secondary" className="text-xs px-1.5 py-0">
+                  ${pointsToDollars(availablePoints).toFixed(2)}
+                </Badge>
+              </Button>
+            )}
+            
             <Button variant="ghost" size="icon" className="text-secondary-foreground hover:bg-secondary/80">
               <Heart className="h-5 w-5" />
               <span className="absolute top-0 right-0 bg-primary text-xs rounded-full h-5 w-5 flex items-center justify-center">
