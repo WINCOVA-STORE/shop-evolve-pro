@@ -347,6 +347,7 @@ export type Database = {
         Row: {
           address: string | null
           avatar_url: string | null
+          birthday: string | null
           city: string | null
           country: string | null
           created_at: string
@@ -361,6 +362,7 @@ export type Database = {
         Insert: {
           address?: string | null
           avatar_url?: string | null
+          birthday?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
@@ -375,6 +377,7 @@ export type Database = {
         Update: {
           address?: string | null
           avatar_url?: string | null
+          birthday?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
@@ -436,6 +439,66 @@ export type Database = {
             columns: ["referrer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          helpful_count: number | null
+          id: string
+          images: string[] | null
+          is_verified_purchase: boolean | null
+          order_id: string | null
+          product_id: string
+          rating: number
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          helpful_count?: number | null
+          id?: string
+          images?: string[] | null
+          is_verified_purchase?: boolean | null
+          order_id?: string | null
+          product_id: string
+          rating: number
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          helpful_count?: number | null
+          id?: string
+          images?: string[] | null
+          is_verified_purchase?: boolean | null
+          order_id?: string | null
+          product_id?: string
+          rating?: number
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]
@@ -522,6 +585,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      grant_birthday_points: {
+        Args: { target_user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
