@@ -63,7 +63,7 @@ export const useAuth = () => {
 
     toast({
       title: "¡Cuenta creada!",
-      description: "Bienvenido a tu tienda.",
+      description: "Bienvenido a Wincova. Has recibido 2000 puntos de bienvenida! 🎉",
     });
     return { error: null };
   };

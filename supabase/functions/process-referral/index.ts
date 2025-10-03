@@ -74,7 +74,10 @@ serve(async (req) => {
 
     if (orderError) throw orderError;
 
-    const rewardAmount = Number(order.total) * 0.10; // 10% reward
+    // New reward system: 1% in points (1000 points = $1)
+    const orderTotal = Number(order.total);
+    const referrerPoints = Math.floor(orderTotal * 10); // 1% of order in points
+    const referredPoints = Math.floor(orderTotal * 10); // 1% of order in points
 
     // Check if referral already exists
     const { data: existingReferral } = await supabaseClient
@@ -93,31 +96,46 @@ serve(async (req) => {
           referred_id: user_id,
           referral_code: referralCode,
           order_id: order_id,
-          reward_earned: rewardAmount,
+          reward_earned: referrerPoints,
         });
 
       if (referralError) throw referralError;
 
-      // Create reward for referrer
-      const { error: rewardError } = await supabaseClient
-        .from("rewards")
-        .insert({
+      // Create rewards for both referrer and referred user
+      const rewards = [
+        {
           user_id: referrerId,
           type: "referral",
-          amount: rewardAmount,
-          description: `Recompensa por referir un amigo`,
+          amount: referrerPoints,
+          description: `Recompensa por referir un amigo (1% de $${orderTotal.toFixed(2)})`,
           order_id: order_id,
-        });
+        },
+        {
+          user_id: user_id,
+          type: "referral",
+          amount: referredPoints,
+          description: `Bono por usar código de referido (1% de $${orderTotal.toFixed(2)})`,
+          order_id: order_id,
+        }
+      ];
+
+      const { error: rewardError } = await supabaseClient
+        .from("rewards")
+        .insert(rewards);
 
       if (rewardError) throw rewardError;
 
-      console.log("Referral processed successfully, reward:", rewardAmount);
+      console.log(`Referral processed successfully. Referrer: ${referrerPoints} pts, Referred: ${referredPoints} pts`);
     } else {
       console.log("Referral already exists");
     }
 
     return new Response(
-      JSON.stringify({ success: true, reward: rewardAmount }),
+      JSON.stringify({ 
+        success: true, 
+        referrer_points: referrerPoints,
+        referred_points: referredPoints 
+      }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
