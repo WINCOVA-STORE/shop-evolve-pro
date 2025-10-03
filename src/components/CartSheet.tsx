@@ -1,4 +1,4 @@
-import { ShoppingCart, Minus, Plus, X } from "lucide-react";
+import { ShoppingCart, Minus, Plus, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -14,16 +14,53 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { useTranslation } from "react-i18next";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export const CartSheet = () => {
   const { items, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
   const { formatPrice } = useCurrency();
   const { t } = useTranslation();
+  const { toast } = useToast();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const taxRate = 0.0975; // Tennessee state tax (9.75%)
   const taxAmount = cartTotal * taxRate;
   const shippingCost = cartTotal > 50 ? 0 : 8.99;
   const total = cartTotal + taxAmount + shippingCost;
+
+  const handleCheckout = async () => {
+    setIsCheckingOut(true);
+    
+    try {
+      const cartItems = items.map((item) => ({
+        product_name: item.name,
+        product_description: item.description || '',
+        product_price: item.price,
+        quantity: item.quantity,
+      }));
+
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { cartItems, total },
+      });
+
+      if (error) throw error;
+
+      if (data.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error("Error creating checkout:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo iniciar el proceso de pago. Por favor, intenta de nuevo.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   return (
     <Sheet>
@@ -132,8 +169,20 @@ export const CartSheet = () => {
             </div>
 
             <SheetFooter className="mt-6">
-              <Button className="w-full" size="lg">
-                {t('cart.checkout')}
+              <Button 
+                className="w-full" 
+                size="lg"
+                onClick={handleCheckout}
+                disabled={isCheckingOut}
+              >
+                {isCheckingOut ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Procesando...
+                  </>
+                ) : (
+                  t('cart.checkout')
+                )}
               </Button>
             </SheetFooter>
           </>
