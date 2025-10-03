@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Package, ShoppingBag, Users, DollarSign, ArrowLeft, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 interface Stats {
   totalOrders: number;
@@ -303,6 +304,8 @@ const Admin = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <Footer />
     </div>
   );
 };

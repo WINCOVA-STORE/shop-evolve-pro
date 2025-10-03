@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Package, Gift, Users, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 interface Order {
   id: string;
@@ -291,6 +292,8 @@ const Profile = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <Footer />
     </div>
   );
 };
