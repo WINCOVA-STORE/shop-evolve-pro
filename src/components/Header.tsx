@@ -140,16 +140,16 @@ export const Header = () => {
           <Link to="/" className="text-secondary-foreground hover:text-primary transition-colors font-medium">
             {t('nav.home')}
           </Link>
-          <Link to="/men" className="text-secondary-foreground hover:text-primary transition-colors">
+          <Link to="/category/men" className="text-secondary-foreground hover:text-primary transition-colors">
             {t('nav.men')}
           </Link>
-          <Link to="/women" className="text-secondary-foreground hover:text-primary transition-colors">
+          <Link to="/category/women" className="text-secondary-foreground hover:text-primary transition-colors">
             {t('nav.women')}
           </Link>
-          <Link to="/kids" className="text-secondary-foreground hover:text-primary transition-colors">
+          <Link to="/category/kids" className="text-secondary-foreground hover:text-primary transition-colors">
             {t('nav.kids')}
           </Link>
-          <Link to="/electronics" className="text-secondary-foreground hover:text-primary transition-colors">
+          <Link to="/category/electronics" className="text-secondary-foreground hover:text-primary transition-colors">
             {t('nav.electronics')}
           </Link>
           <Link to="/refer-earn" className="text-primary hover:text-primary/80 transition-colors font-semibold">

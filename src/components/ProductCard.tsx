@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { Product } from "@/hooks/useProducts";
 
 interface ProductCardProps extends Product {}
@@ -15,8 +16,9 @@ export const ProductCard = (product: ProductCardProps) => {
   const { addToCart } = useCart();
   const { formatPrice } = useCurrency();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  const { name, price, compare_at_price, images, tags = [] } = product;
+  const { id, name, price, compare_at_price, images, tags = [] } = product;
   
   const image = images[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop";
   const hasDiscount = compare_at_price && compare_at_price > price;
@@ -34,7 +36,10 @@ export const ProductCard = (product: ProductCardProps) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image Container */}
-      <div className="relative aspect-square overflow-hidden bg-muted">
+      <div 
+        className="relative aspect-square overflow-hidden bg-muted cursor-pointer"
+        onClick={() => navigate(`/product/${id}`)}
+      >
         <img
           src={image}
           alt={name}
@@ -74,7 +79,10 @@ export const ProductCard = (product: ProductCardProps) => {
       {/* Content */}
       <div className="p-4 space-y-3">
         {/* Title */}
-        <h3 className="font-medium text-sm line-clamp-3 min-h-[60px] text-foreground hover:text-primary transition-colors cursor-pointer">
+        <h3 
+          className="font-medium text-sm line-clamp-3 min-h-[60px] text-foreground hover:text-primary transition-colors cursor-pointer"
+          onClick={() => navigate(`/product/${id}`)}
+        >
           {name}
         </h3>
 
