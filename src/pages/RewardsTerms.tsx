@@ -75,10 +75,46 @@ const RewardsTerms = () => {
                 Desde el primer día comienzas a ganar, y mientras más te involucras, más obtienes.
               </p>
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mt-4">
-                <p className="text-sm font-medium">
-                  👉 Consulta la lista completa de acciones en la sección "Comparte y Gana" de tu perfil.
+                <p className="text-sm font-medium mb-2">
+                  💰 <strong>Ejemplos de cómo ganar puntos:</strong>
+                </p>
+                <ul className="text-sm space-y-1 ml-6 list-disc">
+                  <li>Por cada $1 que gastes: 10 puntos</li>
+                  <li>Referir un amigo: 500 puntos (cuando realice su primera compra)</li>
+                  <li>Dejar una reseña: 50 puntos</li>
+                  <li>Seguir en redes sociales: 25 puntos por plataforma</li>
+                  <li>Bonus de bienvenida: 100 puntos al registrarte</li>
+                </ul>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                👉 Consulta la lista completa de acciones en la sección "Comparte y Gana" de tu perfil.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Section 2.5 - Valor y Límites */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <Gift className="h-6 w-6 text-primary" />
+                ¿Cuánto valen mis puntos?
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-foreground/90 leading-relaxed">
+              <p>
+                <strong>100 puntos = $1 dólar de descuento</strong> en tus compras.
+              </p>
+              <p>
+                Por ejemplo, si tienes 1,000 puntos acumulados, puedes canjearlos por $10 de descuento en tu próxima compra.
+              </p>
+              <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-lg p-4 mt-4">
+                <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                  ⚠️ <strong>Límite de uso:</strong> Puedes usar hasta el 2% del monto de tu compra en puntos. Esto asegura que el programa sea sustentable para todos.
                 </p>
               </div>
+              <p className="text-sm text-muted-foreground">
+                Ejemplo: En una compra de $100, puedes usar hasta 200 puntos (equivalente a $2 de descuento).
+              </p>
             </CardContent>
           </Card>
 
@@ -168,6 +204,30 @@ const RewardsTerms = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Award className="h-6 w-6 text-primary" />
+                ¿Hay restricciones en el uso de puntos?
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-foreground/90 leading-relaxed">
+              <p>
+                Los puntos se pueden usar en la mayoría de nuestros productos, pero hay algunas excepciones:
+              </p>
+              <ul className="space-y-2 ml-6 list-disc">
+                <li>No se pueden combinar con otros cupones o promociones</li>
+                <li>No son válidos para compra de tarjetas de regalo</li>
+                <li>No se pueden canjear por efectivo</li>
+                <li>Deben usarse en compras superiores a $10</li>
+              </ul>
+              <p className="text-sm text-muted-foreground mt-4">
+                Estas restricciones nos ayudan a mantener el programa justo y sustentable para todos.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Section 8 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <Award className="h-6 w-6 text-primary" />
                 ¿Puede Wincova cambiar los términos del programa?
               </CardTitle>
             </CardHeader>
@@ -176,10 +236,34 @@ const RewardsTerms = () => {
                 Sí, podemos actualizar las reglas para mejorar el sistema.
               </p>
               <p>
-                Pero si lo hacemos, siempre te lo haremos saber claramente.
+                Pero si lo hacemos, siempre te lo haremos saber claramente con anticipación.
               </p>
               <p className="font-semibold text-primary">
                 Siempre sabrás cómo estás ganando.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Section 9 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <Award className="h-6 w-6 text-primary" />
+                Suspensión o terminación de cuenta
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-foreground/90 leading-relaxed">
+              <p>
+                Wincova se reserva el derecho de suspender o terminar la participación en el programa de cualquier usuario que:
+              </p>
+              <ul className="space-y-2 ml-6 list-disc">
+                <li>Intente manipular o defraudar el sistema</li>
+                <li>Cree múltiples cuentas para obtener beneficios duplicados</li>
+                <li>Viole los términos y condiciones generales de Wincova</li>
+                <li>Use métodos automatizados para ganar puntos</li>
+              </ul>
+              <p className="font-semibold text-primary mt-4">
+                Jugamos limpio, y esperamos lo mismo de ti.
               </p>
             </CardContent>
           </Card>
