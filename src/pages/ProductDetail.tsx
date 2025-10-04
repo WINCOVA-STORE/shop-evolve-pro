@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -18,6 +18,7 @@ import { Product } from "@/hooks/useProducts";
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { addToCart } = useCart();
   const { formatPrice } = useCurrency();
   const { toast } = useToast();
@@ -102,14 +103,25 @@ const ProductDetail = () => {
       <Header />
       
       <div className="container mx-auto px-4 py-8">
-        <Button
-          variant="ghost"
-          className="mb-6"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Volver
-        </Button>
+        {location.state?.fromOrder ? (
+          <Button
+            variant="ghost"
+            className="mb-6 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 hover:scale-105 transition-all"
+            onClick={() => navigate(`/order/${location.state.fromOrder}`)}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Volver a la Orden
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            className="mb-6"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Volver
+          </Button>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-8 mb-12">
           {/* Images Section */}

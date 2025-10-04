@@ -266,7 +266,7 @@ const OrderDetail = () => {
                     <div 
                       key={item.id} 
                       className="p-4 hover:bg-primary/5 transition-all cursor-pointer group"
-                      onClick={() => item.product_id ? navigate(`/product/${item.product_id}`) : navigate("/")}
+                      onClick={() => item.product_id ? navigate(`/product/${item.product_id}`, { state: { fromOrder: orderId } }) : navigate("/")}
                     >
                       <div className="flex justify-between items-start gap-4">
                         <div className="flex-1">
