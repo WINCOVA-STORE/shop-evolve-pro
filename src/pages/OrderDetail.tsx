@@ -13,6 +13,7 @@ import { Footer } from "@/components/Footer";
 
 interface OrderItem {
   id: string;
+  product_id: string | null;
   product_name: string;
   product_price: number;
   quantity: number;
@@ -262,15 +263,21 @@ const OrderDetail = () => {
               <CardContent className="p-0">
                 <div className="divide-y">
                   {items.map((item) => (
-                    <div key={item.id} className="p-4 hover:bg-muted/50 transition-colors">
+                    <div 
+                      key={item.id} 
+                      className="p-4 hover:bg-primary/5 transition-all cursor-pointer group"
+                      onClick={() => item.product_id ? navigate(`/product/${item.product_id}`) : navigate("/")}
+                    >
                       <div className="flex justify-between items-start gap-4">
                         <div className="flex-1">
-                          <h3 className="font-semibold mb-1">{item.product_name}</h3>
+                          <h3 className="font-semibold mb-1 group-hover:text-primary transition-colors">
+                            {item.product_name}
+                          </h3>
                           <p className="text-sm text-muted-foreground">
                             ${Number(item.product_price).toFixed(2)} × {item.quantity}
                           </p>
                         </div>
-                        <p className="font-bold text-lg">
+                        <p className="font-bold text-lg group-hover:text-primary transition-colors">
                           ${Number(item.subtotal).toFixed(2)}
                         </p>
                       </div>
@@ -346,7 +353,7 @@ const OrderDetail = () => {
 
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-lg">Total</span>
-                  <span className="font-bold text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  <span className="font-bold text-3xl" style={{ color: "hsl(var(--secondary))" }}>
                     ${Number(order.total).toFixed(2)} {order.currency}
                   </span>
                 </div>
@@ -373,7 +380,7 @@ const OrderDetail = () => {
                   {order.tracking_number && (
                     <Button 
                       variant="outline" 
-                      className="w-full border-primary/40 hover:bg-primary/5 hover:scale-105 transition-all"
+                      className="w-full border-primary/40 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 hover:border-primary hover:scale-105 transition-all hover:shadow-lg"
                       onClick={() => navigate("/track-order")}
                     >
                       <Truck className="mr-2 h-4 w-4" />
