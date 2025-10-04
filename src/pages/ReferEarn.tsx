@@ -398,13 +398,13 @@ const ReferEarn = () => {
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-500/20 via-cyan-500/20 to-teal-500/20 rounded-full blur-3xl" />
             <CardHeader className="relative z-10 text-center pb-8">
               <div className="inline-block px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-bold mb-4 shadow-lg">
-                BENEFICIOS EXCLUSIVOS
+                {t('refer_earn.benefits_badge')}
               </div>
               <CardTitle className="text-4xl font-bold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Beneficios del Programa
+                {t('refer_earn.benefits_title')}
               </CardTitle>
               <CardDescription className="text-base text-foreground/70">
-                Todo lo que necesitas saber sobre nuestras recompensas
+                {t('refer_earn.benefits_subtitle')}
               </CardDescription>
             </CardHeader>
             <CardContent className="relative z-10">
@@ -414,9 +414,9 @@ const ReferEarn = () => {
                     <CheckCircle className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-lg mb-1 text-foreground">Recompensas Ilimitadas</h4>
+                    <h4 className="font-bold text-lg mb-1 text-foreground">{t('refer_earn.benefit_unlimited_title')}</h4>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      No hay límite en cuánto puedes ganar. Mientras más compartes, más ganas.
+                      {t('refer_earn.benefit_unlimited_desc')}
                     </p>
                   </div>
                 </div>
@@ -425,9 +425,9 @@ const ReferEarn = () => {
                     <CheckCircle className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-lg mb-1 text-foreground">Recompensas Inmediatas</h4>
+                    <h4 className="font-bold text-lg mb-1 text-foreground">{t('refer_earn.benefit_instant_title')}</h4>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      Los puntos se acreditan al instante después de cada compra exitosa.
+                      {t('refer_earn.benefit_instant_desc')}
                     </p>
                   </div>
                 </div>
@@ -436,9 +436,9 @@ const ReferEarn = () => {
                     <CheckCircle className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-lg mb-1 text-foreground">Fácil de Usar</h4>
+                    <h4 className="font-bold text-lg mb-1 text-foreground">{t('refer_earn.benefit_easy_title')}</h4>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      Solo comparte tu link y listo. Sin complicaciones ni requisitos complejos.
+                      {t('refer_earn.benefit_easy_desc')}
                     </p>
                   </div>
                 </div>
@@ -447,9 +447,9 @@ const ReferEarn = () => {
                     <CheckCircle className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-lg mb-1 text-foreground">Seguimiento en Tiempo Real</h4>
+                    <h4 className="font-bold text-lg mb-1 text-foreground">{t('refer_earn.benefit_realtime_title')}</h4>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      Ve tus estadísticas actualizadas en tiempo real desde tu panel.
+                      {t('refer_earn.benefit_realtime_desc')}
                     </p>
                   </div>
                 </div>
@@ -490,7 +490,7 @@ const ReferEarn = () => {
 
                 {/* Vista previa de cómo se verá */}
                 <div className="pt-4 border-t">
-                  <p className="text-xs text-muted-foreground mb-3 text-center">Vista previa de cómo se verá:</p>
+                  <p className="text-xs text-muted-foreground mb-3 text-center">{t('refer_earn.preview_label')}</p>
                   
                   <Card className="opacity-60">
                     <CardContent className="p-4">
@@ -502,7 +502,7 @@ const ReferEarn = () => {
                           </p>
                           <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
-                            15 de marzo, 2025
+                            {new Date("2025-03-15").toLocaleDateString(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' })}
                           </p>
                         </div>
                         <Badge variant="secondary" className="bg-primary/10 text-primary">
@@ -522,7 +522,7 @@ const ReferEarn = () => {
                           </p>
                           <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
-                            10 de marzo, 2025
+                            {new Date("2025-03-10").toLocaleDateString(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' })}
                           </p>
                         </div>
                         <Badge variant="secondary" className="bg-primary/10 text-primary">
@@ -541,7 +541,7 @@ const ReferEarn = () => {
                       <div>
                         <p className="font-medium flex items-center gap-2">
                           <User className="h-4 w-4 text-primary" />
-                          Referido #{referral.id.substring(0, 8)}
+                          {t('refer_earn.referred')} #{referral.id.substring(0, 8)}
                         </p>
                         <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
@@ -596,19 +596,19 @@ const ReferEarn = () => {
 
                 {/* Vista previa de cómo se verá */}
                 <div className="pt-4 border-t">
-                  <p className="text-xs text-muted-foreground mb-3 text-center">Vista previa de cómo se verá:</p>
+                  <p className="text-xs text-muted-foreground mb-3 text-center">{t('refer_earn.preview_label')}</p>
                   
                   <Card className="opacity-60">
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <p className="font-medium">Orden #WIN-2025-001</p>
+                            <p className="font-medium">{t('order_detail.order')} #WIN-2025-001</p>
                           <Badge variant="outline" className="text-xs">{t('order_detail.status_delivered')}</Badge>
                           </div>
                           <p className="text-sm text-muted-foreground flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
-                            20 de marzo, 2025
+                            {new Date("2025-03-20").toLocaleDateString(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' })}
                           </p>
                         </div>
                         <Badge variant="secondary" className="bg-primary/10 text-primary">
@@ -627,12 +627,12 @@ const ReferEarn = () => {
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <p className="font-medium">Orden #WIN-2025-002</p>
+                            <p className="font-medium">{t('order_detail.order')} #WIN-2025-002</p>
                           <Badge variant="outline" className="text-xs">{t('order_detail.status_delivered')}</Badge>
                           </div>
                           <p className="text-sm text-muted-foreground flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
-                            18 de marzo, 2025
+                            {new Date("2025-03-18").toLocaleDateString(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' })}
                           </p>
                         </div>
                         <Badge variant="secondary" className="bg-primary/10 text-primary">
@@ -681,7 +681,7 @@ const ReferEarn = () => {
                     </div>
                     
                     <div className="mt-4 pt-4 border-t bg-muted/30 -mx-4 -mb-4 px-4 py-3 rounded-b-lg">
-                      <p className="text-sm text-muted-foreground mb-2">¿Te gustó tu compra?</p>
+                      <p className="text-sm text-muted-foreground mb-2">{t('refer_earn.did_you_like_purchase')}</p>
                       <div className="flex gap-2">
                         <Button size="sm" variant="outline" className="flex-1" onClick={(e) => {
                           e.stopPropagation();
@@ -689,13 +689,13 @@ const ReferEarn = () => {
                           navigate('/');
                         }}>
                           <ShoppingBag className="h-3 w-3 mr-1" />
-                          Comprar de nuevo
+                          {t('refer_earn.buy_again')}
                         </Button>
                         <Button size="sm" variant="outline" onClick={(e) => {
                           e.stopPropagation();
                           navigate('/profile?tab=orders');
                         }}>
-                          Ver detalles
+                          {t('refer_earn.view_details')}
                         </Button>
                       </div>
                     </div>
@@ -721,7 +721,7 @@ const ReferEarn = () => {
             {/* Balance principal */}
             <Card className="bg-gradient-to-br from-primary/10 to-accent/5 border-2 border-primary/20 shadow-lg">
               <CardContent className="p-8 text-center">
-                <p className="text-sm font-medium text-muted-foreground mb-2">Tu balance actual</p>
+                <p className="text-sm font-medium text-muted-foreground mb-2">{t('refer_earn.current_balance')}</p>
                 <div className="text-6xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent mb-3">
                   {availablePoints.toLocaleString()}
                 </div>
@@ -741,7 +741,7 @@ const ReferEarn = () => {
             <div className="mt-8">
               <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                 <Gift className="h-5 w-5 text-primary" />
-                Historial de Recompensas
+                {t('refer_earn.rewards_history')}
               </h3>
               
               {rewards.length === 0 ? (
@@ -758,7 +758,7 @@ const ReferEarn = () => {
 
                   {/* Vista previa */}
                   <div className="pt-4 border-t">
-                    <p className="text-xs text-muted-foreground mb-3 text-center">Ejemplo de recompensas:</p>
+                    <p className="text-xs text-muted-foreground mb-3 text-center">{t('refer_earn.rewards_examples')}</p>
                     
                     <Card className="opacity-60 mb-3">
                       <CardContent className="p-4">
@@ -768,11 +768,11 @@ const ReferEarn = () => {
                               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                                 <Gift className="h-4 w-4 text-primary" />
                               </div>
-                              <p className="font-medium">Bono de bienvenida</p>
+                              <p className="font-medium">{t('refer_earn.welcome_bonus')}</p>
                             </div>
                             <p className="text-sm text-muted-foreground ml-10 flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              Al registrarte
+                              {t('refer_earn.on_signup')}
                             </p>
                           </div>
                   <Badge variant="secondary" className="bg-primary/10 text-primary">
@@ -790,11 +790,11 @@ const ReferEarn = () => {
                               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                                 <User className="h-4 w-4 text-primary" />
                               </div>
-                              <p className="font-medium">Por referir a María</p>
+                              <p className="font-medium">{t('refer_earn.for_referring_friend')}</p>
                             </div>
                             <p className="text-sm text-muted-foreground ml-10 flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              15 de marzo, 2025
+                              {new Date("2025-03-15").toLocaleDateString(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' })}
                             </p>
                           </div>
                   <Badge variant="secondary" className="bg-primary/10 text-primary">
@@ -812,11 +812,11 @@ const ReferEarn = () => {
                               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                                 <ShoppingBag className="h-4 w-4 text-primary" />
                               </div>
-                              <p className="font-medium">Puntos por compra</p>
+                              <p className="font-medium">{t('refer_earn.purchase_points')}</p>
                             </div>
                             <p className="text-sm text-muted-foreground ml-10 flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              Orden #WIN-2025-001
+                              {t('order_detail.order')} #WIN-2025-001
                             </p>
                           </div>
                           <Badge variant="secondary" className="bg-primary/10 text-primary">
