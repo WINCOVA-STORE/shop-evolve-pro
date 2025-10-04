@@ -192,161 +192,196 @@ const ReferEarn = () => {
           </p>
         </div>
 
-        {/* Stats Cards - Now Clickable */}
+        {/* Stats Cards - Now Clickable with Enhanced Colors */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-5xl mx-auto">
           <Card 
-            className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 cursor-pointer"
+            className="relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border-2 hover:border-blue-500/50 cursor-pointer bg-gradient-to-br from-background via-blue-50/30 to-background dark:from-background dark:via-blue-950/20 dark:to-background"
             onClick={() => setReferralsSheetOpen(true)}
           >
-            <div className="absolute inset-0 bg-[var(--gradient-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Total Referidos</CardTitle>
-              <div className="p-2 rounded-lg bg-primary/10 group-hover:scale-110 transition-transform duration-300">
-                <Users className="h-5 w-5 text-primary" />
+              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
+                <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
             </CardHeader>
             <CardContent className="relative z-10">
-              <div className="text-4xl font-bold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">{stats.totalReferrals}</div>
-              <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
-                Amigos invitados <ExternalLink className="h-3 w-3" />
+              <div className="text-5xl font-bold bg-gradient-to-br from-blue-600 to-indigo-600 bg-clip-text text-transparent">{stats.totalReferrals}</div>
+              <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1 font-medium">
+                Amigos invitados <ExternalLink className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
               </p>
             </CardContent>
           </Card>
 
           <Card 
-            className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 cursor-pointer"
+            className="relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border-2 hover:border-amber-500/50 cursor-pointer bg-gradient-to-br from-background via-amber-50/30 to-background dark:from-background dark:via-amber-950/20 dark:to-background"
             onClick={() => setEarnedSheetOpen(true)}
           >
-            <div className="absolute inset-0 bg-[var(--gradient-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Total Ganado</CardTitle>
-              <div className="p-2 rounded-lg bg-primary/10 group-hover:scale-110 transition-transform duration-300">
-                <Gift className="h-5 w-5 text-primary" />
+              <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
+                <Gift className="h-5 w-5 text-amber-600 dark:text-amber-400" />
               </div>
             </CardHeader>
             <CardContent className="relative z-10">
-              <div className="text-4xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent">
+              <div className="text-5xl font-bold bg-gradient-to-br from-amber-600 to-orange-600 bg-clip-text text-transparent">
                 {(orderDetails.reduce((sum, order) => sum + order.points_earned, 0) + stats.totalEarned).toLocaleString()} <span className="text-lg">pts</span>
               </div>
-              <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
-                En todas tus compras <ExternalLink className="h-3 w-3" />
+              <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1 font-medium">
+                En todas tus compras <ExternalLink className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
               </p>
             </CardContent>
           </Card>
 
           <Card 
-            className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 cursor-pointer"
+            className="relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border-2 hover:border-emerald-500/50 cursor-pointer bg-gradient-to-br from-background via-emerald-50/30 to-background dark:from-background dark:via-emerald-950/20 dark:to-background"
             onClick={() => setAvailableSheetOpen(true)}
           >
-            <div className="absolute inset-0 bg-[var(--gradient-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium">Disponible</CardTitle>
-              <div className="p-2 rounded-lg bg-primary/10 group-hover:scale-110 transition-transform duration-300">
-                <TrendingUp className="h-5 w-5 text-primary" />
+              <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
+                <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
               </div>
             </CardHeader>
             <CardContent className="relative z-10">
-              <div className="text-4xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent">{availablePoints.toLocaleString()} <span className="text-lg">pts</span></div>
-              <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
-                Listos para usar <ExternalLink className="h-3 w-3" />
+              <div className="text-5xl font-bold bg-gradient-to-br from-emerald-600 to-green-600 bg-clip-text text-transparent">{availablePoints.toLocaleString()} <span className="text-lg">pts</span></div>
+              <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1 font-medium">
+                Listos para usar <ExternalLink className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Referral Link Section - Simplified */}
+        {/* Referral Link Section - Enhanced with Color */}
         <div className="max-w-3xl mx-auto mb-16">
-          <Card className="border-2 shadow-xl">
-            <CardHeader className="text-center pb-6">
-              <CardTitle className="text-2xl">Comparte y Gana</CardTitle>
-              <CardDescription className="text-base">
+          <Card className="border-2 shadow-2xl bg-gradient-to-br from-background to-muted/20 overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-orange-500/10 to-amber-500/10 rounded-full blur-3xl -z-0" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-primary/10 to-accent/10 rounded-full blur-3xl -z-0" />
+            
+            <CardHeader className="text-center pb-6 relative z-10">
+              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 bg-clip-text text-transparent">
+                Comparte y Gana
+              </CardTitle>
+              <CardDescription className="text-base mt-2">
                 Haz click en "Compartir" para copiar tu link automáticamente
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 relative z-10">
               <div className="flex justify-center">
                 <Button 
                   onClick={handleShare} 
                   size="lg" 
-                  className="bg-[var(--gradient-primary)] hover:opacity-90 text-lg px-12 py-6 h-auto"
+                  className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:via-amber-600 hover:to-orange-700 text-white text-lg px-16 py-7 h-auto shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 font-semibold"
                 >
-                  <Copy className="h-5 w-5 mr-2" />
+                  <Copy className="h-5 w-5 mr-3" />
                   Compartir Link
                 </Button>
               </div>
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
+                  <span className="w-full border-t border-border/50" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">o comparte en</span>
+                  <span className="bg-background px-3 text-muted-foreground font-medium">O COMPARTE EN</span>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-3 justify-center">
-                <Button onClick={shareViaWhatsApp} variant="outline" size="lg" className="hover:border-primary hover:text-primary transition-colors">
+                <Button 
+                  onClick={shareViaWhatsApp} 
+                  variant="outline" 
+                  size="lg" 
+                  className="hover:border-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-950 transition-all duration-300 border-2"
+                >
                   <Share2 className="h-4 w-4 mr-2" />
                   WhatsApp
                 </Button>
-                <Button onClick={shareViaEmail} variant="outline" size="lg" className="hover:border-primary hover:text-primary transition-colors">
+                <Button 
+                  onClick={shareViaEmail} 
+                  variant="outline" 
+                  size="lg" 
+                  className="hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 transition-all duration-300 border-2"
+                >
                   <Mail className="h-4 w-4 mr-2" />
                   Email
                 </Button>
-                <Button onClick={shareViaFacebook} variant="outline" size="lg" className="hover:border-primary hover:text-primary transition-colors">
+                <Button 
+                  onClick={shareViaFacebook} 
+                  variant="outline" 
+                  size="lg" 
+                  className="hover:border-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950 transition-all duration-300 border-2"
+                >
                   <Share2 className="h-4 w-4 mr-2" />
                   Facebook
                 </Button>
               </div>
 
-              <div className="mt-4 p-3 bg-muted/30 rounded-lg">
+              <div className="mt-4 p-4 bg-gradient-to-r from-muted/50 via-muted/30 to-muted/50 rounded-xl border border-border/50">
                 <p className="text-xs text-muted-foreground text-center font-mono break-all">{referralLink}</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* How it Works */}
+        {/* How it Works - Enhanced with Gradient Backgrounds */}
         <div className="max-w-5xl mx-auto mb-16">
-          <h2 className="text-4xl font-bold text-center mb-12">¿Cómo Funciona?</h2>
+          <h2 className="text-4xl font-bold text-center mb-3 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 bg-clip-text text-transparent">
+            ¿Cómo Funciona?
+          </h2>
+          <p className="text-center text-muted-foreground mb-12 text-lg">Tres pasos simples para comenzar a ganar</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2">
-              <CardHeader>
-                <div className="w-16 h-16 rounded-2xl bg-[var(--gradient-primary)] flex items-center justify-center mb-6 mx-auto shadow-lg">
-                  <Share2 className="h-8 w-8 text-white" />
+            <Card className="text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-3 border-2 hover:border-purple-500/50 relative overflow-hidden bg-gradient-to-br from-background via-purple-50/30 to-background dark:from-background dark:via-purple-950/20 dark:to-background">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-2xl" />
+              <CardHeader className="relative z-10">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-6 mx-auto shadow-2xl transform hover:rotate-12 transition-transform duration-300">
+                  <Share2 className="h-10 w-10 text-white" />
                 </div>
-                <CardTitle className="text-xl">1. Comparte</CardTitle>
+                <div className="inline-block px-4 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-sm font-bold mb-2">
+                  PASO 1
+                </div>
+                <CardTitle className="text-2xl font-bold">Comparte</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed">
+              <CardContent className="relative z-10">
+                <p className="text-muted-foreground leading-relaxed text-base">
                   Envía tu link único a amigos y familiares. Es simple y rápido.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2">
-              <CardHeader>
-                <div className="w-16 h-16 rounded-2xl bg-[var(--gradient-primary)] flex items-center justify-center mb-6 mx-auto shadow-lg">
-                  <Users className="h-8 w-8 text-white" />
+            <Card className="text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-3 border-2 hover:border-blue-500/50 relative overflow-hidden bg-gradient-to-br from-background via-blue-50/30 to-background dark:from-background dark:via-blue-950/20 dark:to-background">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full blur-2xl" />
+              <CardHeader className="relative z-10">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-6 mx-auto shadow-2xl transform hover:rotate-12 transition-transform duration-300">
+                  <Users className="h-10 w-10 text-white" />
                 </div>
-                <CardTitle className="text-xl">2. Ellos Compran</CardTitle>
+                <div className="inline-block px-4 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-bold mb-2">
+                  PASO 2
+                </div>
+                <CardTitle className="text-2xl font-bold">Ellos Compran</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed">
+              <CardContent className="relative z-10">
+                <p className="text-muted-foreground leading-relaxed text-base">
                   Cuando tus amigos compren usando tu link, ambos reciben puntos de recompensa.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2">
-              <CardHeader>
-                <div className="w-16 h-16 rounded-2xl bg-[var(--gradient-primary)] flex items-center justify-center mb-6 mx-auto shadow-lg">
-                  <Gift className="h-8 w-8 text-white" />
+            <Card className="text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-3 border-2 hover:border-orange-500/50 relative overflow-hidden bg-gradient-to-br from-background via-orange-50/30 to-background dark:from-background dark:via-orange-950/20 dark:to-background">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/20 to-amber-500/20 rounded-full blur-2xl" />
+              <CardHeader className="relative z-10">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center mb-6 mx-auto shadow-2xl transform hover:rotate-12 transition-transform duration-300">
+                  <Gift className="h-10 w-10 text-white" />
                 </div>
-                <CardTitle className="text-xl">3. Todos Ganan</CardTitle>
+                <div className="inline-block px-4 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-sm font-bold mb-2">
+                  PASO 3
+                </div>
+                <CardTitle className="text-2xl font-bold">Todos Ganan</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed">
+              <CardContent className="relative z-10">
+                <p className="text-muted-foreground leading-relaxed text-base">
                   Acumula puntos con cada compra y úsalos como descuento en futuras órdenes.
                 </p>
               </CardContent>
@@ -354,57 +389,65 @@ const ReferEarn = () => {
           </div>
         </div>
 
-        {/* Benefits */}
+        {/* Benefits - Enhanced with Rich Colors */}
         <div className="max-w-5xl mx-auto">
-          <Card className="bg-[var(--gradient-accent)] border-2 shadow-xl overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-            <CardHeader className="relative z-10">
-              <CardTitle className="text-center text-3xl mb-2">Beneficios del Programa</CardTitle>
-              <CardDescription className="text-center text-base">Todo lo que necesitas saber sobre nuestras recompensas</CardDescription>
+          <Card className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-950/30 dark:via-purple-950/30 dark:to-pink-950/30 border-2 border-indigo-200/50 dark:border-indigo-800/50 shadow-2xl overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-500/20 via-cyan-500/20 to-teal-500/20 rounded-full blur-3xl" />
+            <CardHeader className="relative z-10 text-center pb-8">
+              <div className="inline-block px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-bold mb-4 shadow-lg">
+                BENEFICIOS EXCLUSIVOS
+              </div>
+              <CardTitle className="text-4xl font-bold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Beneficios del Programa
+              </CardTitle>
+              <CardDescription className="text-base text-foreground/70">
+                Todo lo que necesitas saber sobre nuestras recompensas
+              </CardDescription>
             </CardHeader>
             <CardContent className="relative z-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-background/50 transition-colors">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <CheckCircle className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-4 p-5 rounded-xl bg-white/60 dark:bg-black/20 hover:bg-white/80 dark:hover:bg-black/30 transition-all duration-300 border border-indigo-200/50 dark:border-indigo-800/50 hover:shadow-lg hover:-translate-y-1">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 shadow-lg">
+                    <CheckCircle className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-lg mb-1">Recompensas Ilimitadas</h4>
-                    <p className="text-sm text-muted-foreground">
-                      No hay límite en cuánto puedes ganar
+                    <h4 className="font-bold text-lg mb-1 text-foreground">Recompensas Ilimitadas</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      No hay límite en cuánto puedes ganar. Mientras más compartes, más ganas.
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-background/50 transition-colors">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <CheckCircle className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-4 p-5 rounded-xl bg-white/60 dark:bg-black/20 hover:bg-white/80 dark:hover:bg-black/30 transition-all duration-300 border border-purple-200/50 dark:border-purple-800/50 hover:shadow-lg hover:-translate-y-1">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg">
+                    <CheckCircle className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-lg mb-1">Recompensas Inmediatas</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Los puntos se acreditan al instante
+                    <h4 className="font-bold text-lg mb-1 text-foreground">Recompensas Inmediatas</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Los puntos se acreditan al instante después de cada compra exitosa.
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-background/50 transition-colors">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <CheckCircle className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-4 p-5 rounded-xl bg-white/60 dark:bg-black/20 hover:bg-white/80 dark:hover:bg-black/30 transition-all duration-300 border border-pink-200/50 dark:border-pink-800/50 hover:shadow-lg hover:-translate-y-1">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 shadow-lg">
+                    <CheckCircle className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-lg mb-1">Fácil de Usar</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Solo comparte tu link y listo
+                    <h4 className="font-bold text-lg mb-1 text-foreground">Fácil de Usar</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Solo comparte tu link y listo. Sin complicaciones ni requisitos complejos.
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-background/50 transition-colors">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <CheckCircle className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-4 p-5 rounded-xl bg-white/60 dark:bg-black/20 hover:bg-white/80 dark:hover:bg-black/30 transition-all duration-300 border border-orange-200/50 dark:border-orange-800/50 hover:shadow-lg hover:-translate-y-1">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 shadow-lg">
+                    <CheckCircle className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-lg mb-1">Seguimiento en Tiempo Real</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Ve tus estadísticas actualizadas
+                    <h4 className="font-bold text-lg mb-1 text-foreground">Seguimiento en Tiempo Real</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Ve tus estadísticas actualizadas en tiempo real desde tu panel.
                     </p>
                   </div>
                 </div>
