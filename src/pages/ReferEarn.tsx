@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useRewards } from "@/hooks/useRewards";
+import { useTranslation } from "react-i18next";
 
 interface ReferralStats {
   totalReferrals: number;
@@ -39,6 +40,7 @@ const ReferEarn = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const { rewards, availablePoints } = useRewards();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [referralCode, setReferralCode] = useState("");
   const [stats, setStats] = useState<ReferralStats>({
@@ -126,7 +128,7 @@ const ReferEarn = () => {
       console.error("Error fetching referral data:", error);
       toast({
         title: "Error",
-        description: "No se pudieron cargar los datos",
+        description: t('profile.error_loading'),
         variant: "destructive",
       });
     } finally {
@@ -138,10 +140,10 @@ const ReferEarn = () => {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
-    toast({
-      title: "¡Link copiado!",
-      description: "Ahora puedes compartirlo con tus amigos",
-    });
+      toast({
+        title: t('refer_earn.link_copied'),
+        description: t('refer_earn.share_with_friends'),
+      });
   };
 
   const handleShare = () => {
@@ -149,13 +151,13 @@ const ReferEarn = () => {
   };
 
   const shareViaEmail = () => {
-    window.location.href = `mailto:?subject=¡Únete a Wincova!&body=Descubre productos increíbles en Wincova. Usa mi link: ${referralLink}`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(t('refer_earn.title'))}!&body=${encodeURIComponent(t('refer_earn.subtitle') + ' ' + referralLink)}`;
   };
 
   const shareViaWhatsApp = () => {
     window.open(
       `https://wa.me/?text=${encodeURIComponent(
-        `¡Descubre Wincova! Usa mi link de referido: ${referralLink}`
+        `${t('refer_earn.title')}! ${referralLink}`
       )}`
     );
   };
@@ -182,13 +184,13 @@ const ReferEarn = () => {
           <div className="absolute inset-0 bg-[var(--gradient-hero)] rounded-3xl blur-3xl opacity-30 -z-10" />
           <Badge className="mb-6 animate-fade-in" variant="secondary">
             <Gift className="h-3 w-3 mr-1" />
-            Programa de Referidos
+            {t('refer_earn.title')}
           </Badge>
           <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 animate-fade-in">
-            Invita y Gana <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Recompensas</span>
+            {t('refer_earn.title')} <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{t('refer_earn.rewards')}</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in">
-            Comparte tu link y gana puntos cuando tus amigos compren. ¡Es simple y todos ganan!
+            {t('refer_earn.subtitle')}
           </p>
         </div>
 
@@ -200,7 +202,7 @@ const ReferEarn = () => {
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
-              <CardTitle className="text-sm font-medium">Total Referidos</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('refer_earn.total_referrals')}</CardTitle>
               <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
                 <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
@@ -208,7 +210,7 @@ const ReferEarn = () => {
             <CardContent className="relative z-10">
               <div className="text-5xl font-bold bg-gradient-to-br from-blue-600 to-indigo-600 bg-clip-text text-transparent">{stats.totalReferrals}</div>
               <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1 font-medium">
-                Amigos invitados <ExternalLink className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                {t('refer_earn.friends_invited')} <ExternalLink className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
               </p>
             </CardContent>
           </Card>
@@ -219,17 +221,17 @@ const ReferEarn = () => {
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
-              <CardTitle className="text-sm font-medium">Total Ganado</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('refer_earn.total_earned')}</CardTitle>
               <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
                 <Gift className="h-5 w-5 text-amber-600 dark:text-amber-400" />
               </div>
             </CardHeader>
             <CardContent className="relative z-10">
               <div className="text-5xl font-bold bg-gradient-to-br from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                {(orderDetails.reduce((sum, order) => sum + order.points_earned, 0) + stats.totalEarned).toLocaleString()} <span className="text-lg">pts</span>
+                {(orderDetails.reduce((sum, order) => sum + order.points_earned, 0) + stats.totalEarned).toLocaleString()} <span className="text-lg">{t('refer_earn.points')}</span>
               </div>
               <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1 font-medium">
-                En todas tus compras <ExternalLink className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                {t('refer_earn.in_all_purchases')} <ExternalLink className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
               </p>
             </CardContent>
           </Card>
@@ -240,15 +242,15 @@ const ReferEarn = () => {
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
-              <CardTitle className="text-sm font-medium">Disponible</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('refer_earn.available')}</CardTitle>
               <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
                 <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
               </div>
             </CardHeader>
             <CardContent className="relative z-10">
-              <div className="text-5xl font-bold bg-gradient-to-br from-emerald-600 to-green-600 bg-clip-text text-transparent">{availablePoints.toLocaleString()} <span className="text-lg">pts</span></div>
+              <div className="text-5xl font-bold bg-gradient-to-br from-emerald-600 to-green-600 bg-clip-text text-transparent">{availablePoints.toLocaleString()} <span className="text-lg">{t('refer_earn.points')}</span></div>
               <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1 font-medium">
-                Listos para usar <ExternalLink className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                {t('refer_earn.ready_to_use')} <ExternalLink className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
               </p>
             </CardContent>
           </Card>
@@ -262,10 +264,10 @@ const ReferEarn = () => {
             
             <CardHeader className="text-center pb-6 relative z-10">
               <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 bg-clip-text text-transparent">
-                Comparte y Gana
+                {t('refer_earn.share_earn')}
               </CardTitle>
               <CardDescription className="text-base mt-2">
-                Haz click en "Compartir" para copiar tu link automáticamente
+                {t('refer_earn.share_description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 relative z-10">
@@ -276,7 +278,7 @@ const ReferEarn = () => {
                   className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:via-amber-600 hover:to-orange-700 text-white text-lg px-16 py-7 h-auto shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 font-semibold"
                 >
                   <Copy className="h-5 w-5 mr-3" />
-                  Compartir Link
+                  {t('refer_earn.share_link')}
                 </Button>
               </div>
 
@@ -285,7 +287,7 @@ const ReferEarn = () => {
                   <span className="w-full border-t border-border/50" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-3 text-muted-foreground font-medium">O COMPARTE EN</span>
+                  <span className="bg-background px-3 text-muted-foreground font-medium">{t('refer_earn.or_share_on')}</span>
                 </div>
               </div>
 
@@ -297,7 +299,7 @@ const ReferEarn = () => {
                   className="hover:border-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-950 transition-all duration-300 border-2"
                 >
                   <Share2 className="h-4 w-4 mr-2" />
-                  WhatsApp
+                  {t('refer_earn.whatsapp')}
                 </Button>
                 <Button 
                   onClick={shareViaEmail} 
@@ -306,7 +308,7 @@ const ReferEarn = () => {
                   className="hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 transition-all duration-300 border-2"
                 >
                   <Mail className="h-4 w-4 mr-2" />
-                  Email
+                  {t('refer_earn.email')}
                 </Button>
                 <Button 
                   onClick={shareViaFacebook} 
@@ -315,7 +317,7 @@ const ReferEarn = () => {
                   className="hover:border-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950 transition-all duration-300 border-2"
                 >
                   <Share2 className="h-4 w-4 mr-2" />
-                  Facebook
+                  {t('refer_earn.facebook')}
                 </Button>
               </div>
 
@@ -329,9 +331,9 @@ const ReferEarn = () => {
         {/* How it Works - Enhanced with Gradient Backgrounds */}
         <div className="max-w-5xl mx-auto mb-16">
           <h2 className="text-4xl font-bold text-center mb-3 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 bg-clip-text text-transparent">
-            ¿Cómo Funciona?
+            {t('refer_earn.how_it_works')}
           </h2>
-          <p className="text-center text-muted-foreground mb-12 text-lg">Tres pasos simples para comenzar a ganar</p>
+          <p className="text-center text-muted-foreground mb-12 text-lg">{t('refer_earn.three_steps')}</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-3 border-2 hover:border-purple-500/50 relative overflow-hidden bg-gradient-to-br from-background via-purple-50/30 to-background dark:from-background dark:via-purple-950/20 dark:to-background">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-2xl" />
@@ -340,13 +342,13 @@ const ReferEarn = () => {
                   <Share2 className="h-10 w-10 text-white" />
                 </div>
                 <div className="inline-block px-4 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-sm font-bold mb-2">
-                  PASO 1
+                  {t('refer_earn.step_1')}
                 </div>
-                <CardTitle className="text-2xl font-bold">Comparte</CardTitle>
+                <CardTitle className="text-2xl font-bold">{t('refer_earn.share')}</CardTitle>
               </CardHeader>
               <CardContent className="relative z-10">
                 <p className="text-muted-foreground leading-relaxed text-base">
-                  Envía tu link único a amigos y familiares. Es simple y rápido.
+                  {t('refer_earn.share_desc')}
                 </p>
               </CardContent>
             </Card>
@@ -358,13 +360,13 @@ const ReferEarn = () => {
                   <Users className="h-10 w-10 text-white" />
                 </div>
                 <div className="inline-block px-4 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-bold mb-2">
-                  PASO 2
+                  {t('refer_earn.step_2')}
                 </div>
-                <CardTitle className="text-2xl font-bold">Ellos Compran</CardTitle>
+                <CardTitle className="text-2xl font-bold">{t('refer_earn.they_buy')}</CardTitle>
               </CardHeader>
               <CardContent className="relative z-10">
                 <p className="text-muted-foreground leading-relaxed text-base">
-                  Cuando tus amigos compren usando tu link, ambos reciben puntos de recompensa.
+                  {t('refer_earn.they_buy_desc')}
                 </p>
               </CardContent>
             </Card>
@@ -376,13 +378,13 @@ const ReferEarn = () => {
                   <Gift className="h-10 w-10 text-white" />
                 </div>
                 <div className="inline-block px-4 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-sm font-bold mb-2">
-                  PASO 3
+                  {t('refer_earn.step_3')}
                 </div>
-                <CardTitle className="text-2xl font-bold">Todos Ganan</CardTitle>
+                <CardTitle className="text-2xl font-bold">{t('refer_earn.you_earn')}</CardTitle>
               </CardHeader>
               <CardContent className="relative z-10">
                 <p className="text-muted-foreground leading-relaxed text-base">
-                  Acumula puntos con cada compra y úsalos para pagar parte de futuras órdenes.
+                  {t('refer_earn.you_earn_desc')}
                 </p>
               </CardContent>
             </Card>
@@ -465,7 +467,7 @@ const ReferEarn = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl flex items-center gap-2">
               <Users className="h-6 w-6 text-primary" />
-              Tus Referidos
+              {t('refer_earn.referrals_details')}
             </DialogTitle>
           </DialogHeader>
           
@@ -477,12 +479,12 @@ const ReferEarn = () => {
                   <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                     <Users className="h-8 w-8 text-primary" />
                   </div>
-                  <p className="font-semibold text-lg mb-2">Aún no tienes referidos</p>
+                  <p className="font-semibold text-lg mb-2">{t('refer_earn.no_referrals_yet')}</p>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Comparte tu link para empezar a ganar puntos
+                    {t('refer_earn.subtitle')}
                   </p>
                   <Button onClick={() => setReferralsSheetOpen(false)} variant="outline" size="sm">
-                    Compartir ahora
+                    {t('refer_earn.share_link')}
                   </Button>
                 </div>
 
@@ -543,7 +545,7 @@ const ReferEarn = () => {
                         </p>
                         <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {new Date(referral.created_at).toLocaleDateString('es', {
+                          {new Date(referral.created_at).toLocaleDateString(i18n.language, {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric'
@@ -568,7 +570,7 @@ const ReferEarn = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl flex items-center gap-2">
               <Gift className="h-6 w-6 text-primary" />
-              Puntos Ganados
+              {t('refer_earn.earnings_details')}
             </DialogTitle>
           </DialogHeader>
           
@@ -580,15 +582,15 @@ const ReferEarn = () => {
                   <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                     <Gift className="h-8 w-8 text-primary" />
                   </div>
-                  <p className="font-semibold text-lg mb-2">No hay compras aún</p>
+                  <p className="font-semibold text-lg mb-2">{t('refer_earn.no_earnings_yet')}</p>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Cada compra que realices te dará puntos de recompensa
+                    {t('refer_earn.in_all_purchases')}
                   </p>
                   <Button onClick={() => {
                     setEarnedSheetOpen(false);
                     navigate('/');
                   }} variant="outline" size="sm">
-                    Ir a comprar
+                    {t('cart.continue_shopping')}
                   </Button>
                 </div>
 
@@ -602,7 +604,7 @@ const ReferEarn = () => {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <p className="font-medium">Orden #WIN-2025-001</p>
-                            <Badge variant="outline" className="text-xs">Completada</Badge>
+                          <Badge variant="outline" className="text-xs">{t('order_detail.status_delivered')}</Badge>
                           </div>
                           <p className="text-sm text-muted-foreground flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
@@ -614,7 +616,7 @@ const ReferEarn = () => {
                         </Badge>
                       </div>
                       <div className="flex items-center justify-between pt-2 border-t text-sm">
-                        <span className="text-muted-foreground">Total de orden:</span>
+                        <span className="text-muted-foreground">{t('order_detail.total')}:</span>
                         <span className="font-medium">450,000 pts</span>
                       </div>
                     </CardContent>
@@ -626,7 +628,7 @@ const ReferEarn = () => {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <p className="font-medium">Orden #WIN-2025-002</p>
-                            <Badge variant="outline" className="text-xs">Completada</Badge>
+                          <Badge variant="outline" className="text-xs">{t('order_detail.status_delivered')}</Badge>
                           </div>
                           <p className="text-sm text-muted-foreground flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
@@ -638,7 +640,7 @@ const ReferEarn = () => {
                         </Badge>
                       </div>
                       <div className="flex items-center justify-between pt-2 border-t text-sm">
-                        <span className="text-muted-foreground">Total de orden:</span>
+                        <span className="text-muted-foreground">{t('order_detail.total')}:</span>
                         <span className="font-medium">280,000 pts</span>
                       </div>
                     </CardContent>
@@ -656,13 +658,13 @@ const ReferEarn = () => {
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <p className="font-medium group-hover:text-primary transition-colors">Orden {order.order_number}</p>
+                          <p className="font-medium group-hover:text-primary transition-colors">{t('refer_earn.order')} {order.order_number}</p>
                           <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                          <Badge variant="outline" className="text-xs">Completada</Badge>
+                          <Badge variant="outline" className="text-xs">{t('order_detail.status_delivered')}</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {new Date(order.created_at).toLocaleDateString('es', {
+                          {new Date(order.created_at).toLocaleDateString(i18n.language, {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric'
@@ -674,7 +676,7 @@ const ReferEarn = () => {
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between pt-2 border-t text-sm">
-                      <span className="text-muted-foreground">Total de orden:</span>
+                      <span className="text-muted-foreground">{t('order_detail.total')}:</span>
                       <span className="font-medium">${order.total.toLocaleString()}</span>
                     </div>
                     
@@ -711,7 +713,7 @@ const ReferEarn = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl flex items-center gap-2">
               <TrendingUp className="h-6 w-6 text-primary" />
-              Balance Disponible
+              {t('refer_earn.available_points')}
             </DialogTitle>
           </DialogHeader>
           
@@ -723,12 +725,12 @@ const ReferEarn = () => {
                 <div className="text-6xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent mb-3">
                   {availablePoints.toLocaleString()}
                 </div>
-                <p className="text-lg text-muted-foreground">puntos disponibles</p>
+                <p className="text-lg text-muted-foreground">{t('refer_earn.points')} {t('refer_earn.available').toLowerCase()}</p>
                 
                 {availablePoints > 0 && (
                   <div className="mt-4 pt-4 border-t border-primary/20">
                     <p className="text-sm text-muted-foreground">
-                      Puedes usar estos puntos para pagar parte de tu próxima compra
+                      {t('refer_earn.use_at_checkout')}
                     </p>
                   </div>
                 )}
@@ -748,9 +750,9 @@ const ReferEarn = () => {
                     <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                       <TrendingUp className="h-8 w-8 text-primary" />
                     </div>
-                    <p className="font-semibold text-lg mb-2">No hay recompensas aún</p>
+                    <p className="font-semibold text-lg mb-2">{t('refer_earn.no_earnings_yet')}</p>
                     <p className="text-sm text-muted-foreground">
-                      Gana puntos comprando, refiriendo amigos o en tu cumpleaños
+                      {t('refer_earn.in_all_purchases')}
                     </p>
                   </div>
 
@@ -847,7 +849,7 @@ const ReferEarn = () => {
                               </div>
                               <p className="text-sm text-muted-foreground ml-10 flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
-                                {new Date(reward.created_at).toLocaleDateString('es', {
+                                {new Date(reward.created_at).toLocaleDateString(i18n.language, {
                                   year: 'numeric',
                                   month: 'long',
                                   day: 'numeric'
@@ -856,7 +858,7 @@ const ReferEarn = () => {
                               {reward.expires_at && (
                                 <p className="text-xs text-amber-600 ml-10 mt-1 flex items-center gap-1">
                                   <Clock className="h-3 w-3" />
-                                  Expira: {new Date(reward.expires_at).toLocaleDateString('es')}
+                                  {t('order_detail.estimated_delivery')}: {new Date(reward.expires_at).toLocaleDateString(i18n.language)}
                                 </p>
                               )}
                             </div>
