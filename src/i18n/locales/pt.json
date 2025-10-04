@@ -61,10 +61,28 @@
     "customer_3": "Ana Costa"
   },
   "footer": {
+    "brand_description": "Sua loja online de confiança. Produtos de qualidade com envio rápido e garantia de satisfação.",
+    "shop": "Comprar",
+    "contact": "Contato",
+    "customer_service": "Atendimento ao Cliente",
     "contact_title": "Fale conosco — estamos aqui 24/7",
     "phone": "Telefone",
     "email": "Email",
-    "whatsapp": "Converse conosco no WhatsApp"
+    "whatsapp": "Converse conosco no WhatsApp",
+    "my_account": "Minha Conta",
+    "refer_earn": "Indicar & Ganhar",
+    "rewards_terms": "Termos do Programa de Recompensas",
+    "track_order": "Rastrear Pedido",
+    "return_policy": "Política de Devoluções",
+    "faq": "Perguntas Frequentes",
+    "newsletter_title": "Newsletter",
+    "newsletter_subtitle": "Assine para receber ofertas exclusivas",
+    "newsletter_placeholder": "Seu email",
+    "newsletter_submit": "Enviar",
+    "copyright": "© {{year}} Wincova. Todos os direitos reservados.",
+    "terms": "Termos e Condições",
+    "privacy": "Política de Privacidade",
+    "cookies": "Cookies"
   },
   "auth": {
     "login_tab": "Entrar",

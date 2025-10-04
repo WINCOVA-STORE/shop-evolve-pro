@@ -61,10 +61,28 @@
     "customer_3": "张敏"
   },
   "footer": {
+    "brand_description": "您值得信赖的网上商店。优质产品，快速配送，满意保障。",
+    "shop": "选购",
+    "contact": "联系",
+    "customer_service": "客户服务",
     "contact_title": "联系我们 — 全天候在线",
     "phone": "电话",
     "email": "邮箱",
-    "whatsapp": "在 WhatsApp 上与我们聊天"
+    "whatsapp": "在 WhatsApp 上与我们聊天",
+    "my_account": "我的账户",
+    "refer_earn": "推荐赚取",
+    "rewards_terms": "奖励计划条款",
+    "track_order": "订单跟踪",
+    "return_policy": "退货政策",
+    "faq": "常见问题",
+    "newsletter_title": "订阅",
+    "newsletter_subtitle": "订阅以获取独家优惠",
+    "newsletter_placeholder": "你的邮箱",
+    "newsletter_submit": "发送",
+    "copyright": "© {{year}} Wincova。保留所有权利。",
+    "terms": "条款与条件",
+    "privacy": "隐私政策",
+    "cookies": "Cookies"
   },
   "auth": {
     "login_tab": "登录",

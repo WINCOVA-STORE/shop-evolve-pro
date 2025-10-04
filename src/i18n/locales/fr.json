@@ -61,10 +61,28 @@
     "customer_3": "Sophie Lefebvre"
   },
   "footer": {
+    "brand_description": "Votre boutique en ligne de confiance. Produits de qualité avec livraison rapide et garantie de satisfaction.",
+    "shop": "Boutique",
+    "contact": "Contact",
+    "customer_service": "Service Client",
     "contact_title": "Contactez-nous — nous sommes là 24/7",
     "phone": "Téléphone",
     "email": "Email",
-    "whatsapp": "Chattez avec nous sur WhatsApp"
+    "whatsapp": "Chattez avec nous sur WhatsApp",
+    "my_account": "Mon Compte",
+    "refer_earn": "Parrainer & Gagner",
+    "rewards_terms": "Conditions du Programme de Récompenses",
+    "track_order": "Suivre la Commande",
+    "return_policy": "Politique de Retour",
+    "faq": "FAQ",
+    "newsletter_title": "Newsletter",
+    "newsletter_subtitle": "Inscrivez-vous pour recevoir des offres exclusives",
+    "newsletter_placeholder": "Votre email",
+    "newsletter_submit": "Envoyer",
+    "copyright": "© {{year}} Wincova. Tous droits réservés.",
+    "terms": "Termes et Conditions",
+    "privacy": "Politique de Confidentialité",
+    "cookies": "Cookies"
   },
   "auth": {
     "login_tab": "Connexion",

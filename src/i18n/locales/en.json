@@ -61,10 +61,28 @@
     "customer_3": "Ana Martínez"
   },
   "footer": {
+    "brand_description": "Your trusted online store. Quality products with fast shipping and satisfaction guarantee.",
+    "shop": "Shop",
+    "contact": "Contact",
+    "customer_service": "Customer Service",
     "contact_title": "Contact us — we're here 24/7",
     "phone": "Phone",
     "email": "Email",
-    "whatsapp": "Chat with us on WhatsApp"
+    "whatsapp": "Chat with us on WhatsApp",
+    "my_account": "My Account",
+    "refer_earn": "Refer & Earn",
+    "rewards_terms": "Rewards Program Terms",
+    "track_order": "Track Order",
+    "return_policy": "Return Policy",
+    "faq": "FAQ",
+    "newsletter_title": "Newsletter",
+    "newsletter_subtitle": "Subscribe to receive exclusive offers",
+    "newsletter_placeholder": "Your email",
+    "newsletter_submit": "Send",
+    "copyright": "© {{year}} Wincova. All rights reserved.",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookies"
   },
   "auth": {
     "login_tab": "Login",

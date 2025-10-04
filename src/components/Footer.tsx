@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import logoWhite from "@/assets/logo-white.png";
+import { useTranslation } from "react-i18next";
 
 export const Footer = () => {
+  const { t } = useTranslation();
+  const year = new Date().getFullYear();
   return (
     <footer className="bg-secondary text-secondary-foreground mt-16">
       <div className="container mx-auto px-4 py-12">
@@ -14,7 +17,7 @@ export const Footer = () => {
           <div className="space-y-4">
             <img src={logoWhite} alt="Wincova" className="h-10 w-auto" />
             <p className="text-sm text-secondary-foreground/80">
-              Tu tienda en línea de confianza. Productos de calidad con envío rápido y garantía de satisfacción.
+              {t('footer.brand_description')}
             </p>
             <div className="flex gap-3">
               <Button variant="ghost" size="icon" className="hover:bg-secondary/80">
@@ -34,26 +37,26 @@ export const Footer = () => {
 
           {/* Shop Links */}
           <div>
-            <h3 className="font-semibold mb-4">Comprar</h3>
+            <h3 className="font-semibold mb-4">{t('footer.shop')}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/category/men" className="hover:text-primary transition-colors">
-                  Hombres
+                  {t('nav.men')}
                 </Link>
               </li>
               <li>
                 <Link to="/category/women" className="hover:text-primary transition-colors">
-                  Mujeres
+                  {t('nav.women')}
                 </Link>
               </li>
               <li>
                 <Link to="/category/kids" className="hover:text-primary transition-colors">
-                  Niños
+                  {t('nav.kids')}
                 </Link>
               </li>
               <li>
                 <Link to="/category/electronics" className="hover:text-primary transition-colors">
-                  Electrónica
+                  {t('nav.electronics')}
                 </Link>
               </li>
             </ul>
@@ -61,36 +64,36 @@ export const Footer = () => {
 
           {/* Customer Service */}
           <div>
-            <h3 className="font-semibold mb-4">Servicio al Cliente</h3>
+            <h3 className="font-semibold mb-4">{t('footer.customer_service')}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/profile" className="hover:text-primary transition-colors">
-                  Mi Cuenta
+                  {t('footer.my_account')}
                 </Link>
               </li>
               <li>
                 <Link to="/refer-earn" className="hover:text-primary transition-colors">
-                  Programa de Referidos
+                  {t('footer.refer_earn')}
                 </Link>
               </li>
               <li>
                 <Link to="/rewards-terms" className="hover:text-primary transition-colors">
-                  Términos del Programa de Recompensas
+                  {t('footer.rewards_terms')}
                 </Link>
               </li>
               <li>
                 <Link to="/track-order" className="hover:text-primary transition-colors">
-                  Rastrear Pedido
+                  {t('footer.track_order')}
                 </Link>
               </li>
               <li>
                 <Link to="/return-policy" className="hover:text-primary transition-colors">
-                  Política de Devoluciones
+                  {t('footer.return_policy')}
                 </Link>
               </li>
               <li>
                 <Link to="/faq" className="hover:text-primary transition-colors">
-                  Preguntas Frecuentes
+                  {t('footer.faq')}
                 </Link>
               </li>
             </ul>
@@ -98,7 +101,7 @@ export const Footer = () => {
 
           {/* Contact & Newsletter */}
           <div>
-            <h3 className="font-semibold mb-4">Contacto</h3>
+            <h3 className="font-semibold mb-4">{t('footer.contact')}</h3>
             <ul className="space-y-3 text-sm mb-4">
               <li className="flex items-start gap-2">
                 <Phone className="h-4 w-4 mt-0.5" />
@@ -119,17 +122,17 @@ export const Footer = () => {
             </ul>
 
             <div className="space-y-2">
-              <h4 className="font-semibold text-sm">Newsletter</h4>
+              <h4 className="font-semibold text-sm">{t('footer.newsletter_title')}</h4>
               <p className="text-xs text-secondary-foreground/80">
-                Suscríbete para recibir ofertas exclusivas
+                {t('footer.newsletter_subtitle')}
               </p>
               <div className="flex gap-2">
                 <Input
                   type="email"
-                  placeholder="Tu email"
+                  placeholder={t('footer.newsletter_placeholder')}
                   className="bg-background"
                 />
-                <Button>Enviar</Button>
+                <Button>{t('footer.newsletter_submit')}</Button>
               </div>
             </div>
           </div>
@@ -139,16 +142,16 @@ export const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-secondary-foreground/80">
-          <p>© 2025 Wincova. Todos los derechos reservados.</p>
+          <p>{t('footer.copyright', { year })}</p>
           <div className="flex gap-6">
             <Link to="/terms" className="hover:text-primary transition-colors">
-              Términos y Condiciones
+              {t('footer.terms')}
             </Link>
             <a href="#" className="hover:text-primary transition-colors">
-              Política de Privacidad
+              {t('footer.privacy')}
             </a>
             <Link to="/cookie-policy" className="hover:text-primary transition-colors">
-              Cookies
+              {t('footer.cookies')}
             </Link>
           </div>
         </div>
