@@ -729,50 +729,50 @@ const TrackOrder = () => {
 
         {/* Information Card */}
         {orders.length === 0 && !isLoading && (
-          <Card className="bg-gradient-to-br from-primary/5 via-purple-500/5 to-primary/5 border-2 border-primary/20 shadow-xl overflow-hidden animate-scale-in">
+          <Card className="shadow-xl border-2 overflow-hidden animate-scale-in">
             <div className="h-1 bg-gradient-to-r from-primary via-purple-600 to-primary"></div>
             <CardContent className="pt-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg">
-                  <Zap className="h-6 w-6 text-white" />
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 rounded-xl bg-primary/10">
+                  <Zap className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="font-bold text-2xl">Información Importante</h3>
               </div>
               
-              <div className="grid gap-3">
-                <div className="flex gap-3 p-4 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 hover:scale-[1.02] transition-transform">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                  </div>
-                  <span className="text-sm">El número de pedido se envía por <strong>correo inmediatamente</strong> después de tu compra.</span>
+              <div className="space-y-3">
+                <div className="flex gap-3 p-4 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors">
+                  <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">
+                    El número de pedido se envía por <strong>correo inmediatamente</strong> después de tu compra.
+                  </span>
                 </div>
                 
-                <div className="flex gap-3 p-4 rounded-xl bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 hover:scale-[1.02] transition-transform">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
-                    <Clock className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <span className="text-sm">Si no encuentras el correo, <strong>revisa tu carpeta de spam</strong>.</span>
+                <div className="flex gap-3 p-4 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors">
+                  <Clock className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">
+                    Si no encuentras el correo, <strong>revisa tu carpeta de spam</strong>.
+                  </span>
                 </div>
                 
-                <div className="flex gap-3 p-4 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 hover:scale-[1.02] transition-transform">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-                    <Truck className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <span className="text-sm">Los números de rastreo se actualizan <strong>cada 24 horas</strong> una vez que el pedido es enviado.</span>
+                <div className="flex gap-3 p-4 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors">
+                  <Truck className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">
+                    Los números de rastreo se actualizan <strong>cada 24 horas</strong> una vez que el pedido es enviado.
+                  </span>
                 </div>
                 
-                <div className="flex gap-3 p-4 rounded-xl bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 hover:scale-[1.02] transition-transform">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center">
-                    <MapPin className="h-5 w-5 text-yellow-600" />
-                  </div>
-                  <span className="text-sm">Los envíos desde nuestros proveedores en <strong>US/EU tardan 2-5 días hábiles</strong>.</span>
+                <div className="flex gap-3 p-4 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors">
+                  <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">
+                    Los envíos desde nuestros proveedores en <strong>US/EU tardan 2-5 días hábiles</strong>.
+                  </span>
                 </div>
                 
-                <div className="flex gap-3 p-4 rounded-xl bg-gradient-to-r from-pink-500/10 to-red-500/10 border border-pink-500/20 hover:scale-[1.02] transition-transform">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center">
-                    <Calendar className="h-5 w-5 text-pink-600" />
-                  </div>
-                  <span className="text-sm">Si no tienes tu número de pedido, <strong>usa la búsqueda por fechas</strong>.</span>
+                <div className="flex gap-3 p-4 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors">
+                  <Calendar className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">
+                    Si no tienes tu número de pedido, <strong>usa la búsqueda por fechas</strong>.
+                  </span>
                 </div>
               </div>
             </CardContent>
