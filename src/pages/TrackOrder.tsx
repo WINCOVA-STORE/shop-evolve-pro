@@ -270,10 +270,10 @@ const TrackOrder = () => {
         };
       case "delivered":
         return {
-          icon: <CheckCircle className="h-6 w-6 text-green-600" />,
+          icon: <CheckCircle className="h-6 w-6 text-secondary" />,
           label: "Entregado",
           description: "Tu pedido ha sido entregado exitosamente.",
-          color: "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800"
+          color: "bg-secondary/5 dark:bg-secondary/20 border-secondary/20 dark:border-secondary/30"
         };
       case "cancelled":
         return {
@@ -324,9 +324,9 @@ const TrackOrder = () => {
       >
         {/* Status gradient bar */}
         <div className={`h-2 ${
-          order.status === 'delivered' ? 'bg-gradient-to-r from-green-500 to-emerald-600' :
-          order.status === 'shipped' ? 'bg-gradient-to-r from-secondary to-secondary/80' :
-          order.status === 'processing' ? 'bg-gradient-to-r from-primary to-primary/80' :
+          order.status === 'delivered' ? 'bg-gradient-to-r from-secondary to-secondary/80' :
+          order.status === 'shipped' ? 'bg-gradient-to-r from-primary to-primary/80' :
+          order.status === 'processing' ? 'bg-gradient-to-r from-secondary to-secondary/80' :
           order.status === 'cancelled' ? 'bg-gradient-to-r from-red-500 to-red-600' :
           'bg-gradient-to-r from-primary to-primary/80'
         }`}></div>
@@ -340,9 +340,9 @@ const TrackOrder = () => {
               
               {/* Icon container */}
               <div className={`relative p-3 rounded-xl shadow-lg ${
-                order.status === 'delivered' ? 'bg-gradient-to-br from-green-500 to-emerald-600' :
-                order.status === 'shipped' ? 'bg-gradient-to-br from-secondary to-secondary/90' :
-                order.status === 'processing' ? 'bg-gradient-to-br from-primary to-primary/90' :
+                order.status === 'delivered' ? 'bg-gradient-to-br from-secondary to-secondary/90' :
+                order.status === 'shipped' ? 'bg-gradient-to-br from-primary to-primary/90' :
+                order.status === 'processing' ? 'bg-gradient-to-br from-secondary to-secondary/90' :
                 order.status === 'cancelled' ? 'bg-gradient-to-br from-red-500 to-red-600' :
                 'bg-gradient-to-br from-primary to-primary/90'
               }`}>
@@ -358,7 +358,7 @@ const TrackOrder = () => {
                   {statusInfo.label}
                 </h2>
                 {order.status === 'delivered' && (
-                  <span className="px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-semibold">
+                  <span className="px-3 py-1 rounded-full bg-secondary/10 dark:bg-secondary/20 text-secondary-foreground text-xs font-semibold border border-secondary/20">
                     Completado
                   </span>
                 )}
@@ -440,12 +440,12 @@ const TrackOrder = () => {
                 </span>
                 <span className="font-semibold">{formatDate(order.created_at)}</span>
               </div>
-              <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 border-2 border-orange-200 dark:border-orange-800">
+              <div className="flex justify-between items-center p-4 rounded-xl bg-muted/30 dark:bg-muted/10 border-2 border-muted">
                 <span className="text-base font-semibold flex items-center gap-2 text-foreground">
                   <span className="text-2xl">💰</span>
                   Total Pagado
                 </span>
-                <span className="font-bold text-3xl text-orange-600 dark:text-orange-400">
+                <span className="font-bold text-3xl text-primary">
                   ${order.total.toFixed(2)}
                 </span>
               </div>
@@ -564,8 +564,8 @@ const TrackOrder = () => {
               <Truck className="h-4 w-4 text-primary" />
               <span className="text-sm font-semibold">Envío 2-5 días</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30">
-              <CheckCircle className="h-4 w-4 text-green-600" />
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/30">
+              <CheckCircle className="h-4 w-4 text-secondary-foreground" />
               <span className="text-sm font-semibold">Actualización 24h</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/30">
@@ -718,9 +718,9 @@ const TrackOrder = () => {
         {orders.length > 0 && (
           <div className="space-y-6 animate-fade-in">
             {orders.length > 1 && (
-              <div className="text-center p-5 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 rounded-xl border-2 border-primary/20 shadow-lg">
+              <div className="text-center p-5 bg-secondary/5 dark:bg-secondary/10 rounded-xl border-2 border-secondary/20 shadow-lg">
                 <div className="flex items-center justify-center gap-3 mb-2">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+                  <CheckCircle className="h-6 w-6 text-secondary" />
                   <p className="text-lg font-bold">
                     ¡Encontrado! {orders.length} pedidos
                   </p>
@@ -749,7 +749,7 @@ const TrackOrder = () => {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button 
                     asChild 
-                    className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                    className="flex-1 bg-secondary hover:bg-secondary/90 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
                   >
                     <a href="tel:6157289932">
                       📞 Llamar: 615-728-9932
