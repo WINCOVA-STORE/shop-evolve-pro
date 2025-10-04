@@ -17,18 +17,48 @@
   },
   "hero": {
     "title": "Explore nossas categorias — encontre o que combina com você",
-    "cta": "Veja Como Você Ganha"
+    "subtitle": "Descubra as melhores ofertas em produtos de qualidade com entrega rápida",
+    "cta": "Veja Como Você Ganha",
+    "see_offers": "Ver Ofertas",
+    "new_products_badge": "Novos Produtos Toda Semana"
   },
   "categories": {
     "title": "Comprar por Categoria"
   },
   "products": {
     "featured": "Produtos em Destaque",
+    "featured_subtitle": "Os produtos mais populares da temporada",
     "no_products": "Nenhum produto disponível",
     "add_to_cart": "Adicionar ao Carrinho",
     "sale": "PROMOÇÃO",
     "new": "NOVO",
-    "reviews": "avaliações"
+    "reviews": "avaliações",
+    "view_all": "Ver Todos"
+  },
+  "benefits": {
+    "free_shipping": "Frete Grátis",
+    "free_shipping_desc": "Em compras acima de $50",
+    "secure_purchase": "Compra Segura",
+    "secure_purchase_desc": "100% Protegida",
+    "returns": "Devoluções",
+    "returns_desc": "30 dias grátis",
+    "rewards": "Recompensas",
+    "rewards_desc": "Em cada compra"
+  },
+  "special_offer": {
+    "badge": "Oferta Especial",
+    "title": "Até 50% de Desconto!",
+    "description": "Em produtos selecionados. Aproveite esta oportunidade única.",
+    "cta": "Comprar Agora"
+  },
+  "testimonials": {
+    "title": "O Que Nossos Clientes Dizem",
+    "testimonial_1": "Excelente serviço e produtos de qualidade. A entrega foi muito rápida.",
+    "testimonial_2": "Adoro o programa de recompensas. Economizei muito dinheiro.",
+    "testimonial_3": "A melhor experiência de compra online. Muito recomendado.",
+    "customer_1": "Maria Silva",
+    "customer_2": "Carlos Santos",
+    "customer_3": "Ana Costa"
   },
   "footer": {
     "contact_title": "Fale conosco — estamos aqui 24/7",

@@ -28,20 +28,20 @@ const Index = () => {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200')] bg-cover bg-center opacity-10"></div>
         <div className="container mx-auto px-4 text-center space-y-6 relative z-10">
           <Badge variant="secondary" className="mb-4">
-            Nuevos Productos Cada Semana
+            {t('hero.new_products_badge')}
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold">
             {t('hero.title')}
           </h1>
           <p className="text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto">
-            Descubre las mejores ofertas en productos de calidad con envío rápido
+            {t('hero.subtitle')}
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Button size="lg" variant="secondary" className="text-lg px-8">
               {t('hero.cta')}
             </Button>
             <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground/10">
-              Ver Ofertas
+              {t('hero.see_offers')}
             </Button>
           </div>
         </div>
@@ -54,29 +54,29 @@ const Index = () => {
             <div className="flex items-center gap-3">
               <Truck className="h-10 w-10 text-primary" />
               <div>
-                <h3 className="font-semibold">Envío Gratis</h3>
-                <p className="text-sm text-muted-foreground">En compras +$50</p>
+                <h3 className="font-semibold">{t('benefits.free_shipping')}</h3>
+                <p className="text-sm text-muted-foreground">{t('benefits.free_shipping_desc')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Shield className="h-10 w-10 text-primary" />
               <div>
-                <h3 className="font-semibold">Compra Segura</h3>
-                <p className="text-sm text-muted-foreground">100% Protegida</p>
+                <h3 className="font-semibold">{t('benefits.secure_purchase')}</h3>
+                <p className="text-sm text-muted-foreground">{t('benefits.secure_purchase_desc')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Package className="h-10 w-10 text-primary" />
               <div>
-                <h3 className="font-semibold">Devoluciones</h3>
-                <p className="text-sm text-muted-foreground">30 días gratis</p>
+                <h3 className="font-semibold">{t('benefits.returns')}</h3>
+                <p className="text-sm text-muted-foreground">{t('benefits.returns_desc')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Gift className="h-10 w-10 text-primary" />
               <div>
-                <h3 className="font-semibold">Recompensas</h3>
-                <p className="text-sm text-muted-foreground">En cada compra</p>
+                <h3 className="font-semibold">{t('benefits.rewards')}</h3>
+                <p className="text-sm text-muted-foreground">{t('benefits.rewards_desc')}</p>
               </div>
             </div>
           </div>
@@ -103,9 +103,9 @@ const Index = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-3xl font-bold text-foreground">{t('products.featured')}</h2>
-            <p className="text-muted-foreground mt-2">Los productos más populares de la temporada</p>
+            <p className="text-muted-foreground mt-2">{t('products.featured_subtitle')}</p>
           </div>
-          <Button variant="outline">Ver Todos</Button>
+          <Button variant="outline">{t('products.view_all')}</Button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {isLoading ? (
@@ -134,16 +134,16 @@ const Index = () => {
           <div className="absolute top-0 right-0 w-1/2 h-full bg-[url('https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=800')] bg-cover bg-center opacity-20"></div>
           <div className="relative z-10 p-12 md:p-16">
             <Badge variant="secondary" className="mb-4">
-              Oferta Especial
+              {t('special_offer.badge')}
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              ¡Hasta 50% de Descuento!
+              {t('special_offer.title')}
             </h2>
             <p className="text-xl mb-6 max-w-md">
-              En productos seleccionados. Aprovecha esta oportunidad única.
+              {t('special_offer.description')}
             </p>
             <Button size="lg" variant="secondary">
-              Comprar Ahora
+              {t('special_offer.cta')}
             </Button>
           </div>
         </Card>
@@ -151,23 +151,23 @@ const Index = () => {
 
       {/* Testimonials */}
       <section className="container mx-auto px-4 py-12">
-        <h2 className="text-3xl font-bold text-center mb-12">Lo Que Dicen Nuestros Clientes</h2>
+        <h2 className="text-3xl font-bold text-center mb-12">{t('testimonials.title')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
-              name: "María González",
+              name: t('testimonials.customer_1'),
               rating: 5,
-              comment: "Excelente servicio y productos de calidad. El envío fue muy rápido.",
+              comment: t('testimonials.testimonial_1'),
             },
             {
-              name: "Carlos Rodríguez",
+              name: t('testimonials.customer_2'),
               rating: 5,
-              comment: "Me encanta el programa de recompensas. He ahorrado mucho dinero.",
+              comment: t('testimonials.testimonial_2'),
             },
             {
-              name: "Ana Martínez",
+              name: t('testimonials.customer_3'),
               rating: 5,
-              comment: "La mejor experiencia de compra online. Muy recomendado.",
+              comment: t('testimonials.testimonial_3'),
             },
           ].map((testimonial, index) => (
             <Card key={index} className="p-6">

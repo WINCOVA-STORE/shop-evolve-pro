@@ -17,18 +17,48 @@
   },
   "hero": {
     "title": "Explorez nos catégories — trouvez ce qui vous convient",
-    "cta": "Voir Comment Vous Gagnez"
+    "subtitle": "Découvrez les meilleures offres sur des produits de qualité avec expédition rapide",
+    "cta": "Voir Comment Vous Gagnez",
+    "see_offers": "Voir les Offres",
+    "new_products_badge": "Nouveaux Produits Chaque Semaine"
   },
   "categories": {
     "title": "Acheter par Catégorie"
   },
   "products": {
     "featured": "Produits en Vedette",
+    "featured_subtitle": "Les produits les plus populaires de la saison",
     "no_products": "Aucun produit disponible",
     "add_to_cart": "Ajouter au Panier",
     "sale": "PROMO",
     "new": "NOUVEAU",
-    "reviews": "avis"
+    "reviews": "avis",
+    "view_all": "Voir Tout"
+  },
+  "benefits": {
+    "free_shipping": "Livraison Gratuite",
+    "free_shipping_desc": "Sur commandes +50$",
+    "secure_purchase": "Achat Sécurisé",
+    "secure_purchase_desc": "100% Protégé",
+    "returns": "Retours",
+    "returns_desc": "30 jours gratuits",
+    "rewards": "Récompenses",
+    "rewards_desc": "À chaque achat"
+  },
+  "special_offer": {
+    "badge": "Offre Spéciale",
+    "title": "Jusqu'à 50% de Réduction!",
+    "description": "Sur une sélection de produits. Profitez de cette opportunité unique.",
+    "cta": "Acheter Maintenant"
+  },
+  "testimonials": {
+    "title": "Ce Que Disent Nos Clients",
+    "testimonial_1": "Excellent service et produits de qualité. L'expédition a été très rapide.",
+    "testimonial_2": "J'adore le programme de récompenses. J'ai économisé beaucoup d'argent.",
+    "testimonial_3": "La meilleure expérience d'achat en ligne. Hautement recommandé.",
+    "customer_1": "Marie Dubois",
+    "customer_2": "Pierre Martin",
+    "customer_3": "Sophie Lefebvre"
   },
   "footer": {
     "contact_title": "Contactez-nous — nous sommes là 24/7",

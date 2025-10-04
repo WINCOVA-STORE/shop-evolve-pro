@@ -16,24 +16,54 @@
     "refer_earn": "Refiere y Gana"
   },
   "hero": {
-    "title": "Explora nuestras categorías — encuentra lo que más te guste",
-    "cta": "Ve Cómo Ganar"
+    "title": "Explora nuestras categorías — encuentra lo que más te convenga",
+    "subtitle": "Descubre las mejores ofertas en productos de calidad con envío rápido",
+    "cta": "Ver Cómo Ganas",
+    "see_offers": "Ver Ofertas",
+    "new_products_badge": "Nuevos Productos Cada Semana"
   },
   "categories": {
     "title": "Comprar por Categoría"
   },
   "products": {
     "featured": "Productos Destacados",
+    "featured_subtitle": "Los productos más populares de la temporada",
     "no_products": "No hay productos disponibles",
     "add_to_cart": "Agregar al Carrito",
     "sale": "OFERTA",
     "new": "NUEVO",
-    "reviews": "reseñas"
+    "reviews": "reseñas",
+    "view_all": "Ver Todos"
+  },
+  "benefits": {
+    "free_shipping": "Envío Gratis",
+    "free_shipping_desc": "En compras +$50",
+    "secure_purchase": "Compra Segura",
+    "secure_purchase_desc": "100% Protegida",
+    "returns": "Devoluciones",
+    "returns_desc": "30 días gratis",
+    "rewards": "Recompensas",
+    "rewards_desc": "En cada compra"
+  },
+  "special_offer": {
+    "badge": "Oferta Especial",
+    "title": "¡Hasta 50% de Descuento!",
+    "description": "En productos seleccionados. Aprovecha esta oportunidad única.",
+    "cta": "Comprar Ahora"
+  },
+  "testimonials": {
+    "title": "Lo Que Dicen Nuestros Clientes",
+    "testimonial_1": "Excelente servicio y productos de calidad. El envío fue muy rápido.",
+    "testimonial_2": "Me encanta el programa de recompensas. He ahorrado mucho dinero.",
+    "testimonial_3": "La mejor experiencia de compra online. Muy recomendado.",
+    "customer_1": "María González",
+    "customer_2": "Carlos Rodríguez",
+    "customer_3": "Ana Martínez"
   },
   "footer": {
     "contact_title": "Contáctanos — estamos aquí 24/7",
     "phone": "Teléfono",
-    "email": "Email",
+    "email": "Correo",
     "whatsapp": "Chatea con nosotros en WhatsApp"
   },
   "auth": {
@@ -42,8 +72,8 @@
     "login_title": "Iniciar Sesión",
     "login_description": "Ingresa tus credenciales para acceder a tu cuenta",
     "signup_title": "Crear Cuenta",
-    "signup_description": "Regístrate para empezar a comprar",
-    "email": "Email",
+    "signup_description": "Regístrate para comenzar a comprar",
+    "email": "Correo Electrónico",
     "password": "Contraseña",
     "full_name": "Nombre Completo",
     "login_button": "Iniciar Sesión",
@@ -57,10 +87,10 @@
     "title": "Carrito de Compras",
     "empty": "Tu carrito está vacío",
     "subtotal": "Subtotal",
-    "tax": "Impuestos",
+    "tax": "Impuesto",
     "shipping": "Envío",
     "total": "Total",
-    "checkout": "Proceder al Pago",
+    "checkout": "Pagar",
     "continue_shopping": "Seguir Comprando",
     "remove": "Eliminar",
     "quantity": "Cantidad"

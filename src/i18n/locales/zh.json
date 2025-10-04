@@ -17,18 +17,48 @@
   },
   "hero": {
     "title": "浏览我们的类别 — 找到最适合您的",
-    "cta": "了解如何赢取奖励"
+    "subtitle": "发现优质产品的最佳优惠，快速配送",
+    "cta": "了解如何赢取奖励",
+    "see_offers": "查看优惠",
+    "new_products_badge": "每周新品"
   },
   "categories": {
     "title": "按类别购物"
   },
   "products": {
     "featured": "精选产品",
+    "featured_subtitle": "本季最受欢迎的产品",
     "no_products": "暂无产品",
     "add_to_cart": "加入购物车",
     "sale": "促销",
     "new": "新品",
-    "reviews": "评价"
+    "reviews": "评价",
+    "view_all": "查看全部"
+  },
+  "benefits": {
+    "free_shipping": "免费配送",
+    "free_shipping_desc": "订单满$50",
+    "secure_purchase": "安全购买",
+    "secure_purchase_desc": "100%保护",
+    "returns": "退货",
+    "returns_desc": "30天免费",
+    "rewards": "奖励",
+    "rewards_desc": "每次购买"
+  },
+  "special_offer": {
+    "badge": "特别优惠",
+    "title": "最高50%折扣！",
+    "description": "精选产品。把握这个独特的机会。",
+    "cta": "立即购买"
+  },
+  "testimonials": {
+    "title": "客户评价",
+    "testimonial_1": "优质的服务和产品。配送非常快。",
+    "testimonial_2": "我喜欢奖励计划。省了很多钱。",
+    "testimonial_3": "最好的在线购物体验。强烈推荐。",
+    "customer_1": "李娜",
+    "customer_2": "王强",
+    "customer_3": "张敏"
   },
   "footer": {
     "contact_title": "联系我们 — 全天候在线",

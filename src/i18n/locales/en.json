@@ -17,18 +17,48 @@
   },
   "hero": {
     "title": "Explore our categories — find what suits you best",
-    "cta": "See How You Win"
+    "subtitle": "Discover the best deals on quality products with fast shipping",
+    "cta": "See How You Win",
+    "see_offers": "View Offers",
+    "new_products_badge": "New Products Every Week"
   },
   "categories": {
     "title": "Shop by Category"
   },
   "products": {
     "featured": "Featured Products",
+    "featured_subtitle": "The most popular products of the season",
     "no_products": "No products available",
     "add_to_cart": "Add to Cart",
     "sale": "SALE",
     "new": "NEW",
-    "reviews": "reviews"
+    "reviews": "reviews",
+    "view_all": "View All"
+  },
+  "benefits": {
+    "free_shipping": "Free Shipping",
+    "free_shipping_desc": "On orders over $50",
+    "secure_purchase": "Secure Purchase",
+    "secure_purchase_desc": "100% Protected",
+    "returns": "Returns",
+    "returns_desc": "30 days free",
+    "rewards": "Rewards",
+    "rewards_desc": "On every purchase"
+  },
+  "special_offer": {
+    "badge": "Special Offer",
+    "title": "Up to 50% Off!",
+    "description": "On selected products. Take advantage of this unique opportunity.",
+    "cta": "Shop Now"
+  },
+  "testimonials": {
+    "title": "What Our Customers Say",
+    "testimonial_1": "Excellent service and quality products. Shipping was very fast.",
+    "testimonial_2": "I love the rewards program. I've saved a lot of money.",
+    "testimonial_3": "The best online shopping experience. Highly recommended.",
+    "customer_1": "Maria González",
+    "customer_2": "Carlos Rodríguez",
+    "customer_3": "Ana Martínez"
   },
   "footer": {
     "contact_title": "Contact us — we're here 24/7",
