@@ -3,7 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Package, AlertCircle, CheckCircle, XCircle, Mail, Phone } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect } from "react";
 
 const ReturnPolicy = () => {
@@ -35,7 +35,7 @@ const ReturnPolicy = () => {
             y reembolsos para asegurar una experiencia de compra transparente y justa.
           </p>
           <p className="text-sm text-muted-foreground mt-4">
-            Última actualización: Enero 2025
+            Última actualización: Octubre 2025
           </p>
         </div>
 
@@ -47,7 +47,7 @@ const ReturnPolicy = () => {
               <div>
                 <h3 className="font-bold text-lg mb-2">Nuestro Modelo de Negocio</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Wincova trabaja con una red de proveedores certificados en Estados Unidos y Europa a través de Spocket. 
+                  Wincova trabaja con una red de proveedores certificados en Estados Unidos y Europa. 
                   Esto nos permite ofrecerte productos de calidad con envíos rápidos (2-5 días). Como cada proveedor tiene 
                   sus propias políticas, hemos establecido lineamientos claros para proteger tus derechos como cliente.
                 </p>
@@ -226,6 +226,7 @@ const ReturnPolicy = () => {
                   <div className="space-y-1 text-sm">
                     <p>📧 Email: <a href="mailto:ventas@wincova.com" className="text-primary hover:underline">ventas@wincova.com</a></p>
                     <p>📱 Teléfono: <a href="tel:6157289932" className="text-primary hover:underline">615-728-9932</a></p>
+                    <p>📦 <Link to="/faq" className="text-primary hover:underline">Ver Preguntas Frecuentes</Link></p>
                   </div>
                 </div>
               </div>

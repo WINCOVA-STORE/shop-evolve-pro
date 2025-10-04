@@ -71,8 +71,9 @@ const FAQ = () => {
               <AccordionItem value="shipping-3">
                 <AccordionTrigger>¿Cuánto tarda la entrega?</AccordionTrigger>
                 <AccordionContent>
-                  Los tiempos de entrega varían según la ubicación y el transportista. Generalmente, el envío estándar toma de 3 a 7 días hábiles.
-                  Una vez enviado, recibirás un número de seguimiento para monitorear tu pedido.
+                  Los tiempos de entrega varían según la ubicación del proveedor y tu dirección. 
+                  Generalmente, los envíos desde Estados Unidos y Europa toman de 2 a 5 días hábiles.
+                  Una vez enviado, recibirás un número de seguimiento para <Link to="/track-order" className="text-primary hover:underline">monitorear tu pedido</Link>.
                 </AccordionContent>
               </AccordionItem>
 
@@ -156,8 +157,11 @@ const FAQ = () => {
               <AccordionItem value="order-3">
                 <AccordionTrigger>¿Cómo rastreo mi pedido?</AccordionTrigger>
                 <AccordionContent>
-                  Visita nuestra página de seguimiento de pedidos e ingresa tu número de pedido y el correo electrónico asociado a la compra.
-                  Podrás verificar el estado de tu pedido en tiempo real.
+                  <p className="mb-2">
+                    Recibirás un correo electrónico con el número de rastreo una vez que tu pedido sea enviado. 
+                    También puedes visitar nuestra <Link to="/track-order" className="text-primary hover:underline font-semibold">página de rastreo de pedidos</Link> e 
+                    ingresar tu número de pedido y correo electrónico para verificar el estado en tiempo real.
+                  </p>
                 </AccordionContent>
               </AccordionItem>
 
@@ -198,14 +202,18 @@ const FAQ = () => {
               <AccordionItem value="return-1">
                 <AccordionTrigger>¿Cómo devuelvo un producto?</AccordionTrigger>
                 <AccordionContent>
-                  <p className="mb-2">Si no estás satisfecho, puedes devolverlo dentro de 30 días. Sigue estos pasos:</p>
+                  <p className="mb-2">Debes reportar cualquier problema dentro de 15 días de recibir tu pedido. Sigue estos pasos:</p>
                   <ol className="list-decimal list-inside space-y-2">
-                    <li><strong>Solicita la devolución:</strong> Ve a gestión de devoluciones e ingresa tu número de pedido y selecciona la razón de devolución.</li>
+                    <li><strong>Contáctanos inmediatamente:</strong> Envía un correo a <a href="mailto:ventas@wincova.com" className="text-primary hover:underline">ventas@wincova.com</a> o llama al <a href="tel:6157289932" className="text-primary hover:underline">615-728-9932</a> con tu número de pedido.</li>
+                    <li><strong>Proporciona evidencia:</strong> Envía fotos claras del problema (producto dañado, incorrecto, defectuoso, etc.).</li>
                     <li><strong>Recibe la etiqueta de devolución:</strong> Si es elegible, te enviaremos por correo una etiqueta de envío de devolución.</li>
-                    <li><strong>Empaca el producto:</strong> Asegúrate de que se devuelva en su empaque original y sin daños.</li>
-                    <li><strong>Envía el paquete:</strong> Deja el paquete en la oficina del transportista designado o programa una recogida.</li>
+                    <li><strong>Empaca el producto:</strong> Asegúrate de que se devuelva en su empaque original y sin usar.</li>
+                    <li><strong>Envía el paquete:</strong> Usa la etiqueta proporcionada y envíanos el número de rastreo.</li>
                     <li><strong>Procesamos tu reembolso:</strong> Una vez que recibamos el producto y verifiquemos su condición, procesaremos tu reembolso dentro de 5 a 10 días hábiles.</li>
                   </ol>
+                  <p className="mt-3 text-sm">
+                    Para más detalles, consulta nuestra <Link to="/return-policy" className="text-primary hover:underline font-semibold">Política de Devoluciones completa</Link>.
+                  </p>
                 </AccordionContent>
               </AccordionItem>
 
@@ -213,12 +221,15 @@ const FAQ = () => {
                 <AccordionTrigger>Condiciones generales para devoluciones y cambios</AccordionTrigger>
                 <AccordionContent>
                   <ul className="list-disc list-inside space-y-1">
-                    <li>Puedes devolver productos dentro de 30 días de la entrega.</li>
+                    <li>Debes reportar problemas dentro de 15 días de recibir el producto.</li>
                     <li>Los productos deben estar sin usar, en su empaque original y con todas las etiquetas adjuntas.</li>
                     <li>Algunos productos no son elegibles para devolución (ver lista de excepciones abajo).</li>
                     <li>No ofrecemos cambios directos, pero puedes devolver el producto y hacer un nuevo pedido.</li>
                     <li>Si el error fue nuestro (producto incorrecto o defectuoso), cubriremos los costos de envío de devolución.</li>
                   </ul>
+                  <p className="mt-3 text-sm">
+                    Consulta nuestra <Link to="/return-policy" className="text-primary hover:underline font-semibold">Política de Devoluciones</Link> para información detallada.
+                  </p>
                 </AccordionContent>
               </AccordionItem>
 
@@ -226,13 +237,15 @@ const FAQ = () => {
                 <AccordionTrigger>Razones válidas para una devolución</AccordionTrigger>
                 <AccordionContent>
                   <ul className="list-disc list-inside space-y-1">
-                    <li>Producto defectuoso o dañado</li>
+                    <li>Producto defectuoso o dañado durante el transporte</li>
                     <li>Artículo incorrecto recibido</li>
                     <li>El producto no coincide con la descripción</li>
-                    <li>Problemas de talla o ajuste</li>
                     <li>Partes o accesorios faltantes</li>
-                    <li>Cambio de opinión (el cliente es responsable del costo de envío de devolución)</li>
+                    <li>Cambio de opinión (depende del proveedor; el cliente es responsable del costo de envío de devolución)</li>
                   </ul>
+                  <p className="mt-3 text-sm">
+                    <strong>Nota:</strong> Lee nuestra <Link to="/return-policy" className="text-primary hover:underline font-semibold">Política de Devoluciones</Link> para entender todos los detalles y condiciones.
+                  </p>
                 </AccordionContent>
               </AccordionItem>
 
@@ -280,7 +293,9 @@ const FAQ = () => {
               <AccordionItem value="refund-3">
                 <AccordionTrigger>¿Se reembolsarán mis costos de envío?</AccordionTrigger>
                 <AccordionContent>
-                  Solo si el producto era defectuoso o incorrecto. En otros casos, el cliente es responsable de los costos de envío de devolución.
+                  Sí, si el producto era defectuoso, incorrecto o no coincide con la descripción. 
+                  En casos de cambio de opinión, el cliente es responsable de los costos de envío de devolución.
+                  Para más información, consulta nuestra <Link to="/return-policy" className="text-primary hover:underline font-semibold">Política de Devoluciones</Link>.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
