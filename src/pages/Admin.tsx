@@ -10,6 +10,7 @@ import { Loader2, Package, ShoppingBag, Users, DollarSign, ArrowLeft, Shield } f
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { useTranslation } from "react-i18next";
 
 interface Stats {
   totalOrders: number;
@@ -33,6 +34,7 @@ interface Order {
 }
 
 const Admin = () => {
+  const { t, i18n } = useTranslation();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -75,8 +77,8 @@ const Admin = () => {
         fetchAdminData();
       } else {
         toast({
-          title: "Acceso Denegado",
-          description: "No tienes permisos de administrador",
+          title: t("admin.access_denied"),
+          description: t("admin.no_permissions"),
           variant: "destructive",
         });
         navigate("/");
@@ -116,7 +118,7 @@ const Admin = () => {
       console.error("Error fetching admin data:", error);
       toast({
         title: "Error",
-        description: "No se pudieron cargar los datos",
+        description: t("admin.error_loading"),
         variant: "destructive",
       });
     } finally {
@@ -156,13 +158,13 @@ const Admin = () => {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Shield className="h-6 w-6 text-primary" />
-              <h1 className="text-3xl font-bold">Panel de Administración</h1>
+              <h1 className="text-3xl font-bold">{t("admin.title")}</h1>
             </div>
-            <p className="text-muted-foreground">Gestiona tu tienda</p>
+            <p className="text-muted-foreground">{t("admin.subtitle")}</p>
           </div>
           <Button variant="outline" onClick={() => navigate("/")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a la tienda
+            {t("admin.back_to_store")}
           </Button>
         </div>
 
@@ -170,7 +172,7 @@ const Admin = () => {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Órdenes</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("admin.total_orders")}</CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -180,7 +182,7 @@ const Admin = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Ingresos Totales</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("admin.total_revenue")}</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -190,7 +192,7 @@ const Admin = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Productos</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("admin.products")}</CardTitle>
               <ShoppingBag className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -200,7 +202,7 @@ const Admin = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Usuarios</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("admin.users")}</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -211,24 +213,24 @@ const Admin = () => {
 
         <Tabs defaultValue="orders" className="space-y-6">
           <TabsList>
-            <TabsTrigger value="orders">Órdenes Recientes</TabsTrigger>
-            <TabsTrigger value="products">Productos</TabsTrigger>
-            <TabsTrigger value="users">Usuarios</TabsTrigger>
+            <TabsTrigger value="orders">{t("admin.recent_orders")}</TabsTrigger>
+            <TabsTrigger value="products">{t("admin.products")}</TabsTrigger>
+            <TabsTrigger value="users">{t("admin.users")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="orders">
             <Card>
               <CardHeader>
-                <CardTitle>Órdenes Recientes</CardTitle>
+                <CardTitle>{t("admin.recent_orders")}</CardTitle>
                 <CardDescription>
-                  Últimas 10 órdenes realizadas
+                  {t("admin.recent_orders_desc")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {recentOrders.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No hay órdenes aún</p>
+                    <p>{t("admin.no_orders")}</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -238,10 +240,10 @@ const Admin = () => {
                           <div>
                             <p className="font-semibold">{order.order_number}</p>
                             <p className="text-sm text-muted-foreground">
-                              {order.profiles?.email || order.profiles?.full_name || "Usuario"}
+                              {order.profiles?.email || order.profiles?.full_name || t("admin.user_label")}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {new Date(order.created_at).toLocaleDateString('es-ES', {
+                              {new Date(order.created_at).toLocaleDateString(i18n.language, {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric',
@@ -270,16 +272,16 @@ const Admin = () => {
           <TabsContent value="products">
             <Card>
               <CardHeader>
-                <CardTitle>Gestión de Productos</CardTitle>
+                <CardTitle>{t("admin.product_management")}</CardTitle>
                 <CardDescription>
-                  Administra el catálogo de productos
+                  {t("admin.product_management_desc")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-8 text-muted-foreground">
                   <ShoppingBag className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Funcionalidad en desarrollo</p>
-                  <p className="text-sm mt-2">Próximamente podrás agregar y editar productos aquí</p>
+                  <p>{t("admin.coming_soon")}</p>
+                  <p className="text-sm mt-2">{t("admin.coming_soon_products")}</p>
                 </div>
               </CardContent>
             </Card>
@@ -288,16 +290,16 @@ const Admin = () => {
           <TabsContent value="users">
             <Card>
               <CardHeader>
-                <CardTitle>Gestión de Usuarios</CardTitle>
+                <CardTitle>{t("admin.user_management")}</CardTitle>
                 <CardDescription>
-                  Administra usuarios y permisos
+                  {t("admin.user_management_desc")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-8 text-muted-foreground">
                   <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Funcionalidad en desarrollo</p>
-                  <p className="text-sm mt-2">Próximamente podrás gestionar usuarios aquí</p>
+                  <p>{t("admin.coming_soon")}</p>
+                  <p className="text-sm mt-2">{t("admin.coming_soon_users")}</p>
                 </div>
               </CardContent>
             </Card>
