@@ -50,7 +50,7 @@ const RewardsTerms = () => {
             </CardHeader>
             <CardContent className="space-y-4 text-foreground/90 leading-relaxed">
               <p>
-                El Programa de Recompensas de Wincova es un sistema de beneficios diseñado para premiar tus compras y participación en la comunidad. Por cada acción válida que realices, ganas puntos que pueden canjearse por descuentos en futuras compras.
+                El Programa de Recompensas de Wincova es un sistema de beneficios diseñado para premiar tus compras y participación en la comunidad. Por cada acción válida que realices, ganas puntos que puedes usar para pagar parte de tus futuras compras.
               </p>
               <p className="font-semibold text-primary">
                 ¡Mientras más participas, más ganas!
@@ -86,8 +86,8 @@ const RewardsTerms = () => {
                   <li>Bonus de bienvenida: 100 puntos al registrarte</li>
                 </ul>
               </div>
-              <p className="text-sm text-muted-foreground">
-                👉 Consulta la lista completa de acciones en la sección "Comparte y Gana" de tu perfil.
+              <p className="text-sm text-muted-foreground mt-2">
+                👉 Consulta la lista completa de acciones y sus puntos correspondientes en la sección "Comparte y Gana" de tu perfil.
               </p>
             </CardContent>
           </Card>
@@ -97,23 +97,23 @@ const RewardsTerms = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Gift className="h-6 w-6 text-primary" />
-                ¿Cuánto valen mis puntos?
+                ¿Cómo uso mis puntos?
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-foreground/90 leading-relaxed">
               <p>
-                <strong>100 puntos = $1 dólar de descuento</strong> en tus compras.
+                Tus puntos acumulados se pueden <strong>aplicar al pago de tus compras</strong> durante el proceso de checkout.
               </p>
               <p>
-                Por ejemplo, si tienes 1,000 puntos acumulados, puedes canjearlos por $10 de descuento en tu próxima compra.
+                Simplemente selecciona cuántos puntos deseas usar y verás cómo se reduce el monto a pagar. Es fácil, rápido y automático.
               </p>
               <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-lg p-4 mt-4">
                 <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
-                  ⚠️ <strong>Límite de uso:</strong> Puedes usar hasta el 2% del monto de tu compra en puntos. Esto asegura que el programa sea sustentable para todos.
+                  ⚠️ <strong>Límite de uso:</strong> Puedes usar puntos para cubrir hasta el 2% del valor total de tu compra. Esto asegura que el programa sea justo y sustentable para todos.
                 </p>
               </div>
               <p className="text-sm text-muted-foreground">
-                Ejemplo: En una compra de $100, puedes usar hasta 200 puntos (equivalente a $2 de descuento).
+                El valor de cada punto y las condiciones de canje pueden variar. Siempre verás el valor aplicado antes de confirmar tu compra.
               </p>
             </CardContent>
           </Card>
@@ -215,7 +215,7 @@ const RewardsTerms = () => {
                 <li>No se pueden combinar con otros cupones o promociones</li>
                 <li>No son válidos para compra de tarjetas de regalo</li>
                 <li>No se pueden canjear por efectivo</li>
-                <li>Deben usarse en compras superiores a $10</li>
+                <li>Deben usarse en compras que superen el monto mínimo establecido</li>
               </ul>
               <p className="text-sm text-muted-foreground mt-4">
                 Estas restricciones nos ayudan a mantener el programa justo y sustentable para todos.
