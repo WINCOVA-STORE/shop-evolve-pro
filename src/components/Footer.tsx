@@ -132,9 +132,9 @@ export const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-secondary-foreground/80">
           <p>© 2025 Wincova. Todos los derechos reservados.</p>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-primary transition-colors">
+            <Link to="/rewards-terms" className="hover:text-primary transition-colors">
               Términos y Condiciones
-            </a>
+            </Link>
             <a href="#" className="hover:text-primary transition-colors">
               Política de Privacidad
             </a>

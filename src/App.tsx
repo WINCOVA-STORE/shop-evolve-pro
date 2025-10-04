@@ -14,6 +14,7 @@ import Admin from "./pages/Admin";
 import ProductDetail from "./pages/ProductDetail";
 import Category from "./pages/Category";
 import Search from "./pages/Search";
+import RewardsTerms from "./pages/RewardsTerms";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/category/:slug" element={<Category />} />
               <Route path="/search" element={<Search />} />
+              <Route path="/rewards-terms" element={<RewardsTerms />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
