@@ -18,60 +18,76 @@ export const LanguageCurrencySelector = () => {
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
     { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'pt', name: 'Português', flag: '🇧🇷' },
+    { code: 'zh', name: '中文', flag: '🇨🇳' },
   ];
 
-  const currencies: { code: Currency; name: string }[] = [
-    { code: 'USD', name: t('currency.usd') },
-    { code: 'EUR', name: t('currency.eur') },
-    { code: 'GBP', name: t('currency.gbp') },
-    { code: 'MXN', name: t('currency.mxn') },
+  // Only USD visible, but keep others in code for future
+  const currencies: { code: Currency; name: string; visible: boolean }[] = [
+    { code: 'USD', name: t('currency.usd'), visible: true },
+    { code: 'EUR', name: t('currency.eur'), visible: false },
+    { code: 'GBP', name: t('currency.gbp'), visible: false },
+    { code: 'MXN', name: t('currency.mxn'), visible: false },
   ];
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
   return (
-    <div className="flex items-center gap-2">
-      {/* Language Selector */}
+    <div className="flex items-center gap-1">
+      {/* Language Selector with Flags */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-secondary-foreground hover:bg-secondary/80">
-            <Globe className="h-4 w-4 mr-2" />
-            <span className="text-lg mr-1">{currentLanguage.flag}</span>
-            {currentLanguage.code.toUpperCase()}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-secondary-foreground hover:bg-secondary/80 hover:scale-105 transition-all gap-1 px-2"
+          >
+            <Globe className="h-4 w-4" />
+            <span className="text-xl">{currentLanguage.flag}</span>
+            <span className="hidden sm:inline text-xs font-semibold">{currentLanguage.code.toUpperCase()}</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Language</DropdownMenuLabel>
+        <DropdownMenuContent align="end" className="bg-background z-50">
+          <DropdownMenuLabel className="text-xs">Language / Idioma / 语言</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {languages.map((lang) => (
             <DropdownMenuItem
               key={lang.code}
               onClick={() => i18n.changeLanguage(lang.code)}
-              className={i18n.language === lang.code ? "bg-accent" : ""}
+              className={`cursor-pointer hover:bg-primary/10 transition-colors ${
+                i18n.language === lang.code ? "bg-primary/20 font-semibold" : ""
+              }`}
             >
-              <span className="text-lg mr-2">{lang.flag}</span>
-              {lang.name}
+              <span className="text-xl mr-3">{lang.flag}</span>
+              <span>{lang.name}</span>
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Currency Selector */}
+      {/* Currency Selector - Only USD visible */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-secondary-foreground hover:bg-secondary/80">
-            <DollarSign className="h-4 w-4 mr-1" />
-            {currency}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-secondary-foreground hover:bg-secondary/80 hover:scale-105 transition-all gap-0.5 px-2"
+          >
+            <DollarSign className="h-4 w-4" />
+            <span className="text-xs font-bold">{currency}</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Currency</DropdownMenuLabel>
+        <DropdownMenuContent align="end" className="bg-background z-50">
+          <DropdownMenuLabel className="text-xs">Currency</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {currencies.map((curr) => (
+          {currencies.filter(curr => curr.visible).map((curr) => (
             <DropdownMenuItem
               key={curr.code}
               onClick={() => setCurrency(curr.code)}
-              className={currency === curr.code ? "bg-accent" : ""}
+              className={`cursor-pointer hover:bg-primary/10 transition-colors ${
+                currency === curr.code ? "bg-primary/20 font-semibold" : ""
+              }`}
             >
               {curr.name}
             </DropdownMenuItem>

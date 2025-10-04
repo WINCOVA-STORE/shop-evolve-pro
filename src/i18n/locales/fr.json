@@ -1,0 +1,74 @@
+{
+  "header": {
+    "search_placeholder": "Je cherche...",
+    "search_button": "Rechercher",
+    "my_account": "Mon Compte",
+    "profile": "Profil",
+    "logout": "Déconnexion",
+    "login": "Connexion"
+  },
+  "nav": {
+    "home": "Accueil",
+    "men": "Hommes",
+    "women": "Femmes",
+    "kids": "Enfants",
+    "electronics": "Électronique",
+    "refer_earn": "Parrainer & Gagner"
+  },
+  "hero": {
+    "title": "Explorez nos catégories — trouvez ce qui vous convient",
+    "cta": "Voir Comment Vous Gagnez"
+  },
+  "categories": {
+    "title": "Acheter par Catégorie"
+  },
+  "products": {
+    "featured": "Produits en Vedette",
+    "no_products": "Aucun produit disponible",
+    "add_to_cart": "Ajouter au Panier",
+    "sale": "PROMO",
+    "new": "NOUVEAU",
+    "reviews": "avis"
+  },
+  "footer": {
+    "contact_title": "Contactez-nous — nous sommes là 24/7",
+    "phone": "Téléphone",
+    "email": "Email",
+    "whatsapp": "Chattez avec nous sur WhatsApp"
+  },
+  "auth": {
+    "login_tab": "Connexion",
+    "signup_tab": "S'inscrire",
+    "login_title": "Connexion",
+    "login_description": "Entrez vos identifiants pour accéder à votre compte",
+    "signup_title": "Créer un Compte",
+    "signup_description": "Inscrivez-vous pour commencer vos achats",
+    "email": "Email",
+    "password": "Mot de passe",
+    "full_name": "Nom Complet",
+    "login_button": "Se Connecter",
+    "signup_button": "Créer un Compte",
+    "logging_in": "Connexion en cours...",
+    "creating_account": "Création du compte...",
+    "back_to_store": "Retour à la boutique",
+    "password_min": "Minimum 6 caractères"
+  },
+  "cart": {
+    "title": "Panier",
+    "empty": "Votre panier est vide",
+    "subtotal": "Sous-total",
+    "tax": "Taxe",
+    "shipping": "Livraison",
+    "total": "Total",
+    "checkout": "Commander",
+    "continue_shopping": "Continuer les Achats",
+    "remove": "Retirer",
+    "quantity": "Quantité"
+  },
+  "currency": {
+    "usd": "USD - Dollar Américain",
+    "eur": "EUR - Euro",
+    "gbp": "GBP - Livre Sterling",
+    "mxn": "MXN - Peso Mexicain"
+  }
+}

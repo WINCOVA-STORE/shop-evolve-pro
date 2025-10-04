@@ -1,0 +1,74 @@
+{
+  "header": {
+    "search_placeholder": "我在找...",
+    "search_button": "搜索",
+    "my_account": "我的账户",
+    "profile": "个人资料",
+    "logout": "登出",
+    "login": "登录"
+  },
+  "nav": {
+    "home": "首页",
+    "men": "男装",
+    "women": "女装",
+    "kids": "童装",
+    "electronics": "电子产品",
+    "refer_earn": "推荐赚取"
+  },
+  "hero": {
+    "title": "浏览我们的类别 — 找到最适合您的",
+    "cta": "了解如何赢取奖励"
+  },
+  "categories": {
+    "title": "按类别购物"
+  },
+  "products": {
+    "featured": "精选产品",
+    "no_products": "暂无产品",
+    "add_to_cart": "加入购物车",
+    "sale": "促销",
+    "new": "新品",
+    "reviews": "评价"
+  },
+  "footer": {
+    "contact_title": "联系我们 — 全天候在线",
+    "phone": "电话",
+    "email": "邮箱",
+    "whatsapp": "在 WhatsApp 上与我们聊天"
+  },
+  "auth": {
+    "login_tab": "登录",
+    "signup_tab": "注册",
+    "login_title": "登录",
+    "login_description": "输入您的凭据以访问您的账户",
+    "signup_title": "创建账户",
+    "signup_description": "注册开始购物",
+    "email": "邮箱",
+    "password": "密码",
+    "full_name": "全名",
+    "login_button": "登录",
+    "signup_button": "创建账户",
+    "logging_in": "登录中...",
+    "creating_account": "创建账户中...",
+    "back_to_store": "返回商店",
+    "password_min": "最少6个字符"
+  },
+  "cart": {
+    "title": "购物车",
+    "empty": "您的购物车是空的",
+    "subtotal": "小计",
+    "tax": "税",
+    "shipping": "运费",
+    "total": "总计",
+    "checkout": "结账",
+    "continue_shopping": "继续购物",
+    "remove": "移除",
+    "quantity": "数量"
+  },
+  "currency": {
+    "usd": "USD - 美元",
+    "eur": "EUR - 欧元",
+    "gbp": "GBP - 英镑",
+    "mxn": "MXN - 墨西哥比索"
+  }
+}

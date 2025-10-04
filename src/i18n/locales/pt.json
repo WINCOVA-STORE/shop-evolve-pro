@@ -1,0 +1,74 @@
+{
+  "header": {
+    "search_placeholder": "Estou procurando por...",
+    "search_button": "Buscar",
+    "my_account": "Minha Conta",
+    "profile": "Perfil",
+    "logout": "Sair",
+    "login": "Entrar"
+  },
+  "nav": {
+    "home": "Início",
+    "men": "Masculino",
+    "women": "Feminino",
+    "kids": "Infantil",
+    "electronics": "Eletrônicos",
+    "refer_earn": "Indicar & Ganhar"
+  },
+  "hero": {
+    "title": "Explore nossas categorias — encontre o que combina com você",
+    "cta": "Veja Como Você Ganha"
+  },
+  "categories": {
+    "title": "Comprar por Categoria"
+  },
+  "products": {
+    "featured": "Produtos em Destaque",
+    "no_products": "Nenhum produto disponível",
+    "add_to_cart": "Adicionar ao Carrinho",
+    "sale": "PROMOÇÃO",
+    "new": "NOVO",
+    "reviews": "avaliações"
+  },
+  "footer": {
+    "contact_title": "Fale conosco — estamos aqui 24/7",
+    "phone": "Telefone",
+    "email": "Email",
+    "whatsapp": "Converse conosco no WhatsApp"
+  },
+  "auth": {
+    "login_tab": "Entrar",
+    "signup_tab": "Cadastrar",
+    "login_title": "Entrar",
+    "login_description": "Digite suas credenciais para acessar sua conta",
+    "signup_title": "Criar Conta",
+    "signup_description": "Cadastre-se para começar a comprar",
+    "email": "Email",
+    "password": "Senha",
+    "full_name": "Nome Completo",
+    "login_button": "Entrar",
+    "signup_button": "Criar Conta",
+    "logging_in": "Entrando...",
+    "creating_account": "Criando conta...",
+    "back_to_store": "Voltar para a loja",
+    "password_min": "Mínimo 6 caracteres"
+  },
+  "cart": {
+    "title": "Carrinho de Compras",
+    "empty": "Seu carrinho está vazio",
+    "subtotal": "Subtotal",
+    "tax": "Imposto",
+    "shipping": "Frete",
+    "total": "Total",
+    "checkout": "Finalizar Compra",
+    "continue_shopping": "Continuar Comprando",
+    "remove": "Remover",
+    "quantity": "Quantidade"
+  },
+  "currency": {
+    "usd": "USD - Dólar Americano",
+    "eur": "EUR - Euro",
+    "gbp": "GBP - Libra Esterlina",
+    "mxn": "MXN - Peso Mexicano"
+  }
+}

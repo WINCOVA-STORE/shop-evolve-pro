@@ -66,42 +66,42 @@ export const Header = () => {
   };
 
   return (
-    <header className="border-b bg-secondary sticky top-0 z-50">
+    <header className="border-b bg-secondary sticky top-0 z-50 shadow-lg">
       <div className="container mx-auto px-4">
         {/* Top bar */}
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-between py-3 gap-4">
           <Button variant="ghost" size="icon" className="lg:hidden text-secondary-foreground hover:bg-secondary/80">
             <Menu className="h-6 w-6" />
           </Button>
 
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             <img 
               src={logoWhite} 
               alt="Wincova" 
-              className="h-10 w-auto object-contain"
+              className="h-9 w-auto object-contain hover:scale-105 transition-transform"
             />
           </Link>
 
-          <div className="hidden lg:flex items-center flex-1 max-w-2xl mx-8">
+          <div className="hidden lg:flex items-center flex-1 max-w-xl mx-4">
             <form onSubmit={handleSearch} className="relative w-full">
               <Input
                 type="search"
                 placeholder={t('header.search_placeholder')}
-                className="pr-10 bg-background"
+                className="pr-24 bg-background border-primary/20 focus:border-primary"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Button
                 type="submit"
                 size="sm"
-                className="absolute right-0 top-0 h-full rounded-l-none"
+                className="absolute right-0 top-0 h-full rounded-l-none hover:scale-105 transition-transform"
               >
                 {t('header.search_button')}
               </Button>
             </form>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             <LanguageCurrencySelector />
             
             {/* Points Display for logged in users */}
@@ -109,17 +109,18 @@ export const Header = () => {
               <Button
                 variant="outline"
                 size="sm"
-                className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/30 hover:border-primary/50 text-primary font-semibold"
+                className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-primary/10 to-secondary/5 border-primary/30 hover:border-primary hover:scale-105 hover:shadow-lg text-primary font-bold transition-all px-3"
                 onClick={() => navigate("/profile")}
               >
-                <Gift className="h-4 w-4" />
-                <span className="text-sm">{availablePoints.toLocaleString()} pts</span>
+                <Gift className="h-4 w-4 text-secondary" />
+                <span className="text-sm">{availablePoints.toLocaleString()}</span>
+                <span className="text-xs opacity-80">pts</span>
               </Button>
             )}
             
-            <Button variant="ghost" size="icon" className="text-secondary-foreground hover:bg-secondary/80">
+            <Button variant="ghost" size="icon" className="text-secondary-foreground hover:bg-secondary/80 hover:scale-105 transition-all relative">
               <Heart className="h-5 w-5" />
-              <span className="absolute top-0 right-0 bg-primary text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">
                 0
               </span>
             </Button>
