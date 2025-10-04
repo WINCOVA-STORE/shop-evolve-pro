@@ -14,7 +14,12 @@ import {
   Truck, 
   XCircle,
   ExternalLink,
-  Calendar 
+  Calendar,
+  MapPin,
+  Box,
+  Zap,
+  Star,
+  ShoppingBag
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -279,51 +284,115 @@ const TrackOrder = () => {
     const trackingUrl = order.tracking_number && order.carrier
       ? getCarrierTrackingUrl(order.carrier, order.tracking_number)
       : null;
+    
+    const statusInfo = getStatusInfo(order.status);
 
     return (
-      <Card key={order.id} className={`border ${getStatusInfo(order.status).color}`}>
+      <Card 
+        key={order.id} 
+        className={`border-2 ${statusInfo.color} shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.01] overflow-hidden animate-fade-in`}
+      >
+        {/* Status gradient bar */}
+        <div className={`h-2 ${
+          order.status === 'delivered' ? 'bg-gradient-to-r from-green-400 to-emerald-500' :
+          order.status === 'shipped' ? 'bg-gradient-to-r from-purple-400 to-pink-500' :
+          order.status === 'processing' ? 'bg-gradient-to-r from-blue-400 to-cyan-500' :
+          order.status === 'cancelled' ? 'bg-gradient-to-r from-red-400 to-orange-500' :
+          'bg-gradient-to-r from-yellow-400 to-orange-500'
+        }`}></div>
+        
         <CardContent className="pt-6">
-          <div className="flex items-start gap-4 mb-4">
-            <div className="p-2 rounded-lg bg-background">
-              {getStatusInfo(order.status).icon}
+          {/* Status Header with Enhanced Design */}
+          <div className="flex items-start gap-4 mb-6">
+            <div className="relative">
+              {/* Glow effect */}
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br opacity-20 blur-md"></div>
+              
+              {/* Icon container */}
+              <div className={`relative p-3 rounded-xl shadow-lg ${
+                order.status === 'delivered' ? 'bg-gradient-to-br from-green-400 to-emerald-500' :
+                order.status === 'shipped' ? 'bg-gradient-to-br from-purple-400 to-pink-500' :
+                order.status === 'processing' ? 'bg-gradient-to-br from-blue-400 to-cyan-500' :
+                order.status === 'cancelled' ? 'bg-gradient-to-br from-red-400 to-orange-500' :
+                'bg-gradient-to-br from-yellow-400 to-orange-500'
+              }`}>
+                <div className="text-white">
+                  {statusInfo.icon}
+                </div>
+              </div>
             </div>
+            
             <div className="flex-1">
-              <h2 className="text-xl font-bold mb-1">
-                Estado: {getStatusInfo(order.status).label}
-              </h2>
-              <p className="text-sm text-muted-foreground mb-2">
-                {getStatusInfo(order.status).description}
+              <div className="flex items-center gap-2 mb-2">
+                <h2 className="text-2xl font-bold">
+                  {statusInfo.label}
+                </h2>
+                {order.status === 'delivered' && (
+                  <span className="px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-semibold">
+                    Completado
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground mb-3">
+                {statusInfo.description}
               </p>
-              <p className="text-xs text-muted-foreground">
-                Pedido: <span className="font-mono font-semibold">{order.order_number}</span>
-              </p>
+              <div className="flex items-center gap-2 text-xs bg-muted/50 rounded-lg px-3 py-2 w-fit">
+                <ShoppingBag className="h-3 w-3" />
+                <span className="font-mono font-semibold">{order.order_number}</span>
+              </div>
             </div>
           </div>
 
+          {/* Tracking Number Section */}
           {order.tracking_number && (
-            <div className="mt-4 p-4 bg-background rounded-lg border">
+            <div className="mt-4 p-5 bg-gradient-to-br from-primary/5 via-purple-500/5 to-primary/5 rounded-xl border-2 border-primary/20 shadow-inner">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <p className="text-sm font-semibold mb-1">Número de Rastreo:</p>
-                  <p className="text-lg font-mono mb-2">{order.tracking_number}</p>
-                  {order.carrier && (
-                    <p className="text-sm text-muted-foreground">
-                      Transportista: <span className="font-semibold">{order.carrier}</span>
-                    </p>
-                  )}
-                  {order.estimated_delivery_date && (
-                    <p className="text-sm text-muted-foreground">
-                      Entrega estimada: <span className="font-semibold">
-                        {formatShortDate(order.estimated_delivery_date)}
-                      </span>
-                    </p>
-                  )}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Truck className="h-5 w-5 text-primary" />
+                    </div>
+                    <p className="text-sm font-bold text-primary">Información de Rastreo</p>
+                  </div>
+                  
+                  <div className="space-y-3 pl-9">
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">Número de Rastreo</p>
+                      <p className="text-lg font-mono font-bold bg-background px-3 py-2 rounded-lg inline-block">
+                        {order.tracking_number}
+                      </p>
+                    </div>
+                    
+                    {order.carrier && (
+                      <div className="flex items-center gap-2">
+                        <Box className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">
+                          Transportista: <span className="font-semibold text-primary">{order.carrier}</span>
+                        </span>
+                      </div>
+                    )}
+                    
+                    {order.estimated_delivery_date && (
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">
+                          Entrega estimada: <span className="font-semibold text-primary">
+                            {formatShortDate(order.estimated_delivery_date)}
+                          </span>
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
+                
                 {trackingUrl && (
-                  <Button asChild variant="outline" size="sm">
+                  <Button 
+                    asChild 
+                    className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                  >
                     <a href={trackingUrl} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-2" />
-                      Rastrear
+                      Rastrear en Vivo
                     </a>
                   </Button>
                 )}
@@ -331,15 +400,24 @@ const TrackOrder = () => {
             </div>
           )}
 
-          <div className="border-t mt-4 pt-4">
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Fecha:</span>
+          {/* Order Summary */}
+          <div className="border-t-2 border-dashed mt-6 pt-6">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                <span className="text-sm text-muted-foreground flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  Fecha de Pedido
+                </span>
                 <span className="font-semibold">{formatDate(order.created_at)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Total:</span>
-                <span className="font-semibold text-lg">${order.total.toFixed(2)}</span>
+              <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-primary/10 to-purple-500/10 border-2 border-primary/20">
+                <span className="text-base font-semibold flex items-center gap-2">
+                  <span className="text-2xl">💰</span>
+                  Total Pagado
+                </span>
+                <span className="font-bold text-2xl bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                  ${order.total.toFixed(2)}
+                </span>
               </div>
             </div>
           </div>
@@ -388,42 +466,92 @@ const TrackOrder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <Header />
       
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      {/* Decorative background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 right-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 left-10 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      </div>
+      
+      <main className="container mx-auto px-4 py-8 max-w-4xl relative">
         <Button
           variant="ghost"
           onClick={() => navigate(-1)}
-          className="mb-6"
+          className="mb-6 hover:scale-105 transition-transform"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Volver
         </Button>
 
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <div className="flex justify-center mb-4">
-            <div className="p-4 rounded-full bg-primary/10">
-              <Package className="h-12 w-12 text-primary" />
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="flex justify-center mb-6">
+            <div className="relative">
+              {/* Animated rings */}
+              <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping"></div>
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-purple-500 opacity-20 blur-xl"></div>
+              
+              {/* Main icon */}
+              <div className="relative p-6 rounded-full bg-gradient-to-br from-primary to-purple-600 shadow-2xl shadow-primary/50">
+                <Package className="h-16 w-16 text-white" />
+              </div>
+              
+              {/* Floating decorative icons */}
+              <div className="absolute -top-2 -right-2 p-2 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg animate-bounce">
+                <Zap className="h-4 w-4 text-white" />
+              </div>
+              <div className="absolute -bottom-2 -left-2 p-2 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shadow-lg animate-bounce" style={{ animationDelay: '0.3s' }}>
+                <Star className="h-4 w-4 text-white" />
+              </div>
             </div>
           </div>
-          <h1 className="text-4xl font-bold mb-4">Rastrear tu Pedido</h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Consulta el estado de tu pedido usando tu número de orden o buscando por rango de fechas.
+          
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary via-purple-600 to-primary bg-clip-text text-transparent">
+            Rastrear tu Pedido
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Seguimiento en <span className="font-semibold text-primary">tiempo real</span> de tu pedido. 
+            Consulta el estado usando tu número de orden o buscando por fechas.
           </p>
+          
+          {/* Stats badges */}
+          <div className="flex flex-wrap justify-center gap-4 mt-8">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 to-purple-500/10 border border-primary/20">
+              <Truck className="h-4 w-4 text-primary" />
+              <span className="text-sm font-semibold">Envío 2-5 días</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <span className="text-sm font-semibold">Actualización 24h</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20">
+              <MapPin className="h-4 w-4 text-blue-600" />
+              <span className="text-sm font-semibold">US & EU</span>
+            </div>
+          </div>
         </div>
 
         {/* Search Tabs */}
-        <Card className="mb-8">
+        <Card className="mb-8 shadow-2xl border-2 hover:shadow-primary/20 transition-all duration-300 animate-scale-in overflow-hidden">
+          {/* Gradient header bar */}
+          <div className="h-2 bg-gradient-to-r from-primary via-purple-600 to-primary"></div>
+          
           <CardContent className="pt-6">
             <Tabs defaultValue="order-number">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="order-number">
+              <TabsList className="grid w-full grid-cols-2 p-1 bg-gradient-to-r from-primary/5 to-purple-500/5">
+                <TabsTrigger 
+                  value="order-number" 
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
+                >
                   <Package className="h-4 w-4 mr-2" />
                   Por Número de Pedido
                 </TabsTrigger>
-                <TabsTrigger value="date-range">
+                <TabsTrigger 
+                  value="date-range"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
+                >
                   <Calendar className="h-4 w-4 mr-2" />
                   Por Rango de Fechas
                 </TabsTrigger>
@@ -461,9 +589,20 @@ const TrackOrder = () => {
                     </p>
                   </div>
 
-                  <Button type="submit" className="w-full" disabled={isLoading}>
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all" 
+                    disabled={isLoading}
+                  >
                     <Search className="mr-2 h-4 w-4" />
-                    {isLoading ? "Buscando..." : "Rastrear Pedido"}
+                    {isLoading ? (
+                      <>
+                        <span className="animate-pulse">Buscando</span>
+                        <span className="animate-bounce ml-1">...</span>
+                      </>
+                    ) : (
+                      "Rastrear Pedido"
+                    )}
                   </Button>
                 </form>
               </TabsContent>
@@ -512,9 +651,20 @@ const TrackOrder = () => {
                     Busca todos los pedidos realizados en un rango de fechas específico.
                   </p>
 
-                  <Button type="submit" className="w-full" disabled={isLoading}>
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all" 
+                    disabled={isLoading}
+                  >
                     <Search className="mr-2 h-4 w-4" />
-                    {isLoading ? "Buscando..." : "Buscar Pedidos"}
+                    {isLoading ? (
+                      <>
+                        <span className="animate-pulse">Buscando</span>
+                        <span className="animate-bounce ml-1">...</span>
+                      </>
+                    ) : (
+                      "Buscar Pedidos"
+                    )}
                   </Button>
                 </form>
               </TabsContent>
@@ -524,11 +674,17 @@ const TrackOrder = () => {
 
         {/* Results Section */}
         {orders.length > 0 && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fade-in">
             {orders.length > 1 && (
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-sm font-semibold">
-                  Se encontraron {orders.length} pedidos en este rango de fechas
+              <div className="text-center p-5 bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 rounded-xl border-2 border-primary/20 shadow-lg">
+                <div className="flex items-center justify-center gap-3 mb-2">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                  <p className="text-lg font-bold">
+                    ¡Encontrado! {orders.length} pedidos
+                  </p>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Todos los pedidos en el rango de fechas seleccionado
                 </p>
               </div>
             )}
@@ -536,21 +692,33 @@ const TrackOrder = () => {
             {orders.map((order) => renderOrderCard(order))}
 
             {/* Help Section */}
-            <Card className="bg-muted/50">
+            <Card className="bg-gradient-to-br from-primary/5 via-purple-500/5 to-primary/5 border-2 border-primary/20 shadow-xl overflow-hidden">
+              <div className="h-1 bg-gradient-to-r from-primary via-purple-600 to-primary"></div>
               <CardContent className="pt-6">
-                <h3 className="font-bold mb-2">¿Necesitas ayuda con tu pedido?</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Si tienes alguna pregunta o problema, contáctanos:
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 rounded-full bg-gradient-to-br from-primary to-purple-600">
+                    <Star className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="font-bold text-xl">¿Necesitas ayuda?</h3>
+                </div>
+                <p className="text-sm text-muted-foreground mb-5">
+                  Nuestro equipo está listo para ayudarte con cualquier pregunta sobre tu pedido.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Button asChild variant="outline" className="flex-1">
+                  <Button 
+                    asChild 
+                    className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                  >
                     <a href="tel:6157289932">
-                      Llamar: 615-728-9932
+                      📞 Llamar: 615-728-9932
                     </a>
                   </Button>
-                  <Button asChild variant="outline" className="flex-1">
+                  <Button 
+                    asChild 
+                    className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                  >
                     <a href="mailto:ventas@wincova.com">
-                      Email: ventas@wincova.com
+                      ✉️ Email: ventas@wincova.com
                     </a>
                   </Button>
                 </div>
@@ -561,31 +729,52 @@ const TrackOrder = () => {
 
         {/* Information Card */}
         {orders.length === 0 && !isLoading && (
-          <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+          <Card className="bg-gradient-to-br from-primary/5 via-purple-500/5 to-primary/5 border-2 border-primary/20 shadow-xl overflow-hidden animate-scale-in">
+            <div className="h-1 bg-gradient-to-r from-primary via-purple-600 to-primary"></div>
             <CardContent className="pt-6">
-              <h3 className="font-bold text-lg mb-3">Información Importante</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex gap-2">
-                  <span className="text-primary">•</span>
-                  <span>El número de pedido se envía por correo inmediatamente después de tu compra.</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Si no encuentras el correo, revisa tu carpeta de spam.</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Los números de rastreo se actualizan cada 24 horas una vez que el pedido es enviado.</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Los envíos desde nuestros proveedores en US/EU tardan 2-5 días hábiles.</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Si no tienes tu número de pedido, usa la búsqueda por fechas.</span>
-                </li>
-              </ul>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg">
+                  <Zap className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="font-bold text-2xl">Información Importante</h3>
+              </div>
+              
+              <div className="grid gap-3">
+                <div className="flex gap-3 p-4 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 hover:scale-[1.02] transition-transform">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                  </div>
+                  <span className="text-sm">El número de pedido se envía por <strong>correo inmediatamente</strong> después de tu compra.</span>
+                </div>
+                
+                <div className="flex gap-3 p-4 rounded-xl bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 hover:scale-[1.02] transition-transform">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                    <Clock className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <span className="text-sm">Si no encuentras el correo, <strong>revisa tu carpeta de spam</strong>.</span>
+                </div>
+                
+                <div className="flex gap-3 p-4 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 hover:scale-[1.02] transition-transform">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                    <Truck className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <span className="text-sm">Los números de rastreo se actualizan <strong>cada 24 horas</strong> una vez que el pedido es enviado.</span>
+                </div>
+                
+                <div className="flex gap-3 p-4 rounded-xl bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 hover:scale-[1.02] transition-transform">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                    <MapPin className="h-5 w-5 text-yellow-600" />
+                  </div>
+                  <span className="text-sm">Los envíos desde nuestros proveedores en <strong>US/EU tardan 2-5 días hábiles</strong>.</span>
+                </div>
+                
+                <div className="flex gap-3 p-4 rounded-xl bg-gradient-to-r from-pink-500/10 to-red-500/10 border border-pink-500/20 hover:scale-[1.02] transition-transform">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center">
+                    <Calendar className="h-5 w-5 text-pink-600" />
+                  </div>
+                  <span className="text-sm">Si no tienes tu número de pedido, <strong>usa la búsqueda por fechas</strong>.</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         )}
