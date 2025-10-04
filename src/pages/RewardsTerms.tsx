@@ -79,11 +79,12 @@ const RewardsTerms = () => {
                   💰 <strong>Ejemplos de cómo ganar puntos:</strong>
                 </p>
                 <ul className="text-sm space-y-1 ml-6 list-disc">
-                  <li>Por cada $1 que gastes: 10 puntos</li>
+                  <li>Por cada compra que hagas</li>
                   <li>Referir un amigo: 500 puntos (cuando realice su primera compra)</li>
                   <li>Dejar una reseña: 50 puntos</li>
                   <li>Seguir en redes sociales: 25 puntos por plataforma</li>
-                  <li>Bonus de bienvenida: 100 puntos al registrarte</li>
+                  <li>Bonus de bienvenida: 500 puntos al registrarte</li>
+                  <li>Bonus de cumpleaños: 3,000 puntos</li>
                 </ul>
               </div>
               <p className="text-sm text-muted-foreground mt-2">

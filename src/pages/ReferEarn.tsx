@@ -382,7 +382,7 @@ const ReferEarn = () => {
               </CardHeader>
               <CardContent className="relative z-10">
                 <p className="text-muted-foreground leading-relaxed text-base">
-                  Acumula puntos con cada compra y úsalos como descuento en futuras órdenes.
+                  Acumula puntos con cada compra y úsalos para pagar parte de futuras órdenes.
                 </p>
               </CardContent>
             </Card>
@@ -728,7 +728,7 @@ const ReferEarn = () => {
                 {availablePoints > 0 && (
                   <div className="mt-4 pt-4 border-t border-primary/20">
                     <p className="text-sm text-muted-foreground">
-                      Puedes usar estos puntos como descuento en tu próxima compra
+                      Puedes usar estos puntos para pagar parte de tu próxima compra
                     </p>
                   </div>
                 )}
@@ -773,9 +773,9 @@ const ReferEarn = () => {
                               Al registrarte
                             </p>
                           </div>
-                          <Badge variant="secondary" className="bg-primary/10 text-primary">
-                            +2,000 pts
-                          </Badge>
+                  <Badge variant="secondary" className="bg-primary/10 text-primary">
+                    +500 pts
+                  </Badge>
                         </div>
                       </CardContent>
                     </Card>
@@ -795,9 +795,9 @@ const ReferEarn = () => {
                               15 de marzo, 2025
                             </p>
                           </div>
-                          <Badge variant="secondary" className="bg-primary/10 text-primary">
-                            +2,500 pts
-                          </Badge>
+                  <Badge variant="secondary" className="bg-primary/10 text-primary">
+                    +500 pts
+                  </Badge>
                         </div>
                       </CardContent>
                     </Card>
