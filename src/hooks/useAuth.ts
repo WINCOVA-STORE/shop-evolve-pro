@@ -109,6 +109,50 @@ export const useAuth = () => {
     return { error: null };
   };
 
+  const resetPassword = async (email: string) => {
+    const redirectUrl = `${window.location.origin}/auth`;
+    
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl,
+    });
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+      return { error };
+    }
+
+    toast({
+      title: "Email enviado",
+      description: "Revisa tu correo para restablecer tu contraseña.",
+    });
+    return { error: null };
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+      return { error };
+    }
+
+    toast({
+      title: "Contraseña actualizada",
+      description: "Tu contraseña ha sido cambiada exitosamente.",
+    });
+    return { error: null };
+  };
+
   return {
     user,
     session,
@@ -116,5 +160,7 @@ export const useAuth = () => {
     signUp,
     signIn,
     signOut,
+    resetPassword,
+    updatePassword,
   };
 };
