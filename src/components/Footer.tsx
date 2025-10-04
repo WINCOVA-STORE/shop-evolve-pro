@@ -79,9 +79,9 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors">
+                <Link to="/track-order" className="hover:text-primary transition-colors">
                   Rastrear Pedido
-                </a>
+                </Link>
               </li>
               <li>
                 <Link to="/return-policy" className="hover:text-primary transition-colors">
