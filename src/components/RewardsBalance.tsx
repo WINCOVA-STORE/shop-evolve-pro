@@ -62,10 +62,10 @@ export const RewardsBalance = () => {
           <div className="mt-6 space-y-2">
             <h4 className="font-semibold text-sm">Formas de ganar puntos:</h4>
             <ul className="space-y-1 text-sm text-muted-foreground">
-              <li>• Compras: 1% del total en puntos</li>
-              <li>• Reseñas: 100 puntos por producto</li>
-              <li>• Cumpleaños: 500 puntos especiales</li>
-              <li>• Referidos: Hasta 1000 puntos</li>
+              <li>• Compras: Gana puntos con cada compra</li>
+              <li>• Reseñas: Gana puntos por cada producto que reseñes</li>
+              <li>• Cumpleaños: Recibe puntos especiales en tu día</li>
+              <li>• Referidos: Gana puntos por cada amigo que invites</li>
             </ul>
           </div>
         </CardContent>
