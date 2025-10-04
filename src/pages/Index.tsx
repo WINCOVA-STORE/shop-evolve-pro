@@ -2,6 +2,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { CategoryCard } from "@/components/CategoryCard";
+import { FeaturedSidebar } from "@/components/FeaturedSidebar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -125,7 +126,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Featured Products with Sidebar */}
       <section className="container mx-auto px-4 py-16">
         <div className="flex items-center justify-between mb-12">
           <div>
@@ -134,24 +135,33 @@ const Index = () => {
           </div>
           <Button variant="outline">{t('products.view_all')}</Button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {isLoading ? (
-            [...Array(8)].map((_, i) => (
-              <div key={i} className="space-y-3">
-                <Skeleton className="aspect-square w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-              </div>
-            ))
-          ) : products && products.length > 0 ? (
-            products.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))
-          ) : (
-            <div className="col-span-full text-center text-muted-foreground py-12">
-              {t('products.no_products')}
+        
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Products Grid */}
+          <div className="lg:col-span-9">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {isLoading ? (
+                [...Array(6)].map((_, i) => (
+                  <div key={i} className="space-y-3">
+                    <Skeleton className="aspect-square w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                ))
+              ) : products && products.length > 0 ? (
+                products.slice(0, 6).map((product) => (
+                  <ProductCard key={product.id} {...product} />
+                ))
+              ) : (
+                <div className="col-span-full text-center text-muted-foreground py-12">
+                  {t('products.no_products')}
+                </div>
+              )}
             </div>
-          )}
+          </div>
+
+          {/* Featured Sidebar */}
+          <FeaturedSidebar />
         </div>
       </section>
 

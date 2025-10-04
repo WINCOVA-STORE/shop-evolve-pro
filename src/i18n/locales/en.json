@@ -407,5 +407,46 @@
     "start_saving": "start saving today",
     "see_referral_program": "See Referral Program",
     "start_shopping": "Start Shopping"
+  },
+  "newsletter": {
+    "title": "Stay Updated",
+    "description": "Subscribe to our newsletter for exclusive offers",
+    "placeholder": "Enter your email",
+    "cta": "Subscribe",
+    "success": "Successfully subscribed to our newsletter!",
+    "privacy": "We respect your privacy. Unsubscribe at any time."
+  },
+  "wishlist": {
+    "title": "My Wishlist",
+    "add": "Add to Wishlist",
+    "remove": "Remove from Wishlist",
+    "items_count": "items",
+    "clear_all": "Clear All",
+    "empty": "Your wishlist is empty",
+    "empty_description": "Start adding products you love!",
+    "start_shopping": "Start Shopping"
+  },
+  "compare": {
+    "title": "Compare Products",
+    "add": "Add to Compare",
+    "items_count": "products",
+    "clear_all": "Clear All",
+    "empty": "No products to compare",
+    "empty_description": "Add products to start comparing",
+    "start_shopping": "Start Shopping",
+    "price": "Price",
+    "stock": "Stock",
+    "available": "available",
+    "out_of_stock": "Out of stock",
+    "rating": "Rating",
+    "rewards": "Rewards",
+    "points": "points",
+    "description": "Description"
+  },
+  "sidebar": {
+    "featured": "Featured Products",
+    "special_offer": "Special Offer",
+    "discount_banner": "Extra 15% Off First Order",
+    "limited_time": "Limited time offer"
   }
 }

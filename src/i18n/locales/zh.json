@@ -256,5 +256,46 @@
     "start_saving": "今天开始省钱",
     "see_referral_program": "查看推荐计划",
     "start_shopping": "开始购物"
+  },
+  "newsletter": {
+    "title": "保持更新",
+    "description": "订阅以获取独家优惠",
+    "placeholder": "输入您的电子邮件",
+    "cta": "订阅",
+    "success": "您已成功订阅我们的新闻通讯！",
+    "privacy": "我们尊重您的隐私。随时取消订阅。"
+  },
+  "wishlist": {
+    "title": "我的愿望清单",
+    "add": "添加到愿望清单",
+    "remove": "从愿望清单中移除",
+    "items_count": "项商品",
+    "clear_all": "清空全部",
+    "empty": "您的愿望清单是空的",
+    "empty_description": "开始添加您喜欢的产品！",
+    "start_shopping": "开始购物"
+  },
+  "compare": {
+    "title": "比较产品",
+    "add": "添加到比较",
+    "items_count": "个产品",
+    "clear_all": "清空全部",
+    "empty": "没有产品可比较",
+    "empty_description": "添加产品以开始比较",
+    "start_shopping": "开始购物",
+    "price": "价格",
+    "stock": "库存",
+    "available": "可用",
+    "out_of_stock": "缺货",
+    "rating": "评分",
+    "rewards": "奖励",
+    "points": "积分",
+    "description": "描述"
+  },
+  "sidebar": {
+    "featured": "精选产品",
+    "special_offer": "特别优惠",
+    "discount_banner": "首单额外享受15%折扣",
+    "limited_time": "限时优惠"
   }
 }

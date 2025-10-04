@@ -256,5 +256,46 @@
     "start_saving": "comece a economizar hoje",
     "see_referral_program": "Ver Programa de Indicação",
     "start_shopping": "Começar a Comprar"
+  },
+  "newsletter": {
+    "title": "Fique Atualizado",
+    "description": "Inscreva-se para receber ofertas exclusivas",
+    "placeholder": "Digite seu e-mail",
+    "cta": "Inscrever-se",
+    "success": "Você se inscreveu com sucesso em nossa newsletter!",
+    "privacy": "Respeitamos sua privacidade. Cancele a qualquer momento."
+  },
+  "wishlist": {
+    "title": "Minha Lista de Desejos",
+    "add": "Adicionar aos Desejos",
+    "remove": "Remover dos Desejos",
+    "items_count": "itens",
+    "clear_all": "Limpar Tudo",
+    "empty": "Sua lista de desejos está vazia",
+    "empty_description": "Comece a adicionar produtos que você ama!",
+    "start_shopping": "Começar a Comprar"
+  },
+  "compare": {
+    "title": "Comparar Produtos",
+    "add": "Adicionar para Comparar",
+    "items_count": "produtos",
+    "clear_all": "Limpar Tudo",
+    "empty": "Nenhum produto para comparar",
+    "empty_description": "Adicione produtos para começar a comparar",
+    "start_shopping": "Começar a Comprar",
+    "price": "Preço",
+    "stock": "Estoque",
+    "available": "disponíveis",
+    "out_of_stock": "Sem estoque",
+    "rating": "Avaliação",
+    "rewards": "Recompensas",
+    "points": "pontos",
+    "description": "Descrição"
+  },
+  "sidebar": {
+    "featured": "Produtos em Destaque",
+    "special_offer": "Oferta Especial",
+    "discount_banner": "15% Extra de Desconto no Primeiro Pedido",
+    "limited_time": "Oferta por tempo limitado"
   }
 }

@@ -256,5 +256,46 @@
     "start_saving": "commencez à économiser aujourd'hui",
     "see_referral_program": "Voir le Programme de Parrainage",
     "start_shopping": "Commencer à Acheter"
+  },
+  "newsletter": {
+    "title": "Restez Informé",
+    "description": "Abonnez-vous pour recevoir des offres exclusives",
+    "placeholder": "Entrez votre email",
+    "cta": "S'abonner",
+    "success": "Vous êtes maintenant abonné à notre newsletter!",
+    "privacy": "Nous respectons votre vie privée. Désabonnez-vous à tout moment."
+  },
+  "wishlist": {
+    "title": "Ma Liste de Souhaits",
+    "add": "Ajouter aux Souhaits",
+    "remove": "Retirer des Souhaits",
+    "items_count": "articles",
+    "clear_all": "Tout Effacer",
+    "empty": "Votre liste de souhaits est vide",
+    "empty_description": "Commencez à ajouter des produits que vous aimez!",
+    "start_shopping": "Commencer à Magasiner"
+  },
+  "compare": {
+    "title": "Comparer les Produits",
+    "add": "Ajouter à Comparer",
+    "items_count": "produits",
+    "clear_all": "Tout Effacer",
+    "empty": "Aucun produit à comparer",
+    "empty_description": "Ajoutez des produits pour commencer la comparaison",
+    "start_shopping": "Commencer à Magasiner",
+    "price": "Prix",
+    "stock": "Stock",
+    "available": "disponibles",
+    "out_of_stock": "Rupture de stock",
+    "rating": "Évaluation",
+    "rewards": "Récompenses",
+    "points": "points",
+    "description": "Description"
+  },
+  "sidebar": {
+    "featured": "Produits Vedettes",
+    "special_offer": "Offre Spéciale",
+    "discount_banner": "15% de Réduction Supplémentaire sur la Première Commande",
+    "limited_time": "Offre à durée limitée"
   }
 }

@@ -1,9 +1,11 @@
-import { Heart, ShoppingCart, Gift } from "lucide-react";
+import { Heart, ShoppingCart, Gift, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { useCompare } from "@/contexts/CompareContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -15,10 +17,15 @@ interface ProductCardProps extends Product {}
 export const ProductCard = (product: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToCompare, isInCompare } = useCompare();
   const { formatPrice } = useCurrency();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { name } = useTranslatedProduct(product);
+  
+  const inWishlist = isInWishlist(product.id);
+  const inCompare = isInCompare(product.id);
 
   const { id, price, compare_at_price, images, tags = [] } = product;
   
@@ -32,6 +39,20 @@ export const ProductCard = (product: ProductCardProps) => {
 
   const handleAddToCart = () => {
     addToCart(product, 1);
+  };
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (inWishlist) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
+
+  const handleCompareToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addToCompare(product);
   };
 
   return (
@@ -64,19 +85,36 @@ export const ProductCard = (product: ProductCardProps) => {
           </Badge>
         )}
 
-        {/* Quick Actions */}
+        {/* Quick Actions - always visible on mobile, hover on desktop */}
         <div
           className={cn(
-            "absolute top-3 right-3 flex flex-col gap-2 transition-all duration-300",
-            isHovered ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+            "absolute top-3 right-3 flex flex-col gap-2 transition-all duration-300 opacity-100 md:opacity-0",
+            isHovered && "md:opacity-100 md:translate-x-0"
           )}
         >
           <Button
             size="icon"
             variant="secondary"
-            className="h-9 w-9 rounded-full shadow-lg"
+            className={cn(
+              "h-9 w-9 rounded-full shadow-lg",
+              inWishlist && "text-red-500"
+            )}
+            onClick={handleWishlistToggle}
+            title={inWishlist ? t("wishlist.remove") : t("wishlist.add")}
           >
-            <Heart className="h-4 w-4" />
+            <Heart className={cn("h-4 w-4", inWishlist && "fill-current")} />
+          </Button>
+          <Button
+            size="icon"
+            variant="secondary"
+            className={cn(
+              "h-9 w-9 rounded-full shadow-lg",
+              inCompare && "text-primary"
+            )}
+            onClick={handleCompareToggle}
+            title={t("compare.add")}
+          >
+            <BarChart3 className="h-4 w-4" />
           </Button>
         </div>
       </div>
