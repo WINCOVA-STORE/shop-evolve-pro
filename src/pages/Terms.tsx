@@ -3,7 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Shield, FileText, Scale, AlertCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Terms = () => {
   const navigate = useNavigate();
@@ -303,7 +303,10 @@ const Terms = () => {
               <h4 className="font-semibold text-lg">8.1 Acumulación de Puntos</h4>
               <p>
                 Los clientes pueden ganar puntos a través de compras, referencias y promociones especiales. 
-                Consulta los términos completos del programa en nuestra página de Términos del Programa de Recompensas.
+                Consulta los términos completos del programa en nuestra{" "}
+                <Link to="/rewards-terms" className="text-primary hover:underline font-semibold">
+                  página de Términos del Programa de Recompensas
+                </Link>.
               </p>
 
               <h4 className="font-semibold text-lg mt-6">8.2 Restricciones del Programa</h4>
@@ -672,8 +675,6 @@ const Terms = () => {
                 <li><strong>Email:</strong> ventas@wincova.com</li>
                 <li><strong>Teléfono:</strong> 615-728-9932</li>
                 <li><strong>Dirección:</strong> 2615 Medical Center Parkway, Suite 1560, Murfreesboro TN 37129</li>
-                <li><strong>Teléfono:</strong> +1 (555) 123-4567</li>
-                <li><strong>Dirección:</strong> 123 Commerce St, Nashville, TN, Estados Unidos</li>
               </ul>
               <p className="font-semibold text-primary mt-4">
                 Tiempo de respuesta típico: 24-48 horas hábiles
