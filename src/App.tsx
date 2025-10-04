@@ -18,6 +18,7 @@ import RewardsTerms from "./pages/RewardsTerms";
 import Terms from "./pages/Terms";
 import CookiePolicy from "./pages/CookiePolicy";
 import FAQ from "./pages/FAQ";
+import ReturnPolicy from "./pages/ReturnPolicy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/terms" element={<Terms />} />
               <Route path="/cookie-policy" element={<CookiePolicy />} />
               <Route path="/faq" element={<FAQ />} />
+              <Route path="/return-policy" element={<ReturnPolicy />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
