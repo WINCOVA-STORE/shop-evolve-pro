@@ -43,6 +43,7 @@ interface Order {
   created_at: string;
   updated_at: string;
   order_items: Array<{
+    product_id: string | null;
     product_name: string;
     quantity: number;
     product_price: number;
@@ -144,6 +145,7 @@ const TrackOrder = () => {
         .select(`
           *,
           order_items (
+            product_id,
             product_name,
             quantity,
             product_price,
@@ -209,6 +211,7 @@ const TrackOrder = () => {
         .select(`
           *,
           order_items (
+            product_id,
             product_name,
             quantity,
             product_price,
@@ -454,8 +457,20 @@ const TrackOrder = () => {
               <h4 className="font-semibold text-sm mb-3">Productos ({order.order_items.length}):</h4>
               <div className="space-y-2">
                 {order.order_items.map((item, index) => (
-                  <div key={index} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
+                  <div 
+                    key={index} 
+                    className={`flex justify-between text-sm p-2 rounded-lg transition-all ${
+                      item.product_id 
+                        ? 'hover:bg-primary/5 cursor-pointer hover:scale-[1.02] active:scale-[0.98]' 
+                        : ''
+                    }`}
+                    onClick={() => {
+                      if (item.product_id) {
+                        navigate(`/product/${item.product_id}`);
+                      }
+                    }}
+                  >
+                    <span className={`${item.product_id ? 'text-primary hover:underline' : 'text-muted-foreground'}`}>
                       {item.product_name} x {item.quantity}
                     </span>
                     <span className="font-semibold">${item.subtotal.toFixed(2)}</span>
