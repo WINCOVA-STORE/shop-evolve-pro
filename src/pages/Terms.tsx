@@ -7,7 +7,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 const Terms = () => {
   const navigate = useNavigate();
-  const effectiveDate = "4 de febrero de 2025";
+  const effectiveDate = "01 de octubre de 2025";
 
   return (
     <div className="min-h-screen bg-background">
