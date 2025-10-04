@@ -75,14 +75,41 @@ const TrackOrder = () => {
     
     const carrierLower = carrier.toLowerCase();
     
+    // USPS - United States Postal Service
     if (carrierLower.includes('usps')) {
       return `https://tools.usps.com/go/TrackConfirmAction?tLabels=${trackingNumber}`;
-    } else if (carrierLower.includes('ups')) {
+    } 
+    // UPS - United Parcel Service
+    else if (carrierLower.includes('ups')) {
       return `https://www.ups.com/track?track=yes&trackNums=${trackingNumber}`;
-    } else if (carrierLower.includes('fedex')) {
+    } 
+    // FedEx
+    else if (carrierLower.includes('fedex')) {
       return `https://www.fedex.com/fedextrack/?trknbr=${trackingNumber}`;
-    } else if (carrierLower.includes('dhl')) {
+    } 
+    // DHL Express
+    else if (carrierLower.includes('dhl')) {
       return `https://www.dhl.com/en/express/tracking.html?AWB=${trackingNumber}`;
+    }
+    // Amazon Logistics
+    else if (carrierLower.includes('amazon')) {
+      return `https://track.amazon.com/tracking/${trackingNumber}`;
+    }
+    // OnTrac
+    else if (carrierLower.includes('ontrac')) {
+      return `https://www.ontrac.com/tracking/?number=${trackingNumber}`;
+    }
+    // LaserShip
+    else if (carrierLower.includes('lasership')) {
+      return `https://www.lasership.com/track/${trackingNumber}`;
+    }
+    // Canada Post
+    else if (carrierLower.includes('canada post')) {
+      return `https://www.canadapost-postescanada.ca/track-reperage/en#/search?searchFor=${trackingNumber}`;
+    }
+    // Correos (Spain)
+    else if (carrierLower.includes('correos')) {
+      return `https://www.correos.es/es/en/herramientas/localizador/envios?tracking=${trackingNumber}`;
     }
     
     return null;
@@ -410,12 +437,12 @@ const TrackOrder = () => {
                 </span>
                 <span className="font-semibold">{formatDate(order.created_at)}</span>
               </div>
-              <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-primary/10 to-purple-500/10 border-2 border-primary/20">
-                <span className="text-base font-semibold flex items-center gap-2">
+              <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 border-2 border-orange-200 dark:border-orange-800">
+                <span className="text-base font-semibold flex items-center gap-2 text-foreground">
                   <span className="text-2xl">💰</span>
                   Total Pagado
                 </span>
-                <span className="font-bold text-2xl bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                <span className="font-bold text-3xl text-orange-600 dark:text-orange-400">
                   ${order.total.toFixed(2)}
                 </span>
               </div>
