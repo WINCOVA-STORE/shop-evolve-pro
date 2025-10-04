@@ -587,21 +587,20 @@ const Terms = () => {
 
               <h4 className="font-semibold text-lg mt-6">16.2 Encriptación y Seguridad de Datos</h4>
               <ul className="space-y-2 ml-6 list-disc">
-                <li><strong>Encriptación SSL/TLS:</strong> Todo el tráfico entre tu navegador y nuestros servidores está protegido mediante encriptación SSL/TLS de 256 bits, el estándar más alto de la industria</li>
+                <li><strong>Encriptación SSL/TLS:</strong> Todo el tráfico entre tu navegador y nuestros servidores está protegido mediante encriptación SSL/TLS, el mismo estándar utilizado por instituciones financieras</li>
                 <li><strong>Protección de Datos en Tránsito:</strong> Utilizamos protocolos HTTPS en todo el sitio web para garantizar que tu información esté cifrada durante la transmisión</li>
-                <li><strong>Almacenamiento Seguro:</strong> Todos los datos personales almacenados en nuestros servidores están cifrados utilizando algoritmos de encriptación de grado militar (AES-256)</li>
-                <li><strong>Infraestructura Segura:</strong> Nuestros servidores están alojados en centros de datos certificados con seguridad física 24/7, controles de acceso biométricos y sistemas de respaldo redundantes</li>
-                <li><strong>Actualizaciones de Seguridad:</strong> Mantenemos todos nuestros sistemas actualizados con los últimos parches de seguridad y realizamos auditorías de seguridad periódicas</li>
+                <li><strong>Almacenamiento Seguro:</strong> Los datos personales almacenados en nuestra base de datos están protegidos con encriptación en reposo</li>
+                <li><strong>Actualizaciones de Seguridad:</strong> Mantenemos nuestros sistemas actualizados con los últimos parches de seguridad</li>
               </ul>
 
               <h4 className="font-semibold text-lg mt-6">16.3 Seguridad en Procesamiento de Pagos</h4>
               <ul className="space-y-2 ml-6 list-disc">
-                <li><strong>Cumplimiento PCI-DSS:</strong> Cumplimos con el estándar PCI-DSS (Payment Card Industry Data Security Standard), el más riguroso para el procesamiento de tarjetas de crédito</li>
-                <li><strong>Tokenización de Tarjetas:</strong> No almacenamos números completos de tarjetas de crédito. Utilizamos tokenización, donde tu información de pago se convierte en un token único e inutilizable fuera de nuestro sistema</li>
-                <li><strong>Procesadores Certificados:</strong> Trabajamos exclusivamente con procesadores de pago certificados y de confianza (Stripe, PayPal) que cumplen con todas las regulaciones financieras</li>
-                <li><strong>Detección de Fraude:</strong> Empleamos sistemas avanzados de detección de fraude con inteligencia artificial que monitorean transacciones sospechosas en tiempo real</li>
-                <li><strong>Autenticación 3D Secure:</strong> Implementamos 3D Secure (Verified by Visa, Mastercard SecureCode) para una capa adicional de autenticación en transacciones</li>
-                <li><strong>Sin Almacenamiento de CVV:</strong> Nunca almacenamos el código de seguridad CVV/CVC de tu tarjeta, cumpliendo con las regulaciones PCI</li>
+                <li><strong>Procesador Certificado PCI-DSS Level 1:</strong> Utilizamos Stripe como nuestro procesador de pagos, certificado con el estándar PCI-DSS Level 1, el nivel más alto de certificación en la industria de pagos</li>
+                <li><strong>Sin Almacenamiento de Datos de Tarjetas:</strong> Tu información de tarjeta de crédito nunca es almacenada en nuestros servidores. Toda la información de pago es procesada y almacenada de forma segura por Stripe</li>
+                <li><strong>Tokenización Automática:</strong> Los datos de tu tarjeta son convertidos en tokens seguros por Stripe. Tus datos de pago reales nunca son transmitidos a nuestros servidores</li>
+                <li><strong>Protección Contra Fraude:</strong> Stripe incluye protección automática contra fraude que monitorea transacciones sospechosas</li>
+                <li><strong>Autenticación Adicional:</strong> Cuando es requerido por regulaciones bancarias (3D Secure/SCA) o detectado como necesario para prevenir fraude, se solicita automáticamente autenticación adicional del titular de la tarjeta</li>
+                <li><strong>Sin Almacenamiento de CVV:</strong> Nunca almacenamos el código de seguridad CVV/CVC de tu tarjeta, cumpliendo con las regulaciones PCI-DSS</li>
               </ul>
 
               <h4 className="font-semibold text-lg mt-6">16.4 Política de Cookies</h4>
@@ -627,13 +626,11 @@ const Terms = () => {
                 <li><strong>Derechos del Usuario:</strong> Puedes solicitar acceso, corrección o eliminación de tus datos personales en cualquier momento contactando nuestro servicio al cliente</li>
               </ul>
 
-              <h4 className="font-semibold text-lg mt-6">16.6 Protección contra Amenazas</h4>
+              <h4 className="font-semibold text-lg mt-6">16.6 Protección de tu Información</h4>
               <ul className="space-y-2 ml-6 list-disc">
-                <li><strong>Firewall de Aplicaciones Web (WAF):</strong> Protege contra ataques comunes como SQL injection, cross-site scripting (XSS) y DDoS</li>
-                <li><strong>Monitoreo 24/7:</strong> Nuestro equipo de seguridad monitorea continuamente la infraestructura para detectar y responder a amenazas</li>
-                <li><strong>Respuesta a Incidentes:</strong> Contamos con un plan de respuesta a incidentes de seguridad y notificaremos a los usuarios afectados según lo requiera la ley</li>
-                <li><strong>Autenticación Multi-Factor (MFA):</strong> Ofrecemos autenticación de dos factores opcional para mayor seguridad de tu cuenta</li>
-                <li><strong>Análisis de Vulnerabilidades:</strong> Realizamos pruebas de penetración y escaneos de vulnerabilidades regularmente</li>
+                <li><strong>Acceso Restringido:</strong> El acceso a tu información personal está limitado únicamente al personal autorizado que lo necesita para procesar pedidos y brindar soporte</li>
+                <li><strong>Respuesta a Incidentes:</strong> En el improbable caso de un incidente de seguridad que afecte tu información personal, notificaremos a los usuarios afectados según lo requiera la ley</li>
+                <li><strong>Contraseñas Seguras:</strong> Las contraseñas se almacenan utilizando funciones hash criptográficas seguras, no almacenamos contraseñas en texto plano</li>
               </ul>
 
               <h4 className="font-semibold text-lg mt-6">16.7 Tus Responsabilidades de Seguridad</h4>
