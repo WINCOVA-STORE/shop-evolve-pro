@@ -222,8 +222,10 @@ export type Database = {
       orders: {
         Row: {
           billing_address: string | null
+          carrier: string | null
           created_at: string
           currency: string | null
+          estimated_delivery_date: string | null
           id: string
           notes: string | null
           order_number: string
@@ -235,13 +237,16 @@ export type Database = {
           subtotal: number
           tax: number | null
           total: number
+          tracking_number: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           billing_address?: string | null
+          carrier?: string | null
           created_at?: string
           currency?: string | null
+          estimated_delivery_date?: string | null
           id?: string
           notes?: string | null
           order_number: string
@@ -253,13 +258,16 @@ export type Database = {
           subtotal: number
           tax?: number | null
           total: number
+          tracking_number?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           billing_address?: string | null
+          carrier?: string | null
           created_at?: string
           currency?: string | null
+          estimated_delivery_date?: string | null
           id?: string
           notes?: string | null
           order_number?: string
@@ -271,6 +279,7 @@ export type Database = {
           subtotal?: number
           tax?: number | null
           total?: number
+          tracking_number?: string | null
           updated_at?: string
           user_id?: string
         }

@@ -4,44 +4,106 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Package, Search, CheckCircle, Clock, Truck, XCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  ArrowLeft, 
+  Package, 
+  Search, 
+  CheckCircle, 
+  Clock, 
+  Truck, 
+  XCircle,
+  ExternalLink,
+  Calendar 
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+interface Order {
+  id: string;
+  order_number: string;
+  status: string;
+  payment_status: string;
+  total: number;
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  tracking_number?: string;
+  carrier?: string;
+  estimated_delivery_date?: string;
+  shipping_address: any;
+  billing_address: any;
+  created_at: string;
+  updated_at: string;
+  order_items: Array<{
+    product_name: string;
+    quantity: number;
+    product_price: number;
+    subtotal: number;
+  }>;
+}
+
 const TrackOrder = () => {
   const navigate = useNavigate();
+  
+  // Search by Order Number
   const [orderNumber, setOrderNumber] = useState("");
   const [email, setEmail] = useState("");
+  
+  // Search by Date Range
+  const [dateEmail, setDateEmail] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  
   const [isLoading, setIsLoading] = useState(false);
-  const [orderData, setOrderData] = useState<any>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleTrackOrder = async (e: React.FormEvent) => {
+  const getCarrierTrackingUrl = (carrier: string | undefined, trackingNumber: string) => {
+    if (!carrier || !trackingNumber) return null;
+    
+    const carrierLower = carrier.toLowerCase();
+    
+    if (carrierLower.includes('usps')) {
+      return `https://tools.usps.com/go/TrackConfirmAction?tLabels=${trackingNumber}`;
+    } else if (carrierLower.includes('ups')) {
+      return `https://www.ups.com/track?track=yes&trackNums=${trackingNumber}`;
+    } else if (carrierLower.includes('fedex')) {
+      return `https://www.fedex.com/fedextrack/?trknbr=${trackingNumber}`;
+    } else if (carrierLower.includes('dhl')) {
+      return `https://www.dhl.com/en/express/tracking.html?AWB=${trackingNumber}`;
+    }
+    
+    return null;
+  };
+
+  const handleTrackByOrderNumber = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!orderNumber || !email) {
+    if (!orderNumber.trim() || !email.trim()) {
       toast.error("Por favor completa todos los campos");
       return;
     }
 
     setIsLoading(true);
+    setOrders([]);
+    setSelectedOrder(null);
+    
     try {
-      // Query order by order_number and email
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("id")
-        .eq("email", email)
-        .single();
+        .eq("email", email.trim().toLowerCase())
+        .maybeSingle();
 
       if (profileError || !profileData) {
-        toast.error("No se encontró ningún pedido con estos datos");
-        setOrderData(null);
-        setIsLoading(false);
+        toast.error("No se encontró ningún pedido con este correo electrónico");
         return;
       }
 
@@ -56,21 +118,93 @@ const TrackOrder = () => {
             subtotal
           )
         `)
-        .eq("order_number", orderNumber)
+        .eq("order_number", orderNumber.trim().toUpperCase())
         .eq("user_id", profileData.id)
-        .single();
+        .maybeSingle();
 
       if (orderError || !orderData) {
-        toast.error("No se encontró ningún pedido con estos datos");
-        setOrderData(null);
+        toast.error("No se encontró ningún pedido con este número");
       } else {
-        setOrderData(orderData);
-        toast.success("Pedido encontrado");
+        setSelectedOrder(orderData as Order);
+        setOrders([orderData as Order]);
+        toast.success("¡Pedido encontrado!");
       }
     } catch (error) {
       console.error("Error tracking order:", error);
       toast.error("Error al buscar el pedido");
-      setOrderData(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTrackByDate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!dateEmail.trim() || !startDate || !endDate) {
+      toast.error("Por favor completa todos los campos");
+      return;
+    }
+
+    if (new Date(startDate) > new Date(endDate)) {
+      toast.error("La fecha inicial debe ser anterior a la fecha final");
+      return;
+    }
+
+    setIsLoading(true);
+    setOrders([]);
+    setSelectedOrder(null);
+    
+    try {
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("email", dateEmail.trim().toLowerCase())
+        .maybeSingle();
+
+      if (profileError || !profileData) {
+        toast.error("No se encontró ningún pedido con este correo electrónico");
+        return;
+      }
+
+      const startDateTime = new Date(startDate);
+      startDateTime.setHours(0, 0, 0, 0);
+      
+      const endDateTime = new Date(endDate);
+      endDateTime.setHours(23, 59, 59, 999);
+
+      const { data: ordersData, error: ordersError } = await supabase
+        .from("orders")
+        .select(`
+          *,
+          order_items (
+            product_name,
+            quantity,
+            product_price,
+            subtotal
+          )
+        `)
+        .eq("user_id", profileData.id)
+        .gte("created_at", startDateTime.toISOString())
+        .lte("created_at", endDateTime.toISOString())
+        .order("created_at", { ascending: false });
+
+      if (ordersError) {
+        toast.error("Error al buscar pedidos");
+        return;
+      }
+
+      if (!ordersData || ordersData.length === 0) {
+        toast.error("No se encontraron pedidos en este rango de fechas");
+      } else {
+        setOrders(ordersData as Order[]);
+        if (ordersData.length === 1) {
+          setSelectedOrder(ordersData[0] as Order);
+        }
+        toast.success(`Se encontraron ${ordersData.length} pedido(s)`);
+      }
+    } catch (error) {
+      console.error("Error tracking orders by date:", error);
+      toast.error("Error al buscar pedidos");
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +223,7 @@ const TrackOrder = () => {
         return {
           icon: <Package className="h-6 w-6 text-blue-600" />,
           label: "Procesando",
-          description: "Tu pedido está siendo preparado para el envío.",
+          description: "Tu pedido está siendo preparado para el envío por nuestro proveedor.",
           color: "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800"
         };
       case "shipped":
@@ -133,6 +267,126 @@ const TrackOrder = () => {
     });
   };
 
+  const formatShortDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    });
+  };
+
+  const renderOrderCard = (order: Order) => {
+    const trackingUrl = order.tracking_number && order.carrier
+      ? getCarrierTrackingUrl(order.carrier, order.tracking_number)
+      : null;
+
+    return (
+      <Card key={order.id} className={`border ${getStatusInfo(order.status).color}`}>
+        <CardContent className="pt-6">
+          <div className="flex items-start gap-4 mb-4">
+            <div className="p-2 rounded-lg bg-background">
+              {getStatusInfo(order.status).icon}
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold mb-1">
+                Estado: {getStatusInfo(order.status).label}
+              </h2>
+              <p className="text-sm text-muted-foreground mb-2">
+                {getStatusInfo(order.status).description}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Pedido: <span className="font-mono font-semibold">{order.order_number}</span>
+              </p>
+            </div>
+          </div>
+
+          {order.tracking_number && (
+            <div className="mt-4 p-4 bg-background rounded-lg border">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <p className="text-sm font-semibold mb-1">Número de Rastreo:</p>
+                  <p className="text-lg font-mono mb-2">{order.tracking_number}</p>
+                  {order.carrier && (
+                    <p className="text-sm text-muted-foreground">
+                      Transportista: <span className="font-semibold">{order.carrier}</span>
+                    </p>
+                  )}
+                  {order.estimated_delivery_date && (
+                    <p className="text-sm text-muted-foreground">
+                      Entrega estimada: <span className="font-semibold">
+                        {formatShortDate(order.estimated_delivery_date)}
+                      </span>
+                    </p>
+                  )}
+                </div>
+                {trackingUrl && (
+                  <Button asChild variant="outline" size="sm">
+                    <a href={trackingUrl} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Rastrear
+                    </a>
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="border-t mt-4 pt-4">
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Fecha:</span>
+                <span className="font-semibold">{formatDate(order.created_at)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Total:</span>
+                <span className="font-semibold text-lg">${order.total.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+
+          {order.order_items && order.order_items.length > 0 && (
+            <div className="border-t mt-4 pt-4">
+              <h4 className="font-semibold text-sm mb-3">Productos ({order.order_items.length}):</h4>
+              <div className="space-y-2">
+                {order.order_items.map((item, index) => (
+                  <div key={index} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {item.product_name} x {item.quantity}
+                    </span>
+                    <span className="font-semibold">${item.subtotal.toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {order.shipping_address && (
+            <div className="border-t mt-4 pt-4">
+              <h4 className="font-semibold text-sm mb-2">Dirección de Envío:</h4>
+              <div className="text-xs text-muted-foreground space-y-1">
+                {typeof order.shipping_address === 'string' ? (
+                  <p>{order.shipping_address}</p>
+                ) : (
+                  <>
+                    {order.shipping_address.street && <p>{order.shipping_address.street}</p>}
+                    {order.shipping_address.city && (
+                      <p>
+                        {order.shipping_address.city}
+                        {order.shipping_address.state && `, ${order.shipping_address.state}`}
+                        {order.shipping_address.zipCode && ` ${order.shipping_address.zipCode}`}
+                      </p>
+                    )}
+                    {order.shipping_address.country && <p>{order.shipping_address.country}</p>}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -156,137 +410,137 @@ const TrackOrder = () => {
           </div>
           <h1 className="text-4xl font-bold mb-4">Rastrear tu Pedido</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Ingresa tu número de pedido y correo electrónico para ver el estado actual de tu envío.
+            Consulta el estado de tu pedido usando tu número de orden o buscando por rango de fechas.
           </p>
         </div>
 
-        {/* Track Order Form */}
+        {/* Search Tabs */}
         <Card className="mb-8">
           <CardContent className="pt-6">
-            <form onSubmit={handleTrackOrder} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="orderNumber">Número de Pedido</Label>
-                <Input
-                  id="orderNumber"
-                  type="text"
-                  placeholder="Ej: ORD-2025-001234"
-                  value={orderNumber}
-                  onChange={(e) => setOrderNumber(e.target.value)}
-                  required
-                />
-                <p className="text-sm text-muted-foreground">
-                  Puedes encontrar tu número de pedido en el correo de confirmación.
-                </p>
-              </div>
+            <Tabs defaultValue="order-number">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="order-number">
+                  <Package className="h-4 w-4 mr-2" />
+                  Por Número de Pedido
+                </TabsTrigger>
+                <TabsTrigger value="date-range">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Por Rango de Fechas
+                </TabsTrigger>
+              </TabsList>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Correo Electrónico</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="tu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <p className="text-sm text-muted-foreground">
-                  El correo electrónico que usaste para realizar la compra.
-                </p>
-              </div>
+              <TabsContent value="order-number" className="mt-6">
+                <form onSubmit={handleTrackByOrderNumber} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="orderNumber">Número de Pedido</Label>
+                    <Input
+                      id="orderNumber"
+                      type="text"
+                      placeholder="Ej: ORD-2025-001234"
+                      value={orderNumber}
+                      onChange={(e) => setOrderNumber(e.target.value)}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Lo encuentras en el correo de confirmación de tu compra.
+                    </p>
+                  </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                <Search className="mr-2 h-4 w-4" />
-                {isLoading ? "Buscando..." : "Rastrear Pedido"}
-              </Button>
-            </form>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Correo Electrónico</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="tu@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      El correo usado para realizar la compra.
+                    </p>
+                  </div>
+
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    <Search className="mr-2 h-4 w-4" />
+                    {isLoading ? "Buscando..." : "Rastrear Pedido"}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              <TabsContent value="date-range" className="mt-6">
+                <form onSubmit={handleTrackByDate} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="dateEmail">Correo Electrónico</Label>
+                    <Input
+                      id="dateEmail"
+                      type="email"
+                      placeholder="tu@email.com"
+                      value={dateEmail}
+                      onChange={(e) => setDateEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="startDate">Desde</Label>
+                      <Input
+                        id="startDate"
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        max={new Date().toISOString().split('T')[0]}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="endDate">Hasta</Label>
+                      <Input
+                        id="endDate"
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        max={new Date().toISOString().split('T')[0]}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground">
+                    Busca todos los pedidos realizados en un rango de fechas específico.
+                  </p>
+
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    <Search className="mr-2 h-4 w-4" />
+                    {isLoading ? "Buscando..." : "Buscar Pedidos"}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
 
-        {/* Order Results */}
-        {orderData && (
+        {/* Results Section */}
+        {orders.length > 0 && (
           <div className="space-y-6">
-            {/* Status Card */}
-            <Card className={`border ${getStatusInfo(orderData.status).color}`}>
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-lg bg-background">
-                    {getStatusInfo(orderData.status).icon}
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-bold mb-2">
-                      Estado: {getStatusInfo(orderData.status).label}
-                    </h2>
-                    <p className="text-muted-foreground">
-                      {getStatusInfo(orderData.status).description}
-                    </p>
-                  </div>
-                </div>
-
-                {orderData.tracking_number && (
-                  <div className="mt-4 p-4 bg-background rounded-lg">
-                    <p className="text-sm font-semibold mb-1">Número de Rastreo:</p>
-                    <p className="text-lg font-mono">{orderData.tracking_number}</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Order Details */}
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="text-xl font-bold mb-4">Detalles del Pedido</h3>
-                
-                <div className="space-y-3 mb-6">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Número de Pedido:</span>
-                    <span className="font-semibold">{orderData.order_number}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Fecha de Pedido:</span>
-                    <span className="font-semibold">{formatDate(orderData.created_at)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Total:</span>
-                    <span className="font-semibold text-lg">${orderData.total_amount.toFixed(2)}</span>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4">
-                  <h4 className="font-semibold mb-3">Dirección de Envío:</h4>
-                  <div className="text-sm text-muted-foreground space-y-1">
-                    <p>{orderData.shipping_address.street}</p>
-                    <p>
-                      {orderData.shipping_address.city}, {orderData.shipping_address.state}{" "}
-                      {orderData.shipping_address.zipCode}
-                    </p>
-                    <p>{orderData.shipping_address.country}</p>
-                  </div>
-                </div>
-
-                {orderData.order_items && orderData.order_items.length > 0 && (
-                  <div className="border-t mt-4 pt-4">
-                    <h4 className="font-semibold mb-3">Productos:</h4>
-                    <div className="space-y-2">
-                      {orderData.order_items.map((item: any, index: number) => (
-                        <div key={index} className="flex justify-between text-sm">
-                          <span>
-                            {item.product_name} x {item.quantity}
-                          </span>
-                          <span className="font-semibold">${item.subtotal.toFixed(2)}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {orders.length > 1 && (
+              <div className="text-center p-4 bg-muted rounded-lg">
+                <p className="text-sm font-semibold">
+                  Se encontraron {orders.length} pedidos en este rango de fechas
+                </p>
+              </div>
+            )}
+            
+            {orders.map((order) => renderOrderCard(order))}
 
             {/* Help Section */}
             <Card className="bg-muted/50">
               <CardContent className="pt-6">
                 <h3 className="font-bold mb-2">¿Necesitas ayuda con tu pedido?</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Si tienes alguna pregunta o problema con tu pedido, no dudes en contactarnos.
+                  Si tienes alguna pregunta o problema, contáctanos:
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button asChild variant="outline" className="flex-1">
@@ -306,26 +560,30 @@ const TrackOrder = () => {
         )}
 
         {/* Information Card */}
-        {!orderData && (
+        {orders.length === 0 && !isLoading && (
           <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
             <CardContent className="pt-6">
               <h3 className="font-bold text-lg mb-3">Información Importante</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex gap-2">
                   <span className="text-primary">•</span>
-                  <span>El número de pedido se envía a tu correo electrónico inmediatamente después de realizar la compra.</span>
+                  <span>El número de pedido se envía por correo inmediatamente después de tu compra.</span>
                 </li>
                 <li className="flex gap-2">
                   <span className="text-primary">•</span>
-                  <span>Si no encuentras el correo, revisa tu carpeta de spam o correo no deseado.</span>
+                  <span>Si no encuentras el correo, revisa tu carpeta de spam.</span>
                 </li>
                 <li className="flex gap-2">
                   <span className="text-primary">•</span>
-                  <span>El estado del pedido se actualiza cada 24 horas.</span>
+                  <span>Los números de rastreo se actualizan cada 24 horas una vez que el pedido es enviado.</span>
                 </li>
                 <li className="flex gap-2">
                   <span className="text-primary">•</span>
-                  <span>Los tiempos de envío varían entre 2-5 días hábiles dependiendo de tu ubicación.</span>
+                  <span>Los envíos desde nuestros proveedores en US/EU tardan 2-5 días hábiles.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-primary">•</span>
+                  <span>Si no tienes tu número de pedido, usa la búsqueda por fechas.</span>
                 </li>
               </ul>
             </CardContent>
