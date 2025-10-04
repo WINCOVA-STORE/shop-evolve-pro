@@ -130,9 +130,9 @@ export const Footer = () => {
                 <Input
                   type="email"
                   placeholder={t('footer.newsletter_placeholder')}
-                  className="bg-background"
+                  className="bg-background text-foreground placeholder:text-muted-foreground border-border hover:border-primary/50 focus:border-primary transition-colors"
                 />
-                <Button>{t('footer.newsletter_submit')}</Button>
+                <Button className="hover:scale-105 transition-transform">{t('footer.newsletter_submit')}</Button>
               </div>
             </div>
           </div>
