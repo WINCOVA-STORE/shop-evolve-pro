@@ -111,9 +111,13 @@ const RewardsTerms = () => {
                   <li>Bonus de cumpleaños: 3,000 puntos</li>
                 </ul>
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
-                👉 Consulta la lista completa de acciones y sus puntos correspondientes en la sección "Comparte y Gana" de tu perfil.
-              </p>
+              <Button
+                variant="link"
+                onClick={() => navigate('/refer-earn')}
+                className="text-sm text-primary hover:text-primary/80 p-0 h-auto mt-2 font-semibold"
+              >
+                👉 Consulta la lista completa de acciones y sus puntos correspondientes en la sección "Refiere y Gana"
+              </Button>
             </CardContent>
           </Card>
 
@@ -132,13 +136,13 @@ const RewardsTerms = () => {
               <p>
                 Simplemente selecciona cuántos puntos deseas usar y verás cómo se reduce el monto a pagar. Es fácil, rápido y automático.
               </p>
-              <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-lg p-4 mt-4">
-                <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
-                  ⚠️ <strong>Límite de uso:</strong> Puedes usar puntos para cubrir hasta el 2% del valor total de tu compra. Esto asegura que el programa sea justo y sustentable para todos.
+              <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20 rounded-lg p-4 mt-4">
+                <p className="text-sm font-medium">
+                  ⚠️ <strong>Límite de uso:</strong> Puedes usar tus puntos para cubrir un porcentaje del valor total de tu compra. El porcentaje máximo aplicable se mostrará automáticamente en el checkout según tu compra.
                 </p>
               </div>
               <p className="text-sm text-muted-foreground">
-                El valor de cada punto y las condiciones de canje pueden variar. Siempre verás el valor aplicado antes de confirmar tu compra.
+                💡 El valor de cada punto y las condiciones de canje pueden variar. Siempre verás el descuento exacto aplicado antes de confirmar tu compra.
               </p>
             </CardContent>
           </Card>
@@ -302,8 +306,15 @@ const RewardsTerms = () => {
               </div>
               <h3 className="text-3xl font-bold mb-3">¿Listo para Ganar Puntos?</h3>
               <p className="text-muted-foreground text-lg mb-6">
-                <span className="font-semibold text-foreground">500 puntos de bienvenida</span> te esperan. 
-                Regístrate y <span className="text-primary font-semibold">empieza a ahorrar hoy</span>
+                <span className="font-semibold text-foreground">500 puntos de bienvenida</span> te esperan.{" "}
+                <Button
+                  variant="link"
+                  onClick={() => navigate('/auth')}
+                  className="text-lg text-primary hover:text-primary/80 p-0 h-auto font-semibold underline"
+                >
+                  Regístrate
+                </Button>{" "}
+                y <span className="text-primary font-semibold">empieza a ahorrar hoy</span>
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
@@ -319,7 +330,7 @@ const RewardsTerms = () => {
                   size="lg"
                   variant="outline"
                   onClick={() => navigate('/')}
-                  className="border-2 hover:bg-primary/5 hover:scale-105 transition-all"
+                  className="border-2 border-primary/40 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 hover:border-primary hover:scale-105 transition-all duration-300 hover:shadow-lg"
                 >
                   Empezar a Comprar
                 </Button>
