@@ -249,24 +249,24 @@ const TrackOrder = () => {
     switch (status) {
       case "pending":
         return {
-          icon: <Clock className="h-6 w-6 text-yellow-600" />,
+          icon: <Clock className="h-6 w-6 text-primary" />,
           label: "Pendiente",
           description: "Tu pedido ha sido recibido y está siendo procesado.",
-          color: "bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-800"
+          color: "bg-primary/5 dark:bg-primary/10 border-primary/20 dark:border-primary/30"
         };
       case "processing":
         return {
-          icon: <Package className="h-6 w-6 text-blue-600" />,
+          icon: <Package className="h-6 w-6 text-primary" />,
           label: "Procesando",
           description: "Tu pedido está siendo preparado para el envío por nuestro proveedor.",
-          color: "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800"
+          color: "bg-primary/5 dark:bg-primary/10 border-primary/20 dark:border-primary/30"
         };
       case "shipped":
         return {
-          icon: <Truck className="h-6 w-6 text-purple-600" />,
+          icon: <Truck className="h-6 w-6 text-primary" />,
           label: "Enviado",
           description: "Tu pedido ha sido enviado y está en camino.",
-          color: "bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800"
+          color: "bg-secondary/5 dark:bg-secondary/20 border-secondary/20 dark:border-secondary/30"
         };
       case "delivered":
         return {
@@ -284,10 +284,10 @@ const TrackOrder = () => {
         };
       default:
         return {
-          icon: <Package className="h-6 w-6 text-gray-600" />,
+          icon: <Package className="h-6 w-6 text-muted-foreground" />,
           label: "Desconocido",
           description: "Estado del pedido no disponible.",
-          color: "bg-gray-50 dark:bg-gray-950/20 border-gray-200 dark:border-gray-800"
+          color: "bg-muted/50 dark:bg-muted border-muted dark:border-muted"
         };
     }
   };
@@ -324,11 +324,11 @@ const TrackOrder = () => {
       >
         {/* Status gradient bar */}
         <div className={`h-2 ${
-          order.status === 'delivered' ? 'bg-gradient-to-r from-green-400 to-emerald-500' :
-          order.status === 'shipped' ? 'bg-gradient-to-r from-purple-400 to-pink-500' :
-          order.status === 'processing' ? 'bg-gradient-to-r from-blue-400 to-cyan-500' :
-          order.status === 'cancelled' ? 'bg-gradient-to-r from-red-400 to-orange-500' :
-          'bg-gradient-to-r from-yellow-400 to-orange-500'
+          order.status === 'delivered' ? 'bg-gradient-to-r from-green-500 to-emerald-600' :
+          order.status === 'shipped' ? 'bg-gradient-to-r from-secondary to-secondary/80' :
+          order.status === 'processing' ? 'bg-gradient-to-r from-primary to-primary/80' :
+          order.status === 'cancelled' ? 'bg-gradient-to-r from-red-500 to-red-600' :
+          'bg-gradient-to-r from-primary to-primary/80'
         }`}></div>
         
         <CardContent className="pt-6">
@@ -340,11 +340,11 @@ const TrackOrder = () => {
               
               {/* Icon container */}
               <div className={`relative p-3 rounded-xl shadow-lg ${
-                order.status === 'delivered' ? 'bg-gradient-to-br from-green-400 to-emerald-500' :
-                order.status === 'shipped' ? 'bg-gradient-to-br from-purple-400 to-pink-500' :
-                order.status === 'processing' ? 'bg-gradient-to-br from-blue-400 to-cyan-500' :
-                order.status === 'cancelled' ? 'bg-gradient-to-br from-red-400 to-orange-500' :
-                'bg-gradient-to-br from-yellow-400 to-orange-500'
+                order.status === 'delivered' ? 'bg-gradient-to-br from-green-500 to-emerald-600' :
+                order.status === 'shipped' ? 'bg-gradient-to-br from-secondary to-secondary/90' :
+                order.status === 'processing' ? 'bg-gradient-to-br from-primary to-primary/90' :
+                order.status === 'cancelled' ? 'bg-gradient-to-br from-red-500 to-red-600' :
+                'bg-gradient-to-br from-primary to-primary/90'
               }`}>
                 <div className="text-white">
                   {statusInfo.icon}
@@ -375,7 +375,7 @@ const TrackOrder = () => {
 
           {/* Tracking Number Section */}
           {order.tracking_number && (
-            <div className="mt-4 p-5 bg-gradient-to-br from-primary/5 via-purple-500/5 to-primary/5 rounded-xl border-2 border-primary/20 shadow-inner">
+            <div className="mt-4 p-5 bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/5 rounded-xl border-2 border-primary/20 shadow-inner">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-3">
@@ -418,7 +418,7 @@ const TrackOrder = () => {
                 {trackingUrl && (
                   <Button 
                     asChild 
-                    className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                    className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
                   >
                     <a href={trackingUrl} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-2" />
@@ -514,7 +514,7 @@ const TrackOrder = () => {
       {/* Decorative background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 right-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 left-10 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 left-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       </div>
       
       <main className="container mx-auto px-4 py-8 max-w-4xl relative">
@@ -533,24 +533,24 @@ const TrackOrder = () => {
             <div className="relative">
               {/* Animated rings */}
               <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping"></div>
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-purple-500 opacity-20 blur-xl"></div>
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary opacity-20 blur-xl"></div>
               
               {/* Main icon */}
-              <div className="relative p-6 rounded-full bg-gradient-to-br from-primary to-purple-600 shadow-2xl shadow-primary/50">
+              <div className="relative p-6 rounded-full bg-gradient-to-br from-primary to-secondary shadow-2xl shadow-primary/50">
                 <Package className="h-16 w-16 text-white" />
               </div>
               
               {/* Floating decorative icons */}
-              <div className="absolute -top-2 -right-2 p-2 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg animate-bounce">
+              <div className="absolute -top-2 -right-2 p-2 rounded-full bg-primary shadow-lg animate-bounce">
                 <Zap className="h-4 w-4 text-white" />
               </div>
-              <div className="absolute -bottom-2 -left-2 p-2 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shadow-lg animate-bounce" style={{ animationDelay: '0.3s' }}>
+              <div className="absolute -bottom-2 -left-2 p-2 rounded-full bg-secondary shadow-lg animate-bounce" style={{ animationDelay: '0.3s' }}>
                 <Star className="h-4 w-4 text-white" />
               </div>
             </div>
           </div>
           
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary via-purple-600 to-primary bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
             Rastrear tu Pedido
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -560,16 +560,16 @@ const TrackOrder = () => {
           
           {/* Stats badges */}
           <div className="flex flex-wrap justify-center gap-4 mt-8">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 to-purple-500/10 border border-primary/20">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30">
               <Truck className="h-4 w-4 text-primary" />
               <span className="text-sm font-semibold">Envío 2-5 días</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30">
               <CheckCircle className="h-4 w-4 text-green-600" />
               <span className="text-sm font-semibold">Actualización 24h</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20">
-              <MapPin className="h-4 w-4 text-blue-600" />
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/30">
+              <MapPin className="h-4 w-4 text-secondary-foreground" />
               <span className="text-sm font-semibold">US & EU</span>
             </div>
           </div>
@@ -578,21 +578,21 @@ const TrackOrder = () => {
         {/* Search Tabs */}
         <Card className="mb-8 shadow-2xl border-2 hover:shadow-primary/20 transition-all duration-300 animate-scale-in overflow-hidden">
           {/* Gradient header bar */}
-          <div className="h-2 bg-gradient-to-r from-primary via-purple-600 to-primary"></div>
+          <div className="h-2 bg-gradient-to-r from-primary via-secondary to-primary"></div>
           
           <CardContent className="pt-6">
             <Tabs defaultValue="order-number">
-              <TabsList className="grid w-full grid-cols-2 p-1 bg-gradient-to-r from-primary/5 to-purple-500/5">
+              <TabsList className="grid w-full grid-cols-2 p-1 bg-gradient-to-r from-primary/5 to-secondary/5">
                 <TabsTrigger 
                   value="order-number" 
-                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
                 >
                   <Package className="h-4 w-4 mr-2" />
                   Por Número de Pedido
                 </TabsTrigger>
                 <TabsTrigger 
                   value="date-range"
-                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all"
                 >
                   <Calendar className="h-4 w-4 mr-2" />
                   Por Rango de Fechas
@@ -633,7 +633,7 @@ const TrackOrder = () => {
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all" 
+                    className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all" 
                     disabled={isLoading}
                   >
                     <Search className="mr-2 h-4 w-4" />
@@ -695,7 +695,7 @@ const TrackOrder = () => {
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all" 
+                    className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all" 
                     disabled={isLoading}
                   >
                     <Search className="mr-2 h-4 w-4" />
@@ -718,7 +718,7 @@ const TrackOrder = () => {
         {orders.length > 0 && (
           <div className="space-y-6 animate-fade-in">
             {orders.length > 1 && (
-              <div className="text-center p-5 bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 rounded-xl border-2 border-primary/20 shadow-lg">
+              <div className="text-center p-5 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 rounded-xl border-2 border-primary/20 shadow-lg">
                 <div className="flex items-center justify-center gap-3 mb-2">
                   <CheckCircle className="h-6 w-6 text-green-600" />
                   <p className="text-lg font-bold">
@@ -734,11 +734,11 @@ const TrackOrder = () => {
             {orders.map((order) => renderOrderCard(order))}
 
             {/* Help Section */}
-            <Card className="bg-gradient-to-br from-primary/5 via-purple-500/5 to-primary/5 border-2 border-primary/20 shadow-xl overflow-hidden">
-              <div className="h-1 bg-gradient-to-r from-primary via-purple-600 to-primary"></div>
+            <Card className="bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/5 border-2 border-primary/20 shadow-xl overflow-hidden">
+              <div className="h-1 bg-gradient-to-r from-primary via-secondary to-primary"></div>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 rounded-full bg-gradient-to-br from-primary to-purple-600">
+                  <div className="p-2 rounded-full bg-gradient-to-br from-primary to-secondary">
                     <Star className="h-5 w-5 text-white" />
                   </div>
                   <h3 className="font-bold text-xl">¿Necesitas ayuda?</h3>
@@ -757,7 +757,7 @@ const TrackOrder = () => {
                   </Button>
                   <Button 
                     asChild 
-                    className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                    className="flex-1 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
                   >
                     <a href="mailto:ventas@wincova.com">
                       ✉️ Email: ventas@wincova.com
@@ -772,7 +772,7 @@ const TrackOrder = () => {
         {/* Information Card */}
         {orders.length === 0 && !isLoading && (
           <Card className="shadow-xl border-2 overflow-hidden animate-scale-in">
-            <div className="h-1 bg-gradient-to-r from-primary via-purple-600 to-primary"></div>
+            <div className="h-1 bg-gradient-to-r from-primary via-secondary to-primary"></div>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 rounded-xl bg-primary/10">
