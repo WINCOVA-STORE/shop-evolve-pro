@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 
 interface ReviewFormProps {
   productId: string;
@@ -27,6 +28,7 @@ export const ReviewForm = ({ productId, onSuccess }: ReviewFormProps) => {
 
   const createReview = useCreateReview();
   const { data: orders } = useUserOrders();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +57,7 @@ export const ReviewForm = ({ productId, onSuccess }: ReviewFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg">
       <div className="space-y-2">
-        <Label>Calificación *</Label>
+        <Label>{t("reviews.rating_label")} *</Label>
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
@@ -80,10 +82,10 @@ export const ReviewForm = ({ productId, onSuccess }: ReviewFormProps) => {
 
       {relevantOrders && relevantOrders.length > 0 && (
         <div className="space-y-2">
-          <Label>¿Compraste este producto? (Opcional)</Label>
+          <Label>{t("reviews.bought_product")}</Label>
           <Select value={selectedOrderId} onValueChange={setSelectedOrderId}>
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona tu pedido" />
+              <SelectValue placeholder={t("reviews.select_order")} />
             </SelectTrigger>
             <SelectContent>
               {relevantOrders.map((order) => (
@@ -97,23 +99,23 @@ export const ReviewForm = ({ productId, onSuccess }: ReviewFormProps) => {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="title">Título (Opcional)</Label>
+        <Label htmlFor="title">{t("reviews.title_label")}</Label>
         <Input
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Resume tu opinión"
+          placeholder={t("reviews.title_placeholder")}
           maxLength={100}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="comment">Comentario (Opcional)</Label>
+        <Label htmlFor="comment">{t("reviews.comment_label")}</Label>
         <Textarea
           id="comment"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          placeholder="Cuéntanos más sobre tu experiencia"
+          placeholder={t("reviews.comment_placeholder")}
           rows={4}
           maxLength={1000}
         />
@@ -121,10 +123,10 @@ export const ReviewForm = ({ productId, onSuccess }: ReviewFormProps) => {
 
       <div className="flex gap-2">
         <Button type="submit" disabled={createReview.isPending}>
-          {createReview.isPending ? "Publicando..." : "Publicar reseña"}
+          {createReview.isPending ? t("reviews.publishing") : t("reviews.publish_review")}
         </Button>
         <p className="text-sm text-muted-foreground self-center">
-          Ganarás 100 puntos 🎁
+          {t("reviews.earn_points")}
         </p>
       </div>
     </form>

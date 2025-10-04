@@ -14,6 +14,7 @@ import { Footer } from "@/components/Footer";
 import { RewardsBalance } from "@/components/RewardsBalance";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useTranslation } from "react-i18next";
 
 interface Order {
   id: string;
@@ -54,6 +55,7 @@ const Profile = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [orders, setOrders] = useState<Order[]>([]);
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [rewards, setRewards] = useState<Reward[]>([]);
@@ -95,7 +97,7 @@ const Profile = () => {
       console.error("Error fetching user data:", error);
       toast({
         title: "Error",
-        description: "No se pudieron cargar tus datos",
+        description: t("profile.error_loading"),
         variant: "destructive",
       });
     } finally {
@@ -123,14 +125,14 @@ const Profile = () => {
       if (error) throw error;
 
       toast({
-        title: "Perfil actualizado",
-        description: "Tus datos se han guardado correctamente",
+        title: t("profile.profile_updated"),
+        description: t("profile.profile_saved"),
       });
     } catch (error) {
       console.error("Error updating profile:", error);
       toast({
         title: "Error",
-        description: "No se pudo actualizar el perfil",
+        description: t("profile.error_updating"),
         variant: "destructive",
       });
     } finally {
@@ -156,7 +158,7 @@ const Profile = () => {
 
   const getPaymentStatusBadge = (status: string) => {
     return status === "paid" ? (
-      <Badge variant="default">Pagado</Badge>
+      <Badge variant="default">{t("profile.paid")}</Badge>
     ) : (
       <Badge variant="secondary">{status}</Badge>
     );
@@ -181,11 +183,11 @@ const Profile = () => {
           onClick={() => navigate("/")}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Volver a la tienda
+          {t("profile.back_to_store")}
         </Button>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Mi Perfil</h1>
+          <h1 className="text-3xl font-bold mb-2">{t("profile.title")}</h1>
           <p className="text-muted-foreground">{user?.email}</p>
         </div>
 
@@ -193,31 +195,31 @@ const Profile = () => {
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="orders">
               <Package className="mr-2 h-4 w-4" />
-              Órdenes
+              {t("profile.orders_tab")}
             </TabsTrigger>
             <TabsTrigger value="referrals">
               <Users className="mr-2 h-4 w-4" />
-              Referidos
+              {t("profile.referrals_tab")}
             </TabsTrigger>
             <TabsTrigger value="rewards">
               <Gift className="mr-2 h-4 w-4" />
-              Recompensas
+              {t("profile.rewards_tab")}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="orders" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Historial de Órdenes</CardTitle>
+                <CardTitle>{t("profile.order_history")}</CardTitle>
                 <CardDescription>
-                  Todas tus compras realizadas
+                  {t("profile.order_history_desc")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {orders.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No tienes órdenes aún</p>
+                    <p>{t("profile.no_orders")}</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -252,7 +254,7 @@ const Profile = () => {
                           {getStatusBadge(order.status)}
                           {getPaymentStatusBadge(order.payment_status)}
                           <span className="ml-auto text-xs text-primary font-medium group-hover:translate-x-1 transition-transform">
-                            Ver Detalles →
+                            {t("profile.view_details")} →
                           </span>
                         </div>
                       </div>
@@ -266,15 +268,15 @@ const Profile = () => {
           <TabsContent value="referrals" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Programa de Referidos</CardTitle>
+                <CardTitle>{t("profile.referral_program")}</CardTitle>
                 <CardDescription>
-                  Invita amigos y gana recompensas
+                  {t("profile.referral_program_desc")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="mb-6 p-4 bg-muted rounded-lg">
                   <p className="text-sm text-muted-foreground mb-2">
-                    Total de referidos exitosos
+                    {t("profile.total_successful_referrals")}
                   </p>
                   <p className="text-3xl font-bold">{referrals.length}</p>
                 </div>
@@ -282,9 +284,9 @@ const Profile = () => {
                 {referrals.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Aún no has referido a nadie</p>
+                    <p>{t("profile.no_referrals")}</p>
                     <Button className="mt-4" onClick={() => navigate("/refer-earn")}>
-                      Comenzar a Referir
+                      {t("profile.start_referring")}
                     </Button>
                   </div>
                 ) : (

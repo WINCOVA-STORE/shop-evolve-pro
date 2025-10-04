@@ -8,6 +8,7 @@ import { useProductReviews } from "@/hooks/useReviews";
 import { ReviewForm } from "./ReviewForm";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 interface ProductReviewsProps {
   productId: string;
@@ -16,9 +17,10 @@ interface ProductReviewsProps {
 export const ProductReviews = ({ productId }: ProductReviewsProps) => {
   const { data: reviews, isLoading } = useProductReviews(productId);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const { t } = useTranslation();
 
   if (isLoading) {
-    return <div className="text-center py-8">Cargando reseñas...</div>;
+    return <div className="text-center py-8">{t("reviews.loading_reviews")}</div>;
   }
 
   const averageRating = reviews && reviews.length > 0
@@ -34,7 +36,7 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Opiniones de clientes</CardTitle>
+          <CardTitle>{t("reviews.customer_opinions")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-2 gap-6 mb-6">
@@ -55,7 +57,7 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
                     ))}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {reviews?.length || 0} reseñas
+                    {reviews?.length || 0} {t("reviews.reviews")}
                   </p>
                 </div>
               </div>
@@ -91,11 +93,11 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
             {showReviewForm ? (
               <>
                 <ChevronUp className="w-4 h-4 mr-2" />
-                Cancelar
+                {t("reviews.cancel")}
               </>
             ) : (
               <>
-                Escribir una reseña
+                {t("reviews.write_review")}
               </>
             )}
           </Button>
@@ -126,11 +128,11 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold">
-                      {review.profiles?.full_name || "Usuario"}
+                    {review.profiles?.full_name || "Usuario"}
                     </span>
                     {review.is_verified_purchase && (
                       <Badge variant="secondary" className="text-xs">
-                        Compra verificada
+                        {t("reviews.verified_purchase")}
                       </Badge>
                     )}
                   </div>
