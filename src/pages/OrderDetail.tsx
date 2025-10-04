@@ -109,6 +109,24 @@ const OrderDetail = () => {
     }
   };
 
+  const getCarrierTrackingUrl = (carrier: string | null, trackingNumber: string) => {
+    if (!carrier) return null;
+    
+    const carrierLower = carrier.toLowerCase();
+    
+    if (carrierLower.includes('ups')) {
+      return `https://www.ups.com/track?tracknum=${trackingNumber}`;
+    } else if (carrierLower.includes('fedex')) {
+      return `https://www.fedex.com/fedextrack/?trknbr=${trackingNumber}`;
+    } else if (carrierLower.includes('usps')) {
+      return `https://tools.usps.com/go/TrackConfirmAction?tLabels=${trackingNumber}`;
+    } else if (carrierLower.includes('dhl')) {
+      return `https://www.dhl.com/en/express/tracking.html?AWB=${trackingNumber}`;
+    }
+    
+    return null;
+  };
+
   const getStatusInfo = (status: string) => {
     const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any; color: string }> = {
       pending: { 
@@ -381,10 +399,20 @@ const OrderDetail = () => {
                     <Button 
                       variant="outline" 
                       className="w-full border-primary/40 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 hover:border-primary hover:scale-105 transition-all hover:shadow-lg"
-                      onClick={() => navigate("/track-order")}
+                      onClick={() => {
+                        const trackingUrl = getCarrierTrackingUrl(order.carrier, order.tracking_number!);
+                        if (trackingUrl) {
+                          window.open(trackingUrl, '_blank');
+                        } else {
+                          toast({
+                            title: "Rastreo en vivo",
+                            description: `Número de seguimiento: ${order.tracking_number}`,
+                          });
+                        }
+                      }}
                     >
                       <Truck className="mr-2 h-4 w-4" />
-                      Rastrear Envío
+                      Rastrear en Vivo
                     </Button>
                   )}
                 </div>
