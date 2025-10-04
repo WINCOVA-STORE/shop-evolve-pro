@@ -23,7 +23,8 @@
     "new_products_badge": "New Products Every Week"
   },
   "categories": {
-    "title": "Shop by Category"
+    "title": "Shop by Category",
+    "no_categories": "No categories available yet"
   },
   "products": {
     "featured": "Featured Products",

@@ -5,8 +5,8 @@ import { CategoryCard } from "@/components/CategoryCard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { mainCategories } from "@/data/categories";
 import { useFeaturedProducts } from "@/hooks/useProducts";
+import { useMainCategoriesWithProducts } from "@/hooks/useCategoriesWithProducts";
 import { useReferral } from "@/hooks/useReferral";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
@@ -14,6 +14,7 @@ import { Truck, Shield, Package, Gift, Star, TrendingUp } from "lucide-react";
 
 const Index = () => {
   const { data: products, isLoading } = useFeaturedProducts(8);
+  const { data: categoriesWithProducts, isLoading: categoriesLoading } = useMainCategoriesWithProducts();
   const { t } = useTranslation();
   
   // Capture referral code from URL
@@ -87,14 +88,27 @@ const Index = () => {
       <section className="container mx-auto px-4 py-12">
         <h2 className="text-3xl font-bold text-foreground mb-8">{t('categories.title')}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {mainCategories.map((category) => (
-            <CategoryCard
-              key={category.name}
-              name={category.name}
-              icon={category.icon}
-              href={`/category/${category.slug}`}
-            />
-          ))}
+          {categoriesLoading ? (
+            [...Array(12)].map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="aspect-square w-full rounded-lg" />
+                <Skeleton className="h-4 w-3/4 mx-auto" />
+              </div>
+            ))
+          ) : categoriesWithProducts && categoriesWithProducts.length > 0 ? (
+            categoriesWithProducts.map((category) => (
+              <CategoryCard
+                key={category.name}
+                name={category.name}
+                icon={category.icon}
+                href={`/category/${category.slug}`}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center text-muted-foreground py-8">
+              {t('categories.no_categories')}
+            </div>
+          )}
         </div>
       </section>
 

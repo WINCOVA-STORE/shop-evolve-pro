@@ -23,7 +23,8 @@
     "new_products_badge": "每周新品"
   },
   "categories": {
-    "title": "按类别购物"
+    "title": "按类别购物",
+    "no_categories": "暂无可用类别"
   },
   "products": {
     "featured": "精选产品",

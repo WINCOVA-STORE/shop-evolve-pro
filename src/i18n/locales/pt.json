@@ -23,7 +23,8 @@
     "new_products_badge": "Novos Produtos Toda Semana"
   },
   "categories": {
-    "title": "Comprar por Categoria"
+    "title": "Comprar por Categoria",
+    "no_categories": "Nenhuma categoria disponível ainda"
   },
   "products": {
     "featured": "Produtos em Destaque",
