@@ -16,6 +16,15 @@ export interface Product {
   reward_percentage: number;
   created_at: string;
   updated_at: string;
+  // Multi-language fields
+  name_es?: string | null;
+  name_fr?: string | null;
+  name_pt?: string | null;
+  name_zh?: string | null;
+  description_es?: string | null;
+  description_fr?: string | null;
+  description_pt?: string | null;
+  description_zh?: string | null;
 }
 
 export const useProducts = () => {

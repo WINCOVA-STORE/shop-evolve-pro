@@ -14,6 +14,7 @@ import { Loader2, ArrowLeft, ShoppingCart, Heart, Share2, Minus, Plus, Star, Pac
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ProductReviews } from "@/components/ProductReviews";
 import { Product } from "@/hooks/useProducts";
+import { useTranslatedProduct } from "@/hooks/useTranslatedProduct";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -26,6 +27,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const { name: translatedName, description: translatedDescription } = useTranslatedProduct(product);
 
   useEffect(() => {
     if (id) {
@@ -75,7 +77,7 @@ const ProductDetail = () => {
 
     toast({
       title: "¡Agregado al carrito!",
-      description: `${quantity} ${quantity === 1 ? 'unidad' : 'unidades'} de ${product.name}`,
+      description: `${quantity} ${quantity === 1 ? 'unidad' : 'unidades'} de ${translatedName}`,
     });
   };
 
@@ -129,7 +131,7 @@ const ProductDetail = () => {
             <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
               <img
                 src={product.images[selectedImage]}
-                alt={product.name}
+                alt={translatedName}
                 className="w-full h-full object-cover"
               />
               {discount > 0 && (
@@ -156,7 +158,7 @@ const ProductDetail = () => {
                   >
                     <img
                       src={image}
-                      alt={`${product.name} ${index + 1}`}
+                      alt={`${translatedName} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
                   </button>
@@ -168,7 +170,7 @@ const ProductDetail = () => {
           {/* Product Info */}
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+              <h1 className="text-3xl font-bold mb-2">{translatedName}</h1>
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
@@ -217,7 +219,7 @@ const ProductDetail = () => {
 
             <div>
               <h3 className="font-semibold mb-2">Descripción</h3>
-              <p className="text-muted-foreground">{product.description}</p>
+              <p className="text-muted-foreground">{translatedDescription}</p>
             </div>
 
             <div>

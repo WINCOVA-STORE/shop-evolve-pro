@@ -8,6 +8,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Product } from "@/hooks/useProducts";
+import { useTranslatedProduct } from "@/hooks/useTranslatedProduct";
 
 interface ProductCardProps extends Product {}
 
@@ -17,8 +18,9 @@ export const ProductCard = (product: ProductCardProps) => {
   const { formatPrice } = useCurrency();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { name } = useTranslatedProduct(product);
 
-  const { id, name, price, compare_at_price, images, tags = [] } = product;
+  const { id, price, compare_at_price, images, tags = [] } = product;
   
   const image = images[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop";
   const hasDiscount = compare_at_price && compare_at_price > price;
