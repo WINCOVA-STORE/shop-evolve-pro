@@ -61,6 +61,14 @@
     "customer_2": "Pierre Martin",
     "customer_3": "Sophie Lefebvre"
   },
+  "newsletter": {
+    "title": "Obtenez 10% de Réduction sur Votre Premier Achat",
+    "description": "Abonnez-vous pour recevoir des offres exclusives et les nouveautés",
+    "placeholder": "Entrez votre email",
+    "cta": "S'abonner",
+    "privacy": "Nous respectons votre vie privée. Désabonnez-vous à tout moment.",
+    "success": "Merci de vous être abonné! Consultez votre email pour votre code de réduction."
+  },
   "footer": {
     "brand_description": "Votre boutique en ligne de confiance. Produits de qualité avec livraison rapide et garantie de satisfaction.",
     "shop": "Boutique",

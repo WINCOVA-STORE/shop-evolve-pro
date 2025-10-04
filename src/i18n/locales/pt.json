@@ -61,6 +61,14 @@
     "customer_2": "Carlos Santos",
     "customer_3": "Ana Costa"
   },
+  "newsletter": {
+    "title": "Ganhe 10% de Desconto na Sua Primeira Compra",
+    "description": "Inscreva-se para receber ofertas exclusivas e novidades",
+    "placeholder": "Digite seu email",
+    "cta": "Inscrever-se",
+    "privacy": "Respeitamos sua privacidade. Cancele quando quiser.",
+    "success": "Obrigado por se inscrever! Verifique seu email para seu código de desconto."
+  },
   "footer": {
     "brand_description": "Sua loja online de confiança. Produtos de qualidade com envio rápido e garantia de satisfação.",
     "shop": "Comprar",

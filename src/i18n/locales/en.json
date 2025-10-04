@@ -61,6 +61,14 @@
     "customer_2": "Carlos Rodríguez",
     "customer_3": "Ana Martínez"
   },
+  "newsletter": {
+    "title": "Get 10% Off Your First Purchase",
+    "description": "Subscribe to receive exclusive offers and product updates",
+    "placeholder": "Enter your email",
+    "cta": "Subscribe",
+    "privacy": "We respect your privacy. Unsubscribe anytime.",
+    "success": "Thank you for subscribing! Check your email for your discount code."
+  },
   "footer": {
     "brand_description": "Your trusted online store. Quality products with fast shipping and satisfaction guarantee.",
     "shop": "Shop",

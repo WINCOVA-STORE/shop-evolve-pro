@@ -10,38 +10,51 @@ import { useMainCategoriesWithProducts } from "@/hooks/useCategoriesWithProducts
 import { useReferral } from "@/hooks/useReferral";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
-import { Truck, Shield, Package, Gift, Star, TrendingUp } from "lucide-react";
+import { Truck, Shield, Package, Gift, Star, Mail } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const Index = () => {
   const { data: products, isLoading } = useFeaturedProducts(8);
-  const { data: categoriesWithProducts, isLoading: categoriesLoading } = useMainCategoriesWithProducts();
+  const { data: categoriesWithProducts, isLoading: categoriesLoading } = useMainCategoriesWithProducts(6);
   const { t } = useTranslation();
+  const [email, setEmail] = useState("");
   
   // Capture referral code from URL
   useReferral();
+
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email) {
+      toast.success(t('newsletter.success'));
+      setEmail("");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
       {/* Hero Banner */}
-      <section className="relative bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-primary-foreground py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200')] bg-cover bg-center opacity-10"></div>
-        <div className="container mx-auto px-4 text-center space-y-6 relative z-10">
-          <Badge variant="secondary" className="mb-4">
+      <section className="relative bg-gradient-to-br from-background to-muted text-foreground h-[70vh] md:h-[85vh] overflow-hidden flex items-center">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200')] bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-background/70"></div>
+        <div className="container mx-auto px-4 text-center space-y-6 relative z-10 animate-fade-in">
+          <Badge variant="secondary" className="mb-4 animate-scale-in">
             {t('hero.new_products_badge')}
           </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold">
+          <h1 className="text-4xl md:text-6xl font-bold max-w-4xl mx-auto">
             {t('hero.title')}
           </h1>
-          <p className="text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             {t('hero.subtitle')}
           </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Button size="lg" variant="secondary" className="text-lg px-8">
+          <div className="flex gap-4 justify-center flex-wrap pt-4">
+            <Button size="lg" className="text-lg px-8 shadow-lg hover:shadow-xl transition-shadow">
               {t('hero.cta')}
             </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground/10">
+            <Button size="lg" variant="ghost" className="text-lg px-8">
               {t('hero.see_offers')}
             </Button>
           </div>
@@ -85,9 +98,9 @@ const Index = () => {
       </section>
 
       {/* Categories */}
-      <section className="container mx-auto px-4 py-12">
-        <h2 className="text-3xl font-bold text-foreground mb-8">{t('categories.title')}</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <section className="container mx-auto px-4 py-16">
+        <h2 className="text-3xl font-bold text-foreground mb-12 text-center">{t('categories.title')}</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8 max-w-5xl mx-auto">
           {categoriesLoading ? (
             [...Array(12)].map((_, i) => (
               <div key={i} className="space-y-2">
@@ -113,15 +126,15 @@ const Index = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="flex items-center justify-between mb-8">
+      <section className="container mx-auto px-4 py-16">
+        <div className="flex items-center justify-between mb-12">
           <div>
             <h2 className="text-3xl font-bold text-foreground">{t('products.featured')}</h2>
             <p className="text-muted-foreground mt-2">{t('products.featured_subtitle')}</p>
           </div>
           <Button variant="outline">{t('products.view_all')}</Button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {isLoading ? (
             [...Array(8)].map((_, i) => (
               <div key={i} className="space-y-3">
@@ -142,31 +155,39 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Special Offer Banner */}
-      <section className="container mx-auto px-4 py-12">
-        <Card className="relative overflow-hidden bg-gradient-to-r from-orange-500 to-red-500 text-white">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-[url('https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=800')] bg-cover bg-center opacity-20"></div>
-          <div className="relative z-10 p-12 md:p-16">
-            <Badge variant="secondary" className="mb-4">
-              {t('special_offer.badge')}
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              {t('special_offer.title')}
-            </h2>
-            <p className="text-xl mb-6 max-w-md">
-              {t('special_offer.description')}
-            </p>
-            <Button size="lg" variant="secondary">
-              {t('special_offer.cta')}
-            </Button>
+      {/* Value Proposition */}
+      <section className="bg-secondary/5 py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto">
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <Shield className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold">{t('benefits.secure_purchase')}</h3>
+              <p className="text-muted-foreground">{t('benefits.secure_purchase_desc')}</p>
+            </div>
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <Truck className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold">{t('benefits.free_shipping')}</h3>
+              <p className="text-muted-foreground">{t('benefits.free_shipping_desc')}</p>
+            </div>
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <Gift className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold">{t('benefits.rewards')}</h3>
+              <p className="text-muted-foreground">{t('benefits.rewards_desc')}</p>
+            </div>
           </div>
-        </Card>
+        </div>
       </section>
 
       {/* Testimonials */}
-      <section className="container mx-auto px-4 py-12">
+      <section className="container mx-auto px-4 py-16">
         <h2 className="text-3xl font-bold text-center mb-12">{t('testimonials.title')}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {[
             {
               name: t('testimonials.customer_1'),
@@ -194,6 +215,37 @@ const Index = () => {
               <p className="font-semibold">{testimonial.name}</p>
             </Card>
           ))}
+        </div>
+      </section>
+
+      {/* Newsletter CTA */}
+      <section className="bg-primary text-primary-foreground py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center space-y-6">
+            <Mail className="h-12 w-12 mx-auto mb-4" />
+            <h2 className="text-3xl md:text-4xl font-bold">
+              {t('newsletter.title')}
+            </h2>
+            <p className="text-lg text-primary-foreground/90">
+              {t('newsletter.description')}
+            </p>
+            <form onSubmit={handleNewsletterSubmit} className="flex gap-3 max-w-md mx-auto">
+              <Input
+                type="email"
+                placeholder={t('newsletter.placeholder')}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="bg-primary-foreground text-foreground"
+              />
+              <Button type="submit" variant="secondary" size="lg">
+                {t('newsletter.cta')}
+              </Button>
+            </form>
+            <p className="text-xs text-primary-foreground/70">
+              {t('newsletter.privacy')}
+            </p>
+          </div>
         </div>
       </section>
 

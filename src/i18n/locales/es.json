@@ -61,6 +61,14 @@
     "customer_2": "Carlos Rodríguez",
     "customer_3": "Ana Martínez"
   },
+  "newsletter": {
+    "title": "Obtén 10% de Descuento en tu Primera Compra",
+    "description": "Suscríbete para recibir ofertas exclusivas y novedades",
+    "placeholder": "Ingresa tu email",
+    "cta": "Suscribirse",
+    "privacy": "Respetamos tu privacidad. Cancela cuando quieras.",
+    "success": "¡Gracias por suscribirte! Revisa tu email para tu código de descuento."
+  },
   "footer": {
     "brand_description": "Tu tienda en línea de confianza. Productos de calidad con envío rápido y garantía de satisfacción.",
     "shop": "Comprar",

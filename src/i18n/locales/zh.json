@@ -61,6 +61,14 @@
     "customer_2": "王强",
     "customer_3": "张敏"
   },
+  "newsletter": {
+    "title": "首次购买享受10%折扣",
+    "description": "订阅以接收独家优惠和产品更新",
+    "placeholder": "输入您的邮箱",
+    "cta": "订阅",
+    "privacy": "我们尊重您的隐私。随时取消订阅。",
+    "success": "感谢订阅！请查看您的邮箱获取折扣代码。"
+  },
   "footer": {
     "brand_description": "您值得信赖的网上商店。优质产品，快速配送，满意保障。",
     "shop": "选购",
