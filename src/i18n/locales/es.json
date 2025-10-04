@@ -119,6 +119,23 @@
     "gbp": "GBP - Libra Esterlina",
     "mxn": "MXN - Peso Mexicano"
   },
+  "rewards_balance": {
+    "loading": "Cargando puntos...",
+    "title": "Tus Puntos de Fidelidad",
+    "total_balance": "Balance Total",
+    "available_points": "puntos disponibles",
+    "ways_to_earn": "Formas de ganar puntos:",
+    "purchases": "Compras: Gana puntos con cada compra",
+    "reviews": "Reseñas: Gana puntos por cada producto que reseñes",
+    "birthday": "Cumpleaños: Recibe puntos especiales en tu día",
+    "referrals": "Referidos: Gana puntos por cada amigo que invites",
+    "points_history": "Historial de Puntos",
+    "type_welcome": "Bienvenida",
+    "type_purchase": "Compra",
+    "type_review": "Reseña",
+    "type_birthday": "Cumpleaños",
+    "type_referral": "Referido"
+  },
   "refer_earn": {
     "title": "Invita y Gana",
     "rewards": "Recompensas",

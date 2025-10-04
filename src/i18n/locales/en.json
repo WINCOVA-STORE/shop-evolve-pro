@@ -230,6 +230,23 @@
     "product_not_found_desc": "This product doesn't exist or is not available",
     "error_loading": "Could not load product"
   },
+  "rewards_balance": {
+    "loading": "Loading points...",
+    "title": "Your Loyalty Points",
+    "total_balance": "Total Balance",
+    "available_points": "available points",
+    "ways_to_earn": "Ways to earn points:",
+    "purchases": "Purchases: Earn points with every purchase",
+    "reviews": "Reviews: Earn points for each product you review",
+    "birthday": "Birthday: Receive special points on your day",
+    "referrals": "Referrals: Earn points for each friend you invite",
+    "points_history": "Points History",
+    "type_welcome": "Welcome",
+    "type_purchase": "Purchase",
+    "type_review": "Review",
+    "type_birthday": "Birthday",
+    "type_referral": "Referral"
+  },
   "refer_earn": {
     "title": "Invite and Earn",
     "rewards": "Rewards",
