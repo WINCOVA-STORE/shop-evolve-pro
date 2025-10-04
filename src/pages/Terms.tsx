@@ -570,12 +570,101 @@ const Terms = () => {
             </CardContent>
           </Card>
 
-          {/* Section 16: Contacto */}
+          {/* Section 16: Seguridad y Protección de Datos */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <Shield className="h-6 w-6 text-primary" />
+                16. Seguridad, Encriptación y Protección de Datos
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-foreground/90 leading-relaxed">
+              <h4 className="font-semibold text-lg">16.1 Compromiso con la Seguridad</h4>
+              <p>
+                En Wincova, la seguridad de tu información personal y financiera es nuestra máxima prioridad. 
+                Implementamos múltiples capas de seguridad para proteger tus datos en todo momento.
+              </p>
+
+              <h4 className="font-semibold text-lg mt-6">16.2 Encriptación y Seguridad de Datos</h4>
+              <ul className="space-y-2 ml-6 list-disc">
+                <li><strong>Encriptación SSL/TLS:</strong> Todo el tráfico entre tu navegador y nuestros servidores está protegido mediante encriptación SSL/TLS de 256 bits, el estándar más alto de la industria</li>
+                <li><strong>Protección de Datos en Tránsito:</strong> Utilizamos protocolos HTTPS en todo el sitio web para garantizar que tu información esté cifrada durante la transmisión</li>
+                <li><strong>Almacenamiento Seguro:</strong> Todos los datos personales almacenados en nuestros servidores están cifrados utilizando algoritmos de encriptación de grado militar (AES-256)</li>
+                <li><strong>Infraestructura Segura:</strong> Nuestros servidores están alojados en centros de datos certificados con seguridad física 24/7, controles de acceso biométricos y sistemas de respaldo redundantes</li>
+                <li><strong>Actualizaciones de Seguridad:</strong> Mantenemos todos nuestros sistemas actualizados con los últimos parches de seguridad y realizamos auditorías de seguridad periódicas</li>
+              </ul>
+
+              <h4 className="font-semibold text-lg mt-6">16.3 Seguridad en Procesamiento de Pagos</h4>
+              <ul className="space-y-2 ml-6 list-disc">
+                <li><strong>Cumplimiento PCI-DSS:</strong> Cumplimos con el estándar PCI-DSS (Payment Card Industry Data Security Standard), el más riguroso para el procesamiento de tarjetas de crédito</li>
+                <li><strong>Tokenización de Tarjetas:</strong> No almacenamos números completos de tarjetas de crédito. Utilizamos tokenización, donde tu información de pago se convierte en un token único e inutilizable fuera de nuestro sistema</li>
+                <li><strong>Procesadores Certificados:</strong> Trabajamos exclusivamente con procesadores de pago certificados y de confianza (Stripe, PayPal) que cumplen con todas las regulaciones financieras</li>
+                <li><strong>Detección de Fraude:</strong> Empleamos sistemas avanzados de detección de fraude con inteligencia artificial que monitorean transacciones sospechosas en tiempo real</li>
+                <li><strong>Autenticación 3D Secure:</strong> Implementamos 3D Secure (Verified by Visa, Mastercard SecureCode) para una capa adicional de autenticación en transacciones</li>
+                <li><strong>Sin Almacenamiento de CVV:</strong> Nunca almacenamos el código de seguridad CVV/CVC de tu tarjeta, cumpliendo con las regulaciones PCI</li>
+              </ul>
+
+              <h4 className="font-semibold text-lg mt-6">16.4 Política de Cookies</h4>
+              <p>
+                Utilizamos cookies y tecnologías similares para mejorar tu experiencia de navegación y la funcionalidad del sitio web.
+              </p>
+              <ul className="space-y-2 ml-6 list-disc">
+                <li><strong>Cookies Esenciales:</strong> Necesarias para el funcionamiento básico del sitio (carrito de compras, autenticación de sesión). No pueden deshabilitarse.</li>
+                <li><strong>Cookies de Rendimiento:</strong> Nos ayudan a entender cómo los visitantes interactúan con nuestro sitio web mediante la recopilación de información anónima</li>
+                <li><strong>Cookies de Funcionalidad:</strong> Permiten que el sitio web recuerde tus preferencias (idioma, región, moneda)</li>
+                <li><strong>Cookies de Marketing:</strong> Se utilizan para rastrear visitantes en los sitios web para mostrar anuncios relevantes y atractivos</li>
+                <li><strong>Control de Cookies:</strong> Puedes gestionar tus preferencias de cookies en la configuración de tu navegador. Ten en cuenta que deshabilitar cookies puede afectar la funcionalidad del sitio</li>
+                <li><strong>Duración de Cookies:</strong> Las cookies de sesión se eliminan al cerrar tu navegador. Las cookies persistentes permanecen hasta 12 meses o hasta que las elimines manualmente</li>
+              </ul>
+
+              <h4 className="font-semibold text-lg mt-6">16.5 Privacidad y Cumplimiento Legal</h4>
+              <ul className="space-y-2 ml-6 list-disc">
+                <li><strong>CCPA (California Consumer Privacy Act):</strong> Los residentes de California tienen derecho a saber qué información personal recopilamos, solicitar su eliminación y optar por no participar en la venta de datos personales</li>
+                <li><strong>GDPR (General Data Protection Regulation):</strong> Para usuarios de la UE, garantizamos el derecho de acceso, rectificación, eliminación y portabilidad de datos personales</li>
+                <li><strong>No Venta de Datos:</strong> Nunca vendemos, alquilamos o compartimos tu información personal con terceros con fines de marketing sin tu consentimiento explícito</li>
+                <li><strong>Minimización de Datos:</strong> Solo recopilamos la información estrictamente necesaria para procesar tus pedidos y mejorar tu experiencia</li>
+                <li><strong>Retención de Datos:</strong> Conservamos tu información personal solo durante el tiempo necesario para cumplir con los propósitos descritos o según lo requiera la ley</li>
+                <li><strong>Derechos del Usuario:</strong> Puedes solicitar acceso, corrección o eliminación de tus datos personales en cualquier momento contactando nuestro servicio al cliente</li>
+              </ul>
+
+              <h4 className="font-semibold text-lg mt-6">16.6 Protección contra Amenazas</h4>
+              <ul className="space-y-2 ml-6 list-disc">
+                <li><strong>Firewall de Aplicaciones Web (WAF):</strong> Protege contra ataques comunes como SQL injection, cross-site scripting (XSS) y DDoS</li>
+                <li><strong>Monitoreo 24/7:</strong> Nuestro equipo de seguridad monitorea continuamente la infraestructura para detectar y responder a amenazas</li>
+                <li><strong>Respuesta a Incidentes:</strong> Contamos con un plan de respuesta a incidentes de seguridad y notificaremos a los usuarios afectados según lo requiera la ley</li>
+                <li><strong>Autenticación Multi-Factor (MFA):</strong> Ofrecemos autenticación de dos factores opcional para mayor seguridad de tu cuenta</li>
+                <li><strong>Análisis de Vulnerabilidades:</strong> Realizamos pruebas de penetración y escaneos de vulnerabilidades regularmente</li>
+              </ul>
+
+              <h4 className="font-semibold text-lg mt-6">16.7 Tus Responsabilidades de Seguridad</h4>
+              <p className="font-semibold text-primary">
+                Aunque implementamos medidas de seguridad robustas, tu cooperación es esencial:
+              </p>
+              <ul className="space-y-2 ml-6 list-disc">
+                <li>Mantén tu contraseña segura y no la compartas con nadie</li>
+                <li>Utiliza contraseñas únicas y complejas (mínimo 8 caracteres, con letras, números y símbolos)</li>
+                <li>Cierra sesión después de usar tu cuenta, especialmente en dispositivos compartidos</li>
+                <li>No respondas a correos electrónicos sospechosos que soliciten información personal o de pago</li>
+                <li>Mantén actualizado tu software antivirus y navegador web</li>
+                <li>Notifícanos inmediatamente si sospechas de actividad no autorizada en tu cuenta</li>
+              </ul>
+
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mt-6">
+                <p className="text-sm font-medium">
+                  🔒 <strong>Compromiso de Transparencia:</strong> Si ocurre una violación de seguridad que comprometa tus datos personales, 
+                  te notificaremos dentro de las 72 horas según lo requiere la ley, con detalles sobre la naturaleza de la violación 
+                  y las medidas tomadas para remediarla.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Section 17: Información de Contacto */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <FileText className="h-6 w-6 text-primary" />
-                16. Información de Contacto
+                17. Información de Contacto
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-foreground/90 leading-relaxed">
@@ -583,7 +672,9 @@ const Terms = () => {
                 Si tienes alguna pregunta sobre estos Términos y Condiciones, puedes contactarnos:
               </p>
               <ul className="space-y-2 ml-6 list-disc">
-                <li><strong>Email:</strong> soporte@wincova.com</li>
+                <li><strong>Email:</strong> ventas@wincova.com</li>
+                <li><strong>Teléfono:</strong> 615-728-9932</li>
+                <li><strong>Dirección:</strong> 2615 Medical Center Parkway, Suite 1560, Murfreesboro TN 37129</li>
                 <li><strong>Teléfono:</strong> +1 (555) 123-4567</li>
                 <li><strong>Dirección:</strong> 123 Commerce St, Nashville, TN, Estados Unidos</li>
               </ul>
