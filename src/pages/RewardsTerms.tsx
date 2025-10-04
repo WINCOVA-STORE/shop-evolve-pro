@@ -309,7 +309,10 @@ const RewardsTerms = () => {
                 <span className="font-semibold text-foreground">500 puntos de bienvenida</span> te esperan.{" "}
                 <Button
                   variant="link"
-                  onClick={() => navigate('/auth')}
+                  onClick={() => {
+                    window.scrollTo(0, 0);
+                    navigate('/auth?mode=signup');
+                  }}
                   className="text-lg text-primary hover:text-primary/80 p-0 h-auto font-semibold underline"
                 >
                   Regístrate

@@ -12,6 +12,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 import ProductDetail from "./pages/ProductDetail";
+import OrderDetail from "./pages/OrderDetail";
 import Category from "./pages/Category";
 import Search from "./pages/Search";
 import RewardsTerms from "./pages/RewardsTerms";
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/order/:orderId" element={<OrderDetail />} />
               <Route path="/category/:slug" element={<Category />} />
               <Route path="/search" element={<Search />} />
               <Route path="/rewards-terms" element={<RewardsTerms />} />

@@ -222,10 +222,17 @@ const Profile = () => {
                 ) : (
                   <div className="space-y-4">
                     {orders.map((order) => (
-                      <div key={order.id} className="border rounded-lg p-4">
+                      <div 
+                        key={order.id} 
+                        className="border rounded-lg p-4 cursor-pointer hover:border-primary hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group"
+                        onClick={() => {
+                          window.scrollTo(0, 0);
+                          navigate(`/order/${order.id}`);
+                        }}
+                      >
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <p className="font-semibold">{order.order_number}</p>
+                            <p className="font-semibold group-hover:text-primary transition-colors">{order.order_number}</p>
                             <p className="text-sm text-muted-foreground">
                               {new Date(order.created_at).toLocaleDateString('es-ES', {
                                 year: 'numeric',
@@ -235,15 +242,18 @@ const Profile = () => {
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="font-bold text-lg">
+                            <p className="font-bold text-lg group-hover:text-primary transition-colors">
                               ${Number(order.total).toFixed(2)} {order.currency}
                             </p>
                           </div>
                         </div>
                         <Separator className="my-2" />
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 items-center">
                           {getStatusBadge(order.status)}
                           {getPaymentStatusBadge(order.payment_status)}
+                          <span className="ml-auto text-xs text-primary font-medium group-hover:translate-x-1 transition-transform">
+                            Ver Detalles →
+                          </span>
                         </div>
                       </div>
                     ))}

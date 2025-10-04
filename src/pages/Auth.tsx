@@ -45,8 +45,12 @@ const Auth = () => {
   useEffect(() => {
     // Check if user is in password recovery mode
     const type = searchParams.get("type");
+    const mode = searchParams.get("mode");
+    
     if (type === "recovery") {
       setIsPasswordRecovery(true);
+    } else if (mode === "signup") {
+      setActiveTab("signup");
     } else if (user && !authLoading) {
       navigate("/");
     }
