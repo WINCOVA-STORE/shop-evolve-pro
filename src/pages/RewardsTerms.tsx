@@ -14,7 +14,7 @@ const RewardsTerms = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <Header />
 
       <main className="container mx-auto px-4 py-12">
@@ -22,24 +22,43 @@ const RewardsTerms = () => {
         <Button 
           variant="ghost" 
           onClick={() => navigate(-1)}
-          className="mb-6"
+          className="mb-6 hover:scale-105 transition-transform"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Volver
         </Button>
 
-        {/* Hero Section */}
+        {/* Hero Section - PREMIUM */}
         <div className="max-w-4xl mx-auto mb-12">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-              <Gift className="h-8 w-8 text-primary" />
+          <div className="text-center mb-8 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 mb-4">
+              <Gift className="h-4 w-4 text-primary" />
+              <span className="text-sm font-semibold">Gana Mientras Compras</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Términos y Condiciones del Programa de Recompensas
+            
+            <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+              Programa de Recompensas
             </h1>
-            <p className="text-lg text-muted-foreground">
-              Todo lo que necesitas saber sobre cómo ganar y usar tus puntos en Wincova
+            <p className="text-xl text-muted-foreground mb-4">
+              <span className="font-semibold text-foreground">Cada compra cuenta.</span> Cada acción suma. 
+              <span className="text-primary font-semibold">¡Empieza a ganar hoy!</span>
             </p>
+            
+            {/* Value Props */}
+            <div className="flex flex-wrap justify-center gap-4 mt-6">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+                <span className="text-xl">💰</span>
+                <span className="text-sm font-semibold">500 pts Bono Bienvenida</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20">
+                <span className="text-xl">🎂</span>
+                <span className="text-sm font-semibold">3,000 pts Cumpleaños</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+                <span className="text-xl">🎁</span>
+                <span className="text-sm font-semibold">1% cada compra</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -274,28 +293,44 @@ const RewardsTerms = () => {
             </CardContent>
           </Card>
 
-          {/* CTA Section */}
-          <Card className="bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 border-2 border-primary/20">
+          {/* CTA Section - ULTRA PREMIUM */}
+          <Card className="bg-gradient-to-br from-secondary/5 via-primary/5 to-secondary/5 border-2 border-primary/20 shadow-2xl overflow-hidden">
+            <div className="h-2 bg-gradient-to-r from-primary via-secondary to-primary"></div>
             <CardContent className="p-8 text-center">
-              <h3 className="text-2xl font-bold mb-4">¿Listo para empezar a ganar?</h3>
-              <p className="text-muted-foreground mb-6">
-                Únete al programa de recompensas y comienza a acumular puntos hoy mismo
+              <div className="inline-flex p-4 rounded-full bg-gradient-to-br from-primary to-secondary shadow-xl mb-4">
+                <Gift className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-3xl font-bold mb-3">¿Listo para Ganar Puntos?</h3>
+              <p className="text-muted-foreground text-lg mb-6">
+                <span className="font-semibold text-foreground">500 puntos de bienvenida</span> te esperan. 
+                Regístrate y <span className="text-primary font-semibold">empieza a ahorrar hoy</span>
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
                 <Button 
                   size="lg"
                   onClick={() => navigate('/refer-earn')}
-                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+                  className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
                 >
+                  <Gift className="h-5 w-5 mr-2" />
                   Ver Programa de Referidos
                 </Button>
                 <Button 
                   size="lg"
                   variant="outline"
                   onClick={() => navigate('/')}
+                  className="border-2 hover:bg-primary/5 hover:scale-105 transition-all"
                 >
-                  Ir a Comprar
+                  Empezar a Comprar
                 </Button>
+              </div>
+              
+              {/* FOMO */}
+              <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                <p className="text-sm font-semibold">
+                  🎯 <span className="text-primary">+5,000 usuarios activos ganando</span> | 
+                  ⚡ Acumula puntos desde tu primera compra
+                </p>
               </div>
             </CardContent>
           </Card>

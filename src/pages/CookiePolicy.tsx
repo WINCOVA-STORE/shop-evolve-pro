@@ -14,7 +14,7 @@ const CookiePolicy = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <Header />
 
       <main className="container mx-auto px-4 py-12 max-w-5xl">
@@ -22,21 +22,27 @@ const CookiePolicy = () => {
         <Button 
           variant="ghost" 
           onClick={() => navigate(-1)}
-          className="mb-6"
+          className="mb-6 hover:scale-105 transition-transform"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Volver
         </Button>
 
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-            <Cookie className="h-8 w-8 text-primary" />
+        {/* Hero Section - PREMIUM */}
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 mb-4">
+            <Cookie className="h-4 w-4 text-secondary" />
+            <span className="text-sm font-semibold">Tu Privacidad Primero</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
             Política de Cookies
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-2">
+            <span className="font-semibold text-foreground">Transparencia total.</span> Conoce cómo usamos cookies para 
+            <span className="text-primary font-semibold"> mejorar tu experiencia de compra</span>.
+          </p>
+          <p className="text-sm text-muted-foreground">
             Última actualización: 01 de octubre de 2025
           </p>
         </div>

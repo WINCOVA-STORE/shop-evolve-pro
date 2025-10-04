@@ -15,7 +15,7 @@ const Terms = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <Header />
 
       <main className="container mx-auto px-4 py-12 max-w-5xl">
@@ -23,29 +23,30 @@ const Terms = () => {
         <Button 
           variant="ghost" 
           onClick={() => navigate(-1)}
-          className="mb-6"
+          className="mb-6 hover:scale-105 transition-transform"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Volver
         </Button>
 
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-            <Scale className="h-8 w-8 text-primary" />
+        {/* Hero Section - PREMIUM */}
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 mb-4">
+            <Scale className="h-4 w-4 text-secondary" />
+            <span className="text-sm font-semibold">Legal y Transparente</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
             Términos y Condiciones
           </h1>
           <p className="text-lg text-muted-foreground">
             Última actualización: {effectiveDate}
           </p>
-          <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-lg max-w-3xl mx-auto">
-            <p className="text-sm text-amber-900 dark:text-amber-100 flex items-start gap-2">
-              <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+          <div className="mt-6 p-4 bg-secondary/5 border-2 border-secondary/20 rounded-xl max-w-3xl mx-auto">
+            <p className="text-sm flex items-start gap-2">
+              <AlertCircle className="h-5 w-5 shrink-0 mt-0.5 text-primary" />
               <span>
-                Al acceder y usar nuestro sitio web, aceptas estar sujeto a estos Términos y Condiciones. 
-                Si no estás de acuerdo, te pedimos que no utilices nuestros servicios.
+                Al usar nuestro sitio, aceptas estos términos. <span className="font-semibold text-foreground">Compra con confianza y seguridad.</span>
               </span>
             </p>
           </div>
@@ -707,21 +708,22 @@ const Terms = () => {
             </CardContent>
           </Card>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons - PREMIUM */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
             <Button 
               size="lg"
               onClick={() => navigate('/')}
-              className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+              className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
             >
-              Volver a la Tienda
+              Empezar a Comprar Ahora
             </Button>
             <Button 
               size="lg"
               variant="outline"
               onClick={() => navigate('/rewards-terms')}
+              className="border-2 hover:bg-primary/5 hover:scale-105 transition-all"
             >
-              Ver Términos del Programa de Recompensas
+              Ver Programa de Recompensas
             </Button>
           </div>
         </div>

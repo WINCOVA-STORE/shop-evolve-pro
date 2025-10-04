@@ -14,56 +14,75 @@ const ReturnPolicy = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <Header />
       
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <Button
           variant="ghost"
           onClick={() => navigate(-1)}
-          className="mb-6"
+          className="mb-6 hover:scale-105 transition-transform"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Volver
         </Button>
 
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Política de Devoluciones y Reembolsos</h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            En Wincova, valoramos tu confianza. Esta política describe claramente cómo manejamos las devoluciones 
-            y reembolsos para asegurar una experiencia de compra transparente y justa.
+        {/* Hero Section - PREMIUM */}
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 mb-4">
+            <Package className="h-4 w-4 text-secondary" />
+            <span className="text-sm font-semibold">Política Clara y Justa</span>
+          </div>
+          
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+            Devoluciones y Reembolsos
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-2">
+            <span className="font-semibold text-foreground">Tu satisfacción es nuestra prioridad.</span> 
+            Política transparente, proceso simple, <span className="text-primary font-semibold">reembolso garantizado</span>.
           </p>
-          <p className="text-sm text-muted-foreground mt-4">
+          <p className="text-sm text-muted-foreground">
             Última actualización: Octubre 2025
           </p>
+          
+          {/* Trust Badge */}
+          <div className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-secondary/10 border-2 border-secondary/20">
+            <span className="text-2xl">🛡️</span>
+            <span className="font-semibold">Compra 100% Protegida</span>
+          </div>
         </div>
 
-        {/* Important Notice */}
-        <Card className="mb-8 border-primary/20 bg-primary/5">
+        {/* Important Notice - PREMIUM */}
+        <Card className="mb-8 border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/5 shadow-xl">
+          <div className="h-2 bg-gradient-to-r from-primary to-secondary"></div>
           <CardContent className="pt-6">
-            <div className="flex gap-3">
-              <AlertCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+            <div className="flex gap-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg">
+                <AlertCircle className="h-6 w-6 text-white flex-shrink-0" />
+              </div>
               <div>
-                <h3 className="font-bold text-lg mb-2">Nuestro Modelo de Negocio</h3>
+                <h3 className="font-bold text-xl mb-2">Nuestro Modelo de Negocio</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Wincova trabaja con una red de proveedores certificados en Estados Unidos y Europa. 
-                  Esto nos permite ofrecerte productos de calidad con envíos rápidos (2-5 días). Como cada proveedor tiene 
-                  sus propias políticas, hemos establecido lineamientos claros para proteger tus derechos como cliente.
+                  Wincova trabaja con proveedores certificados en <span className="font-semibold text-foreground">US y Europa</span>. 
+                  <span className="text-primary font-semibold"> Envíos ultra-rápidos (2-5 días)</span> con políticas claras que protegen tus derechos.
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Return Window */}
-        <Card className="mb-6">
+        {/* Return Window - PREMIUM */}
+        <Card className="mb-6 border-2 hover:shadow-xl transition-all duration-300">
+          <div className="h-1 bg-gradient-to-r from-primary to-secondary"></div>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Package className="h-6 w-6 text-primary" />
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg">
+                <Package className="h-6 w-6 text-white" />
               </div>
-              <h2 className="text-2xl font-bold">Plazo para Devoluciones</h2>
+              <div>
+                <h2 className="text-2xl font-bold">Plazo para Devoluciones</h2>
+                <p className="text-sm text-muted-foreground">15 días de garantía</p>
+              </div>
             </div>
             
             <div className="space-y-4">
@@ -83,14 +102,18 @@ const ReturnPolicy = () => {
           </CardContent>
         </Card>
 
-        {/* Valid Reasons */}
-        <Card className="mb-6">
+        {/* Valid Reasons - PREMIUM */}
+        <Card className="mb-6 border-2 hover:shadow-xl transition-all duration-300">
+          <div className="h-1 bg-gradient-to-r from-secondary to-primary"></div>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-green-500/10">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-secondary to-primary shadow-lg">
+                <CheckCircle className="h-6 w-6 text-white" />
               </div>
-              <h2 className="text-2xl font-bold">Razones Válidas para Devolución</h2>
+              <div>
+                <h2 className="text-2xl font-bold">Razones Válidas</h2>
+                <p className="text-sm text-muted-foreground">Siempre protegemos tu compra</p>
+              </div>
             </div>
             
             <p className="text-muted-foreground mb-4">
@@ -424,27 +447,56 @@ const ReturnPolicy = () => {
           </CardContent>
         </Card>
 
-        {/* Contact CTA */}
-        <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
-          <CardContent className="pt-6">
-            <h2 className="text-2xl font-bold mb-4">¿Necesitas Ayuda con una Devolución?</h2>
-            <p className="text-muted-foreground mb-6">
-              Nuestro equipo de servicio al cliente está aquí para ayudarte. No dudes en contactarnos si tienes 
-              preguntas sobre tu pedido o necesitas asistencia con una devolución.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button asChild className="flex items-center gap-2">
-                <a href="mailto:ventas@wincova.com">
-                  <Mail className="h-4 w-4" />
-                  ventas@wincova.com
+        {/* Contact CTA - ULTRA PREMIUM */}
+        <Card className="bg-gradient-to-br from-secondary/5 via-primary/5 to-secondary/5 border-2 border-primary/20 shadow-2xl overflow-hidden">
+          <div className="h-2 bg-gradient-to-r from-primary via-secondary to-primary"></div>
+          <CardContent className="pt-8">
+            <div className="text-center mb-6">
+              <div className="inline-flex p-4 rounded-full bg-gradient-to-br from-primary to-secondary shadow-xl mb-4">
+                <Package className="h-8 w-8 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold mb-2">¿Necesitas Hacer una Devolución?</h2>
+              <p className="text-muted-foreground text-lg">
+                Proceso <span className="font-semibold text-foreground">rápido y sin complicaciones</span>. 
+                Contacta a nuestro equipo <span className="text-primary font-semibold">ahora mismo</span>
+              </p>
+            </div>
+            
+            <div className="grid sm:grid-cols-2 gap-4 mb-6">
+              <Button 
+                asChild
+                size="lg" 
+                className="bg-secondary hover:bg-secondary/90 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+              >
+                <a href="mailto:ventas@wincova.com" className="flex items-center justify-center gap-2">
+                  <Mail className="h-5 w-5" />
+                  <div className="text-left">
+                    <div className="text-xs opacity-90">Email Directo</div>
+                    <div className="font-bold">ventas@wincova.com</div>
+                  </div>
                 </a>
               </Button>
-              <Button asChild variant="outline" className="flex items-center gap-2">
-                <a href="tel:6157289932">
-                  <Phone className="h-4 w-4" />
-                  615-728-9932
+              <Button 
+                asChild
+                size="lg" 
+                className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+              >
+                <a href="tel:6157289932" className="flex items-center justify-center gap-2">
+                  <Phone className="h-5 w-5" />
+                  <div className="text-left">
+                    <div className="text-xs opacity-90">Llámanos Ya</div>
+                    <div className="font-bold">615-728-9932</div>
+                  </div>
                 </a>
               </Button>
+            </div>
+            
+            {/* Trust Badge */}
+            <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+              <p className="text-sm font-semibold">
+                ⚡ <span className="text-primary">Respuesta en menos de 2 horas</span> | 
+                🛡️ Reembolsos procesados en 5-10 días
+              </p>
             </div>
           </CardContent>
         </Card>
