@@ -225,10 +225,10 @@ const OrderDetail = () => {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
             <div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mb-2">
-                Orden {order.order_number}
+                {t("order_detail.order")} {order.order_number}
               </h1>
               <p className="text-muted-foreground">
-                {new Date(order.created_at).toLocaleDateString('es-ES', {
+                {new Date(order.created_at).toLocaleDateString(dateLocale(), {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
@@ -248,7 +248,7 @@ const OrderDetail = () => {
                 </Badge>
                 {order.payment_status === "paid" && (
                   <Badge variant="default" className="ml-2 bg-green-600">
-                    Pagado
+                    {t("order_detail.paid")}
                   </Badge>
                 )}
               </div>
@@ -262,7 +262,7 @@ const OrderDetail = () => {
                 <div className="flex items-center gap-3">
                   <Truck className="h-5 w-5 text-primary" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium">Número de Seguimiento</p>
+                    <p className="text-sm font-medium">{t("order_detail.tracking_number")}</p>
                     <p className="text-lg font-bold text-primary">{order.tracking_number}</p>
                   </div>
                   {order.carrier && (
@@ -271,7 +271,7 @@ const OrderDetail = () => {
                 </div>
                 {order.estimated_delivery_date && (
                   <p className="text-sm text-muted-foreground mt-2">
-                    Entrega estimada: {new Date(order.estimated_delivery_date).toLocaleDateString('es-ES')}
+                    {t("order_detail.estimated_delivery")}: {new Date(order.estimated_delivery_date).toLocaleDateString(dateLocale())}
                   </p>
                 )}
               </CardContent>
@@ -287,7 +287,7 @@ const OrderDetail = () => {
               <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5">
                 <CardTitle className="flex items-center gap-2">
                   <Package className="h-5 w-5 text-primary" />
-                  Productos
+                  {t("order_detail.products")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -324,7 +324,7 @@ const OrderDetail = () => {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-lg">
                       <MapPin className="h-5 w-5 text-primary" />
-                      Dirección de Envío
+                      {t("order_detail.shipping_address")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -338,7 +338,7 @@ const OrderDetail = () => {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-lg">
                       <CreditCard className="h-5 w-5 text-primary" />
-                      Dirección de Facturación
+                      {t("order_detail.billing_address")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -355,25 +355,25 @@ const OrderDetail = () => {
             <Card className="sticky top-24 overflow-hidden border-2 border-primary/20 shadow-xl">
               <div className="h-2 bg-gradient-to-r from-primary via-secondary to-primary"></div>
               <CardHeader className="bg-gradient-to-br from-primary/5 to-secondary/5">
-                <CardTitle>Resumen de Orden</CardTitle>
+                <CardTitle>{t("order_detail.order_summary")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="text-muted-foreground">{t("order_detail.subtotal")}</span>
                     <span className="font-medium">${Number(order.subtotal).toFixed(2)}</span>
                   </div>
                   
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Envío</span>
+                    <span className="text-muted-foreground">{t("order_detail.shipping")}</span>
                     <span className="font-medium">
-                      {Number(order.shipping) === 0 ? "Gratis" : `$${Number(order.shipping).toFixed(2)}`}
+                      {Number(order.shipping) === 0 ? t("order_detail.free") : `$${Number(order.shipping).toFixed(2)}`}
                     </span>
                   </div>
                   
                   {Number(order.tax) > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Impuestos</span>
+                      <span className="text-muted-foreground">{t("order_detail.tax")}</span>
                       <span className="font-medium">${Number(order.tax).toFixed(2)}</span>
                     </div>
                   )}
@@ -382,7 +382,7 @@ const OrderDetail = () => {
                 <Separator />
 
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-lg">Total</span>
+                  <span className="font-semibold text-lg">{t("order_detail.total")}</span>
                   <span className="font-bold text-3xl" style={{ color: "hsl(var(--secondary))" }}>
                     ${Number(order.total).toFixed(2)} {order.currency}
                   </span>
@@ -392,7 +392,7 @@ const OrderDetail = () => {
                   <>
                     <Separator />
                     <div>
-                      <p className="text-sm font-medium mb-1">Notas</p>
+                      <p className="text-sm font-medium mb-1">{t("order_detail.notes")}</p>
                       <p className="text-sm text-muted-foreground">{order.notes}</p>
                     </div>
                   </>
@@ -404,7 +404,7 @@ const OrderDetail = () => {
                     className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 hover:scale-105 transition-all shadow-lg"
                     onClick={() => navigate("/")}
                   >
-                    Seguir Comprando
+                    {t("order_detail.continue_shopping")}
                   </Button>
                   
                   {order.tracking_number && (
@@ -417,14 +417,14 @@ const OrderDetail = () => {
                           window.open(trackingUrl, '_blank');
                         } else {
                           toast({
-                            title: "Rastreo en vivo",
-                            description: `Número de seguimiento: ${order.tracking_number}`,
+                            title: t("order_detail.track_live"),
+                            description: `${t("order_detail.tracking_number")}: ${order.tracking_number}`,
                           });
                         }
                       }}
                     >
                       <Truck className="mr-2 h-4 w-4" />
-                      Rastrear en Vivo
+                      {t("order_detail.track_live")}
                     </Button>
                   )}
                 </div>
@@ -434,9 +434,9 @@ const OrderDetail = () => {
             {/* Need Help Card */}
             <Card className="bg-gradient-to-br from-secondary/5 to-primary/5 border-primary/20">
               <CardContent className="p-4 text-center">
-                <p className="text-sm font-medium mb-2">¿Necesitas ayuda?</p>
+                <p className="text-sm font-medium mb-2">{t("order_detail.need_help")}</p>
                 <p className="text-xs text-muted-foreground mb-3">
-                  Nuestro equipo está listo para asistirte
+                  {t("order_detail.support_ready")}
                 </p>
                 <Button 
                   variant="outline" 
@@ -444,7 +444,7 @@ const OrderDetail = () => {
                   className="w-full hover:scale-105 transition-transform"
                   onClick={() => navigate("/faq")}
                 >
-                  Contactar Soporte
+                  {t("order_detail.contact_support")}
                 </Button>
               </CardContent>
             </Card>
