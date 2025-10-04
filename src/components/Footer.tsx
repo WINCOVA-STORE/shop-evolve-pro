@@ -89,9 +89,9 @@ export const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors">
+                <Link to="/faq" className="hover:text-primary transition-colors">
                   Preguntas Frecuentes
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -102,11 +102,15 @@ export const Footer = () => {
             <ul className="space-y-3 text-sm mb-4">
               <li className="flex items-start gap-2">
                 <Phone className="h-4 w-4 mt-0.5" />
-                <span>615-728-9932</span>
+                <a href="tel:6157289932" className="hover:text-primary transition-colors">
+                  615-728-9932
+                </a>
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="h-4 w-4 mt-0.5" />
-                <span>ventas@wincova.com</span>
+                <a href="mailto:ventas@wincova.com" className="hover:text-primary transition-colors">
+                  ventas@wincova.com
+                </a>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 mt-0.5" />
