@@ -10,6 +10,7 @@ import { Loader2, ArrowLeft, Package, MapPin, CreditCard, Truck, CheckCircle2 } 
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { useTranslation } from "react-i18next";
 
 interface OrderItem {
   id: string;
@@ -44,9 +45,21 @@ const OrderDetail = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t, i18n } = useTranslation();
   const [order, setOrder] = useState<Order | null>(null);
   const [items, setItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const dateLocale = () => {
+    const lang = i18n.language?.split('-')[0];
+    switch (lang) {
+      case 'es': return 'es-ES';
+      case 'fr': return 'fr-FR';
+      case 'pt': return 'pt-PT';
+      case 'zh': return 'zh-CN';
+      default: return 'en-US';
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -75,12 +88,11 @@ const OrderDetail = () => {
         .eq("id", orderId)
         .eq("user_id", user!.id)
         .single();
-
       if (orderError) throw orderError;
       if (!orderData) {
         toast({
-          title: "Orden no encontrada",
-          description: "No se pudo encontrar esta orden",
+          title: t("order_detail.order_not_found"),
+          description: t("order_detail.could_not_load"),
           variant: "destructive",
         });
         navigate("/profile");
@@ -130,37 +142,37 @@ const OrderDetail = () => {
   const getStatusInfo = (status: string) => {
     const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any; color: string }> = {
       pending: { 
-        label: "Pendiente", 
+        label: t("order_detail.status_pending"), 
         variant: "secondary", 
         icon: Package,
         color: "text-amber-600"
       },
       confirmed: { 
-        label: "Confirmado", 
+        label: t("order_detail.status_confirmed"), 
         variant: "default", 
         icon: CheckCircle2,
         color: "text-blue-600"
       },
       processing: { 
-        label: "Procesando", 
+        label: t("order_detail.status_processing"), 
         variant: "default", 
         icon: Package,
         color: "text-blue-600"
       },
       shipped: { 
-        label: "Enviado", 
+        label: t("order_detail.status_shipped"), 
         variant: "default", 
         icon: Truck,
         color: "text-primary"
       },
       delivered: { 
-        label: "Entregado", 
+        label: t("order_detail.status_delivered"), 
         variant: "default", 
         icon: CheckCircle2,
         color: "text-green-600"
       },
       cancelled: { 
-        label: "Cancelado", 
+        label: t("order_detail.status_cancelled"), 
         variant: "destructive", 
         icon: Package,
         color: "text-destructive"
@@ -183,8 +195,8 @@ const OrderDetail = () => {
         <Header />
         <div className="container mx-auto px-4 py-12 text-center">
           <Package className="h-16 w-16 mx-auto mb-4 opacity-50" />
-          <h2 className="text-2xl font-bold mb-2">Orden no encontrada</h2>
-          <Button onClick={() => navigate("/profile")}>Volver a Mi Perfil</Button>
+          <h2 className="text-2xl font-bold mb-2">{t("order_detail.order_not_found")}</h2>
+          <Button onClick={() => navigate("/profile")}>{t("order_detail.back_to_profile")}</Button>
         </div>
         <Footer />
       </div>
@@ -205,7 +217,7 @@ const OrderDetail = () => {
           onClick={() => navigate("/profile")}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Volver a Mi Perfil
+          {t("order_detail.back_to_profile")}
         </Button>
 
         {/* Header Section - PREMIUM */}
