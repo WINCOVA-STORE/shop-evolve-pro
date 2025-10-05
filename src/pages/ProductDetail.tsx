@@ -8,25 +8,31 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { useCompare } from "@/contexts/CompareContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, ShoppingCart, Heart, Share2, Minus, Plus, Star, Package, Shield, Truck, Gift } from "lucide-react";
+import { Loader2, ArrowLeft, ShoppingCart, Heart, Share2, Minus, Plus, Star, Package, Shield, Truck, Gift, Copy, Check, GitCompare } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ProductReviews } from "@/components/ProductReviews";
 import { Product } from "@/hooks/useProducts";
 import { useTranslatedProduct } from "@/hooks/useTranslatedProduct";
+import { toast as sonnerToast } from "sonner";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToCompare, isInCompare } = useCompare();
   const { formatPrice } = useCurrency();
   const { toast } = useToast();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [copied, setCopied] = useState(false);
   const { name: translatedName, description: translatedDescription } = useTranslatedProduct(product);
 
   useEffect(() => {
@@ -79,6 +85,49 @@ const ProductDetail = () => {
       title: "¡Agregado al carrito!",
       description: `${quantity} ${quantity === 1 ? 'unidad' : 'unidades'} de ${translatedName}`,
     });
+  };
+
+  const handleWishlist = () => {
+    if (!product) return;
+    
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
+
+  const handleCompare = () => {
+    if (!product) return;
+    addToCompare(product);
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: translatedName,
+          text: translatedDescription || translatedName,
+          url: url,
+        });
+        sonnerToast.success("Compartido exitosamente");
+      } catch (err) {
+        if (err instanceof Error && err.name !== 'AbortError') {
+          handleCopyLink(url);
+        }
+      }
+    } else {
+      handleCopyLink(url);
+    }
+  };
+
+  const handleCopyLink = (url: string) => {
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    sonnerToast.success("Enlace copiado al portapapeles");
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const discount = product?.compare_at_price 
@@ -280,11 +329,29 @@ const ProductDetail = () => {
                   <ShoppingCart className="mr-2 h-5 w-5" />
                   {product.stock === 0 ? 'Agotado' : 'Agregar al Carrito'}
                 </Button>
-                <Button size="lg" variant="outline">
-                  <Heart className="h-5 w-5" />
+                <Button 
+                  size="lg" 
+                  variant={isInWishlist(product.id) ? "default" : "outline"}
+                  onClick={handleWishlist}
+                  className="transition-all"
+                >
+                  <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
                 </Button>
-                <Button size="lg" variant="outline">
-                  <Share2 className="h-5 w-5" />
+                <Button 
+                  size="lg" 
+                  variant={isInCompare(product.id) ? "default" : "outline"}
+                  onClick={handleCompare}
+                  className="transition-all"
+                >
+                  <GitCompare className="h-5 w-5" />
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  onClick={handleShare}
+                  className="transition-all"
+                >
+                  {copied ? <Check className="h-5 w-5 text-green-500" /> : <Share2 className="h-5 w-5" />}
                 </Button>
               </div>
             </div>

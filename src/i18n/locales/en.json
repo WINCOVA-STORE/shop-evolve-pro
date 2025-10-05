@@ -444,9 +444,21 @@
     "description": "Description"
   },
   "sidebar": {
-    "featured": "Featured Products",
+    "featured": "Featured",
     "special_offer": "Special Offer",
-    "discount_banner": "Extra 15% Off First Order",
-    "limited_time": "Limited time offer"
+    "discount_banner": "Up to 50% OFF",
+    "limited_time": "Limited time only"
+  },
+  "ads": {
+    "sponsored": "Sponsored",
+    "featured": "Featured",
+    "partner": "Partner",
+    "learn_more": "Learn More",
+    "premium_service": "Premium Service",
+    "premium_service_desc": "Get VIP support and priority shipping",
+    "fast_delivery": "Express Delivery",
+    "fast_delivery_desc": "Same day delivery in select areas",
+    "tech_support": "24/7 Support",
+    "tech_support_desc": "Expert help whenever you need it"
   }
 }

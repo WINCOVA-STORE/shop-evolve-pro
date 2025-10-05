@@ -293,9 +293,21 @@
     "description": "Description"
   },
   "sidebar": {
-    "featured": "Produits Vedettes",
-    "special_offer": "Offre Spéciale",
-    "discount_banner": "15% de Réduction Supplémentaire sur la Première Commande",
-    "limited_time": "Offre à durée limitée"
+    "featured": "En vedette",
+    "special_offer": "Offre spéciale",
+    "discount_banner": "Jusqu'à 50% de réduction",
+    "limited_time": "Pour un temps limité"
+  },
+  "ads": {
+    "sponsored": "Sponsorisé",
+    "featured": "En vedette",
+    "partner": "Partenaire",
+    "learn_more": "En savoir plus",
+    "premium_service": "Service Premium",
+    "premium_service_desc": "Support VIP et expédition prioritaire",
+    "fast_delivery": "Livraison Express",
+    "fast_delivery_desc": "Livraison le jour même dans certaines zones",
+    "tech_support": "Support 24/7",
+    "tech_support_desc": "Aide d'experts quand vous en avez besoin"
   }
 }

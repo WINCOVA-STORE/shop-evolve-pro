@@ -293,9 +293,21 @@
     "description": "描述"
   },
   "sidebar": {
-    "featured": "精选产品",
+    "featured": "精选",
     "special_offer": "特别优惠",
-    "discount_banner": "首单额外享受15%折扣",
+    "discount_banner": "高达50%折扣",
     "limited_time": "限时优惠"
+  },
+  "ads": {
+    "sponsored": "赞助",
+    "featured": "精选",
+    "partner": "合作伙伴",
+    "learn_more": "了解更多",
+    "premium_service": "高级服务",
+    "premium_service_desc": "VIP支持和优先配送",
+    "fast_delivery": "快速配送",
+    "fast_delivery_desc": "部分地区当日送达",
+    "tech_support": "24/7支持",
+    "tech_support_desc": "随时获得专家帮助"
   }
 }

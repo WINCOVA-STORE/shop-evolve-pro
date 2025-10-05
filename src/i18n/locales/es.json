@@ -435,9 +435,21 @@
     "description": "Descripción"
   },
   "sidebar": {
-    "featured": "Productos Destacados",
+    "featured": "Destacados",
     "special_offer": "Oferta Especial",
-    "discount_banner": "15% Extra de Descuento en Primera Compra",
-    "limited_time": "Oferta por tiempo limitado"
+    "discount_banner": "Hasta 50% de Descuento",
+    "limited_time": "Por tiempo limitado"
+  },
+  "ads": {
+    "sponsored": "Patrocinado",
+    "featured": "Destacado",
+    "partner": "Socio",
+    "learn_more": "Saber Más",
+    "premium_service": "Servicio Premium",
+    "premium_service_desc": "Soporte VIP y envío prioritario",
+    "fast_delivery": "Entrega Express",
+    "fast_delivery_desc": "Entrega el mismo día en áreas seleccionadas",
+    "tech_support": "Soporte 24/7",
+    "tech_support_desc": "Ayuda experta cuando la necesites"
   }
 }
