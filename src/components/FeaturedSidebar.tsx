@@ -33,7 +33,7 @@ export const FeaturedSidebar = () => {
   }
 
   return (
-    <aside className="hidden lg:block lg:col-span-3 space-y-4 sticky top-4 self-start max-w-[280px]">
+    <aside className="lg:col-span-3 space-y-4 lg:sticky lg:top-4 lg:self-start max-w-full lg:max-w-[280px]">
       {/* Featured Products - Compact */}
       <Card className="p-3 border-2">
         <h3 className="font-bold text-sm mb-3 text-primary">{t('sidebar.featured')}</h3>
@@ -44,10 +44,12 @@ export const FeaturedSidebar = () => {
         </div>
       </Card>
 
-      <Separator />
+      <Separator className="hidden lg:block" />
 
       {/* Sponsored Ads Section */}
-      <SponsoredAds />
+      <div className="hidden lg:block">
+        <SponsoredAds />
+      </div>
     </aside>
   );
 };
