@@ -137,19 +137,19 @@ const Index = () => {
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Products Grid */}
-          <div className="lg:col-span-9">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Products Grid - Amazon-level responsive grid */}
+          <div className="lg:col-span-9 order-1 lg:order-1">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {isLoading ? (
-                [...Array(6)].map((_, i) => (
+                [...Array(8)].map((_, i) => (
                   <div key={i} className="space-y-3">
-                    <Skeleton className="aspect-square w-full" />
+                    <Skeleton className="aspect-square w-full rounded-lg" />
                     <Skeleton className="h-4 w-3/4" />
                     <Skeleton className="h-4 w-1/2" />
                   </div>
                 ))
               ) : products && products.length > 0 ? (
-                products.slice(0, 6).map((product) => (
+                products.map((product) => (
                   <ProductCard key={product.id} {...product} />
                 ))
               ) : (
@@ -160,8 +160,10 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Featured Sidebar */}
-          <FeaturedSidebar />
+          {/* Featured Sidebar - Mobile: al final, Desktop: lateral */}
+          <div className="order-2 lg:order-2">
+            <FeaturedSidebar />
+          </div>
         </div>
       </section>
 

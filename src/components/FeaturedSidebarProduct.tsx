@@ -29,6 +29,7 @@ export const FeaturedSidebarProduct = ({ product }: FeaturedSidebarProductProps)
         <img
           src={primaryImage}
           alt={name}
+          loading="lazy"
           className="w-full h-full object-cover group-hover:scale-110 transition-transform"
         />
         {hasDiscount && (
