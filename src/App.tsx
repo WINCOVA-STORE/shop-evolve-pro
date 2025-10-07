@@ -25,6 +25,7 @@ import ReturnPolicy from "./pages/ReturnPolicy";
 import TrackOrder from "./pages/TrackOrder";
 import Wishlist from "./pages/Wishlist";
 import Compare from "./pages/Compare";
+import WooCommerceSync from "./pages/WooCommerceSync";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +59,7 @@ const App = () => (
                   <Route path="/faq" element={<FAQ />} />
                   <Route path="/return-policy" element={<ReturnPolicy />} />
                   <Route path="/track-order" element={<TrackOrder />} />
+                  <Route path="/admin/woocommerce-sync" element={<WooCommerceSync />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

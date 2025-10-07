@@ -613,6 +613,115 @@ export type Database = {
           },
         ]
       }
+      woocommerce_category_mapping: {
+        Row: {
+          created_at: string
+          id: string
+          lovable_category_id: string
+          updated_at: string
+          woocommerce_category_id: string
+          woocommerce_category_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lovable_category_id: string
+          updated_at?: string
+          woocommerce_category_id: string
+          woocommerce_category_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lovable_category_id?: string
+          updated_at?: string
+          woocommerce_category_id?: string
+          woocommerce_category_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "woocommerce_category_mapping_lovable_category_id_fkey"
+            columns: ["lovable_category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      woocommerce_product_mapping: {
+        Row: {
+          created_at: string
+          id: string
+          lovable_product_id: string
+          updated_at: string
+          woocommerce_product_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lovable_product_id: string
+          updated_at?: string
+          woocommerce_product_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lovable_product_id?: string
+          updated_at?: string
+          woocommerce_product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "woocommerce_product_mapping_lovable_product_id_fkey"
+            columns: ["lovable_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      woocommerce_sync_logs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          products_created: number | null
+          products_failed: number | null
+          products_synced: number | null
+          products_updated: number | null
+          started_at: string
+          status: string
+          sync_type: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          products_created?: number | null
+          products_failed?: number | null
+          products_synced?: number | null
+          products_updated?: number | null
+          started_at?: string
+          status?: string
+          sync_type?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          products_created?: number | null
+          products_failed?: number | null
+          products_synced?: number | null
+          products_updated?: number | null
+          started_at?: string
+          status?: string
+          sync_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
