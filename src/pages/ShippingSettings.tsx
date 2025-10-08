@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Truck, Package, Settings, History } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -21,6 +21,17 @@ export default function ShippingSettings() {
   const [dropshippingIncludes, setDropshippingIncludes] = useState(
     config?.dropshipping_includes_shipping ?? true
   );
+
+  // Sync state with loaded config
+  useEffect(() => {
+    if (config) {
+      setMode(config.mode);
+      setShowFreeBadge(config.show_free_badge);
+      setManualCost(config.manual_global_cost?.toString() || '');
+      setApiProvider(config.api_provider || '');
+      setDropshippingIncludes(config.dropshipping_includes_shipping);
+    }
+  }, [config]);
 
   const handleSave = () => {
     const updates: any = {
