@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Gift, TrendingUp, DollarSign, Settings as SettingsIcon, Plus, Percent, Calendar, AlertTriangle, Info } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,6 +46,21 @@ export default function RewardsSettings() {
   const [includeTax, setIncludeTax] = useState(config?.include_tax_in_points || false);
   const [includeShipping, setIncludeShipping] = useState(config?.include_shipping_in_points || false);
 
+  // Keep form state in sync with loaded config
+  useEffect(() => {
+    if (!config) return;
+    setEarningType(config.earning_type || 'percentage');
+    setEarningPercentage(config.earning_percentage?.toString() || '1.00');
+    setEarningFixed(config.earning_fixed_amount?.toString() || '');
+    setPointsPerDollar(config.points_per_dollar?.toString() || '1000');
+    setMaxUsagePercentage(config.max_usage_percentage?.toString() || '2.00');
+    setMinPointsToUse(config.min_points_to_use?.toString() || '1000');
+    setShowPercentage(!!config.show_percentage_to_users);
+    setShowConversion(!!config.show_conversion_rate);
+    setIncludeTax(!!config.include_tax_in_points);
+    setIncludeShipping(!!config.include_shipping_in_points);
+  }, [config]);
+
   // Campaign form state
   const [isCreating, setIsCreating] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<RewardsCampaign | null>(null);
@@ -66,7 +81,7 @@ export default function RewardsSettings() {
 
   const handleSaveConfig = async () => {
     try {
-      const result = await updateConfig({
+      await updateConfig({
         earning_type: earningType as 'percentage' | 'fixed',
         earning_percentage: earningType === 'percentage' ? parseFloat(earningPercentage) : null,
         earning_fixed_amount: earningType === 'fixed' ? parseFloat(earningFixed) : null,
@@ -79,8 +94,11 @@ export default function RewardsSettings() {
         include_shipping_in_points: includeShipping,
       });
 
-      // Force a complete page refresh to sync all components
-      window.location.reload();
+      // Config state will update via useRewardsConfig -> setConfig, and useEffect above syncs the form
+      toast({
+        title: "Configuración guardada",
+        description: "Los cambios se han aplicado y ya están activos en toda la tienda.",
+      });
     } catch (error) {
       toast({
         title: "Error",
