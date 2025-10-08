@@ -14,7 +14,8 @@ serve(async (req) => {
 
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    { auth: { persistSession: false } }
   );
 
   try {
@@ -34,145 +35,132 @@ serve(async (req) => {
       // Get line items
       const lineItems = await stripe.checkout.sessions.listLineItems(session_id);
       
-      const authHeader = req.headers.get("Authorization");
+      // Extraer metadata
+      const subtotal = parseFloat(session.metadata?.subtotal || "0");
+      const shippingCost = parseFloat(session.metadata?.shipping_cost || "0");
+      const taxAmount = parseFloat(session.metadata?.tax_amount || "0");
+      const pointsUsed = parseInt(session.metadata?.points_used || "0");
+      const pointsDiscount = parseFloat(session.metadata?.points_discount || "0");
+      const shippingConfigSnapshot = session.metadata?.shipping_config_snapshot 
+        ? JSON.parse(session.metadata.shipping_config_snapshot)
+        : null;
+
+      // Determinar user_id
       let userId = session.metadata?.user_id;
-      
-      if (authHeader) {
-        const token = authHeader.replace("Bearer ", "");
-        const { data } = await supabaseClient.auth.getUser(token);
-        if (data.user) {
-          userId = data.user.id;
+      if (!userId || userId === 'guest') {
+        const authHeader = req.headers.get("Authorization");
+        if (authHeader) {
+          const token = authHeader.replace("Bearer ", "");
+          const { data: { user } } = await supabaseClient.auth.getUser(token);
+          userId = user?.id || null;
         }
       }
 
-      if (!userId || userId === 'guest') {
-        throw new Error("User not authenticated");
+      if (!userId) {
+        throw new Error("User ID is required to create an order");
       }
 
-      // Create order
-      const orderNumber = `ORD-${Date.now()}`;
+      // Generar order number
+      const orderNumber = `WCV-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+
+      // Crear orden con snapshot de configuración
       const { data: order, error: orderError } = await supabaseClient
-        .from('orders')
+        .from("orders")
         .insert({
           user_id: userId,
           order_number: orderNumber,
-          status: 'confirmed',
-          payment_status: 'paid',
-          subtotal: session.amount_subtotal! / 100,
+          subtotal: subtotal,
+          tax: taxAmount,
+          shipping: shippingCost,
           total: session.amount_total! / 100,
-          currency: session.currency?.toUpperCase(),
+          status: "processing",
+          payment_status: "completed",
           stripe_payment_intent_id: session.payment_intent as string,
+          currency: session.currency?.toUpperCase() || "USD",
+          shipping_config_snapshot: shippingConfigSnapshot,
         })
         .select()
         .single();
 
       if (orderError) throw orderError;
 
-      // Create order items
-      const orderItems = lineItems.data.map((item: any) => ({
-        order_id: order.id,
-        product_name: item.description || 'Product',
-        quantity: item.quantity || 1,
-        product_price: (item.amount_total || 0) / 100 / (item.quantity || 1),
-        subtotal: (item.amount_total || 0) / 100,
-      }));
+      // Insertar order items (excluir envío del listado de productos)
+      const productItems = lineItems.data.filter(
+        (item: any) => !item.description?.toLowerCase().includes("envío")
+      );
 
-      const { error: itemsError } = await supabaseClient
-        .from('order_items')
-        .insert(orderItems);
+      for (const item of productItems) {
+        await supabaseClient.from("order_items").insert({
+          order_id: order.id,
+          product_name: item.description || "Product",
+          product_price: (item.amount_total || 0) / 100 / (item.quantity || 1),
+          quantity: item.quantity || 1,
+          subtotal: (item.amount_total || 0) / 100,
+        });
+      }
 
-      if (itemsError) throw itemsError;
+      // Deducir puntos usados
+      if (pointsUsed > 0) {
+        await supabaseClient.from("rewards").insert({
+          user_id: userId,
+          type: "purchase",
+          amount: -pointsUsed,
+          description: `Puntos usados en pedido ${orderNumber}`,
+          order_id: order.id,
+        });
+      }
 
-      // Deduct points if used
-      const pointsUsed = parseInt(session.metadata?.points_used || '0');
-      if (pointsUsed > 0 && userId && userId !== 'guest') {
-        const { error: pointsError } = await supabaseClient
-          .from('rewards')
-          .insert({
+      // Verificar si es primera compra para bono de bienvenida
+      const { data: previousOrders } = await supabaseClient
+        .from("orders")
+        .select("id")
+        .eq("user_id", userId)
+        .neq("id", order.id)
+        .limit(1);
+
+      if (!previousOrders || previousOrders.length === 0) {
+        // Primera compra - otorgar bono de bienvenida si no lo ha recibido
+        const { data: profile } = await supabaseClient
+          .from("profiles")
+          .select("welcome_bonus_claimed")
+          .eq("id", userId)
+          .single();
+
+        if (!profile?.welcome_bonus_claimed) {
+          await supabaseClient.from("rewards").insert({
             user_id: userId,
-            type: 'redemption',
-            amount: -pointsUsed,
-            description: `Puntos usados en orden ${orderNumber}`,
+            type: "welcome",
+            amount: 2000,
+            description: "Bono de bienvenida por tu primera compra",
             order_id: order.id,
           });
 
-        if (pointsError) {
-          console.error('Error deducting points:', pointsError);
-        } else {
-          console.log(`Deducted ${pointsUsed} points for order ${orderNumber}`);
+          await supabaseClient
+            .from("profiles")
+            .update({ welcome_bonus_claimed: true })
+            .eq("id", userId);
         }
       }
 
-      // Process rewards: Welcome bonus + Purchase rewards
-      if (userId && userId !== 'guest') {
-        try {
-          // Check if this is the user's first order
-          const { count } = await supabaseClient
-            .from('orders')
-            .select('id', { count: 'exact', head: true })
-            .eq('user_id', userId);
-
-          const orderTotal = Number(session.amount_total! / 100);
-          const rewards = [];
-
-          // Welcome bonus: 2000 points on first purchase (only if not claimed)
-          if (count === 1) {
-            const { data: profile } = await supabaseClient
-              .from('profiles')
-              .select('welcome_bonus_claimed')
-              .eq('id', userId)
-              .single();
-
-            if (profile && !profile.welcome_bonus_claimed) {
-              rewards.push({
-                user_id: userId,
-                type: 'welcome',
-                amount: 2000,
-                description: 'Bono de bienvenida',
-                order_id: order.id,
-              });
-
-              // Mark welcome bonus as claimed
-              await supabaseClient
-                .from('profiles')
-                .update({ welcome_bonus_claimed: true })
-                .eq('id', userId);
-            }
-          }
-
-          // Purchase reward: 1% of purchase amount in points (1000 points = $1)
-          const purchasePoints = Math.floor(orderTotal * 10); // 1% = orderTotal * 0.01 * 1000
-          rewards.push({
-            user_id: userId,
-            type: 'purchase',
-            amount: purchasePoints,
-            description: `Recompensa por compra de $${orderTotal.toFixed(2)}`,
-            order_id: order.id,
-          });
-
-          // Insert all rewards
-          if (rewards.length > 0) {
-            const { error: rewardsError } = await supabaseClient
-              .from('rewards')
-              .insert(rewards);
-
-            if (rewardsError) {
-              console.error('Error creating rewards:', rewardsError);
-            } else {
-              console.log(`Created ${rewards.length} rewards totaling ${rewards.reduce((sum, r) => sum + r.amount, 0)} points`);
-            }
-          }
-        } catch (rewardError) {
-          console.error('Error processing rewards:', rewardError);
-          // Don't fail the order if reward processing fails
-        }
+      // CRÍTICO: Calcular puntos SOLO sobre subtotal (sin tax, sin envío)
+      const purchasePoints = Math.round(subtotal * 0.01); // 1% del subtotal
+      
+      if (purchasePoints > 0) {
+        await supabaseClient.from("rewards").insert({
+          user_id: userId,
+          type: "purchase",
+          amount: purchasePoints,
+          description: `Puntos por compra ${orderNumber}`,
+          order_id: order.id,
+        });
       }
 
       return new Response(
-        JSON.stringify({ 
-          success: true, 
+        JSON.stringify({
+          success: true,
           order_id: order.id,
-          order_number: orderNumber 
+          order_number: orderNumber,
+          points_earned: purchasePoints,
         }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },

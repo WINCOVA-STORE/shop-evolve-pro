@@ -29,6 +29,36 @@ serve(async (req) => {
       throw new Error("Cart is empty");
     }
 
+    // Obtener configuración de envío activa
+    const { data: shippingConfig, error: configError } = await supabaseClient
+      .from('shipping_config')
+      .select('*')
+      .eq('store_id', 'wincova_main')
+      .single();
+
+    if (configError) {
+      console.error("Error fetching shipping config:", configError);
+      throw new Error("Failed to load shipping configuration");
+    }
+
+    // Calcular subtotal de productos
+    const subtotal = cartItems.reduce((sum: number, item: any) => 
+      sum + (item.product_price * item.quantity), 0
+    );
+
+    // Calcular costo de envío basado en configuración
+    let shippingCost = 0;
+    if (shippingConfig.mode === 'manual' && shippingConfig.manual_global_cost) {
+      shippingCost = shippingConfig.manual_global_cost;
+    }
+    // free, dropshipping, y api (por ahora) = 0
+
+    // Calcular tax (10% del subtotal)
+    const taxAmount = subtotal * 0.1;
+
+    // Total final
+    const finalTotal = subtotal + taxAmount + shippingCost - (pointsDiscount || 0);
+
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
@@ -41,7 +71,7 @@ serve(async (req) => {
       }
     }
 
-    // Create line items from cart
+    // Crear line items incluyendo envío si aplica
     const lineItems = cartItems.map((item: any) => ({
       price_data: {
         currency: 'usd',
@@ -54,6 +84,21 @@ serve(async (req) => {
       quantity: item.quantity,
     }));
 
+    // Agregar envío como line item si hay costo
+    if (shippingCost > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'Envío',
+            description: 'Costo de envío',
+          },
+          unit_amount: Math.round(shippingCost * 100),
+        },
+        quantity: 1,
+      });
+    }
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user?.email,
@@ -65,6 +110,13 @@ serve(async (req) => {
         user_id: user?.id || 'guest',
         points_used: pointsUsed?.toString() || '0',
         points_discount: pointsDiscount?.toString() || '0',
+        subtotal: subtotal.toString(),
+        shipping_cost: shippingCost.toString(),
+        tax_amount: taxAmount.toString(),
+        shipping_config_snapshot: JSON.stringify({
+          mode: shippingConfig.mode,
+          cost: shippingCost,
+        }),
       },
     });
 

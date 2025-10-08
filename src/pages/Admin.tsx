@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Package, ShoppingBag, Users, DollarSign, ArrowLeft, Shield, RefreshCw } from "lucide-react";
+import { Loader2, Package, ShoppingBag, Users, DollarSign, ArrowLeft, Shield, RefreshCw, Truck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -223,6 +223,17 @@ const Admin = () => {
             <TabsTrigger value="products">{t("admin.products")}</TabsTrigger>
             <TabsTrigger value="users">{t("admin.users")}</TabsTrigger>
           </TabsList>
+
+          <div className="flex gap-3">
+            <Button onClick={() => navigate("/admin/woocommerce-sync")} variant="outline">
+              <RefreshCw className="mr-2 h-4 w-4" />
+              WooCommerce Sync
+            </Button>
+            <Button onClick={() => navigate("/admin/shipping-settings")} variant="outline">
+              <Truck className="mr-2 h-4 w-4" />
+              Configuración de Envíos
+            </Button>
+          </div>
 
           <TabsContent value="orders">
             <Card>

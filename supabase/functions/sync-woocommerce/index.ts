@@ -279,7 +279,7 @@ serve(async (req) => {
           products_created: productsCreated,
           products_updated: productsUpdated,
           products_failed: productsFailed,
-          error_message: error.message
+          error_message: error instanceof Error ? error.message : String(error)
         })
         .eq('id', syncLog.id);
 
@@ -290,7 +290,7 @@ serve(async (req) => {
     console.error('Error in sync-woocommerce function:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
         details: 'Check function logs for more information'
       }),
       { 

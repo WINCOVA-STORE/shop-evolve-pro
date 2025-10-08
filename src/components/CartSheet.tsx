@@ -18,9 +18,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useRewards } from "@/hooks/useRewards";
+import { useShippingConfig } from "@/hooks/useShippingConfig";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
+import { FreeShippingBadge } from "@/components/FreeShippingBadge";
 
 export const CartSheet = () => {
   const { items, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
@@ -29,12 +31,13 @@ export const CartSheet = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const { availablePoints, getMaxUsablePoints, pointsToDollars } = useRewards();
+  const { config: shippingConfig, calculateShipping } = useShippingConfig();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [pointsToUse, setPointsToUse] = useState(0);
 
-  const taxRate = 0.0975; // Tennessee state tax (9.75%)
+  const taxRate = 0.1; // 10% tax
   const taxAmount = cartTotal * taxRate;
-  const shippingCost = cartTotal > 50 ? 0 : 8.99;
+  const shippingCost = calculateShipping(cartTotal);
   const subtotalWithShipping = cartTotal + taxAmount + shippingCost;
   
   // Calculate discount from points (1000 points = $1)
@@ -45,7 +48,7 @@ export const CartSheet = () => {
   const maxUsablePoints = getMaxUsablePoints(subtotalWithShipping);
   
   // Calculate points that will be earned from this purchase (1% = 10 points per dollar)
-  const pointsToEarn = Math.floor(total * 10);
+  const pointsToEarn = Math.floor(cartTotal * 10); // Basado solo en subtotal
 
   const handleCheckout = async () => {
     setIsCheckingOut(true);
@@ -175,14 +178,16 @@ export const CartSheet = () => {
                   <span className="font-medium">{formatPrice(cartTotal)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t('cart.tax')} (9.75%)</span>
+                  <span className="text-muted-foreground">{t('cart.tax')} (10%)</span>
                   <span className="font-medium">{formatPrice(taxAmount)}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">{t('cart.shipping')}</span>
-                  <span className="font-medium">
-                    {shippingCost === 0 ? 'FREE' : formatPrice(shippingCost)}
-                  </span>
+                  {shippingCost === 0 && shippingConfig?.show_free_badge ? (
+                    <FreeShippingBadge />
+                  ) : (
+                    <span className="font-medium">{formatPrice(shippingCost)}</span>
+                  )}
                 </div>
               </div>
 

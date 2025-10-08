@@ -26,6 +26,7 @@ import TrackOrder from "./pages/TrackOrder";
 import Wishlist from "./pages/Wishlist";
 import Compare from "./pages/Compare";
 import WooCommerceSync from "./pages/WooCommerceSync";
+import ShippingSettings from "./pages/ShippingSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -60,6 +61,7 @@ const App = () => (
                   <Route path="/return-policy" element={<ReturnPolicy />} />
                   <Route path="/track-order" element={<TrackOrder />} />
                   <Route path="/admin/woocommerce-sync" element={<WooCommerceSync />} />
+                  <Route path="/admin/shipping-settings" element={<ShippingSettings />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
