@@ -66,7 +66,7 @@ export default function RewardsSettings() {
 
   const handleSaveConfig = async () => {
     try {
-      await updateConfig({
+      const result = await updateConfig({
         earning_type: earningType as 'percentage' | 'fixed',
         earning_percentage: earningType === 'percentage' ? parseFloat(earningPercentage) : null,
         earning_fixed_amount: earningType === 'fixed' ? parseFloat(earningFixed) : null,
@@ -79,10 +79,8 @@ export default function RewardsSettings() {
         include_shipping_in_points: includeShipping,
       });
 
-      toast({
-        title: "Configuración guardada",
-        description: "Los cambios se han aplicado correctamente y se reflejarán en toda la aplicación.",
-      });
+      // Force a complete page refresh to sync all components
+      window.location.reload();
     } catch (error) {
       toast({
         title: "Error",

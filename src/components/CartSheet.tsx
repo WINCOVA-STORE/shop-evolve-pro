@@ -55,8 +55,8 @@ export const CartSheet = () => {
   const pointsDiscount = pointsToDollars(pointsToUse);
   const total = Math.max(0, subtotalWithShipping - pointsDiscount);
   
-  // Calculate max usable points based on dynamic config
-  const maxUsablePoints = getMaxUsablePoints(subtotalWithShipping, availablePoints);
+  // Calculate max usable points based on SUBTOTAL only (global standard)
+  const maxUsablePoints = getMaxUsablePoints(cartTotal, availablePoints);
   
   // Calculate points that will be earned from this purchase (based on config)
   const pointsToEarn = calculateEarningPoints(cartTotal); // Basado en configuración dinámica
