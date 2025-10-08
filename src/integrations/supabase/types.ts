@@ -232,6 +232,7 @@ export type Database = {
           payment_status: Database["public"]["Enums"]["payment_status"] | null
           shipping: number | null
           shipping_address: string | null
+          shipping_config_snapshot: Json | null
           status: Database["public"]["Enums"]["order_status"] | null
           stripe_payment_intent_id: string | null
           subtotal: number
@@ -253,6 +254,7 @@ export type Database = {
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           shipping?: number | null
           shipping_address?: string | null
+          shipping_config_snapshot?: Json | null
           status?: Database["public"]["Enums"]["order_status"] | null
           stripe_payment_intent_id?: string | null
           subtotal: number
@@ -274,6 +276,7 @@ export type Database = {
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           shipping?: number | null
           shipping_address?: string | null
+          shipping_config_snapshot?: Json | null
           status?: Database["public"]["Enums"]["order_status"] | null
           stripe_payment_intent_id?: string | null
           subtotal?: number
@@ -313,6 +316,7 @@ export type Database = {
           name_zh: string | null
           price: number
           reward_percentage: number | null
+          shipping_included_in_price: boolean | null
           sku: string | null
           stock: number | null
           tags: string[] | null
@@ -337,6 +341,7 @@ export type Database = {
           name_zh?: string | null
           price: number
           reward_percentage?: number | null
+          shipping_included_in_price?: boolean | null
           sku?: string | null
           stock?: number | null
           tags?: string[] | null
@@ -361,6 +366,7 @@ export type Database = {
           name_zh?: string | null
           price?: number
           reward_percentage?: number | null
+          shipping_included_in_price?: boolean | null
           sku?: string | null
           stock?: number | null
           tags?: string[] | null
@@ -584,6 +590,51 @@ export type Database = {
           },
         ]
       }
+      shipping_config: {
+        Row: {
+          api_credentials: Json | null
+          api_provider: string | null
+          created_at: string
+          dropshipping_includes_shipping: boolean
+          id: string
+          last_changed_by: string | null
+          manual_global_cost: number | null
+          manual_rules: Json | null
+          mode: Database["public"]["Enums"]["shipping_mode"]
+          show_free_badge: boolean
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          api_credentials?: Json | null
+          api_provider?: string | null
+          created_at?: string
+          dropshipping_includes_shipping?: boolean
+          id?: string
+          last_changed_by?: string | null
+          manual_global_cost?: number | null
+          manual_rules?: Json | null
+          mode?: Database["public"]["Enums"]["shipping_mode"]
+          show_free_badge?: boolean
+          store_id?: string
+          updated_at?: string
+        }
+        Update: {
+          api_credentials?: Json | null
+          api_provider?: string | null
+          created_at?: string
+          dropshipping_includes_shipping?: boolean
+          id?: string
+          last_changed_by?: string | null
+          manual_global_cost?: number | null
+          manual_rules?: Json | null
+          mode?: Database["public"]["Enums"]["shipping_mode"]
+          show_free_badge?: boolean
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -727,6 +778,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_active_shipping_config: {
+        Args: { p_store_id?: string }
+        Returns: {
+          api_provider: string
+          dropshipping_includes_shipping: boolean
+          id: string
+          manual_global_cost: number
+          manual_rules: Json
+          mode: Database["public"]["Enums"]["shipping_mode"]
+          show_free_badge: boolean
+        }[]
+      }
       grant_birthday_points: {
         Args: { target_user_id: string }
         Returns: boolean
@@ -748,6 +811,7 @@ export type Database = {
         | "delivered"
         | "cancelled"
       payment_status: "pending" | "completed" | "failed" | "refunded"
+      shipping_mode: "free" | "manual" | "api" | "dropshipping"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -884,6 +948,7 @@ export const Constants = {
         "cancelled",
       ],
       payment_status: ["pending", "completed", "failed", "refunded"],
+      shipping_mode: ["free", "manual", "api", "dropshipping"],
     },
   },
 } as const
