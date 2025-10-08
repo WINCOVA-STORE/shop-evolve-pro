@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { FreeShippingBadge } from "@/components/FreeShippingBadge";
+import { useRewardsCalculation } from "@/hooks/useRewardsCalculation";
 
 export const CartSheet = () => {
   const { items, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
@@ -30,8 +31,18 @@ export const CartSheet = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const { user } = useAuth();
-  const { availablePoints, getMaxUsablePoints, pointsToDollars } = useRewards();
+  const { availablePoints } = useRewards();
   const { config: shippingConfig, calculateShipping } = useShippingConfig();
+  const { 
+    calculateEarningPoints, 
+    getMaxUsablePoints, 
+    pointsToDollars, 
+    formatUsageDisplay,
+    formatEarningDisplay,
+    getEarningDescription,
+    showPercentage,
+    showConversion
+  } = useRewardsCalculation();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [pointsToUse, setPointsToUse] = useState(0);
 
@@ -44,11 +55,11 @@ export const CartSheet = () => {
   const pointsDiscount = pointsToDollars(pointsToUse);
   const total = Math.max(0, subtotalWithShipping - pointsDiscount);
   
-  // Calculate max usable points (2% of purchase amount)
-  const maxUsablePoints = getMaxUsablePoints(subtotalWithShipping);
+  // Calculate max usable points based on dynamic config
+  const maxUsablePoints = getMaxUsablePoints(subtotalWithShipping, availablePoints);
   
-  // Calculate points that will be earned from this purchase (1% = 10 points per dollar)
-  const pointsToEarn = Math.floor(cartTotal * 10); // Basado solo en subtotal
+  // Calculate points that will be earned from this purchase (based on config)
+  const pointsToEarn = calculateEarningPoints(cartTotal); // Basado en configuración dinámica
 
   const handleCheckout = async () => {
     setIsCheckingOut(true);
@@ -219,7 +230,7 @@ export const CartSheet = () => {
                         className="h-9"
                       />
                       <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Máximo: {maxUsablePoints.toLocaleString()} pts (2%)</span>
+                        <span>{formatUsageDisplay(maxUsablePoints)}</span>
                         {pointsToUse > 0 && (
                           <span className="text-primary font-medium">
                             -${pointsDiscount.toFixed(2)}
@@ -259,11 +270,16 @@ export const CartSheet = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Gift className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-medium text-primary">Ganarás con esta compra</span>
+                        <div>
+                          <span className="text-sm font-medium text-primary block">Ganarás con esta compra</span>
+                          {(showPercentage || showConversion) && (
+                            <span className="text-xs text-primary/70">{getEarningDescription()}</span>
+                          )}
+                        </div>
                       </div>
                       <div className="text-right">
                         <p className="text-lg font-bold text-primary">
-                          +{pointsToEarn.toLocaleString()} pts
+                          {formatEarningDisplay(pointsToEarn)}
                         </p>
                       </div>
                     </div>

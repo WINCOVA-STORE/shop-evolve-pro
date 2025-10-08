@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Product } from "@/hooks/useProducts";
 import { useTranslatedProduct } from "@/hooks/useTranslatedProduct";
+import { useRewardsCalculation } from "@/hooks/useRewardsCalculation";
 
 interface ProductCardProps extends Product {}
 
@@ -23,6 +24,7 @@ export const ProductCard = (product: ProductCardProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { name } = useTranslatedProduct(product);
+  const { calculateEarningPoints, formatEarningDisplay, showPercentage, showConversion } = useRewardsCalculation();
   
   const inWishlist = isInWishlist(product.id);
   const inCompare = isInCompare(product.id);
@@ -34,8 +36,8 @@ export const ProductCard = (product: ProductCardProps) => {
   const isNew = tags.includes('new');
   const badge = hasDiscount ? 'sale' : isNew ? 'new' : undefined;
   
-  // Calculate points to earn (1% = 10 points per dollar, 1000 points = $1)
-  const pointsToEarn = Math.floor(price * 10);
+  // Calculate points to earn based on dynamic rewards config
+  const pointsToEarn = calculateEarningPoints(price);
 
   const handleAddToCart = () => {
     addToCart(product, 1);
@@ -143,11 +145,13 @@ export const ProductCard = (product: ProductCardProps) => {
             )}
           </div>
           
-          {/* Points Badge */}
-          <div className="flex items-center gap-1 text-xs text-primary font-medium">
-            <Gift className="h-3 w-3" />
-            <span>+{pointsToEarn.toLocaleString()} pts</span>
-          </div>
+          {/* Points Badge - only show if percentage or conversion should be visible */}
+          {(showPercentage || showConversion || pointsToEarn > 0) && (
+            <div className="flex items-center gap-1 text-xs text-primary font-medium">
+              <Gift className="h-3 w-3" />
+              <span>{formatEarningDisplay(pointsToEarn)}</span>
+            </div>
+          )}
         </div>
 
         {/* Add to Cart Button */}
