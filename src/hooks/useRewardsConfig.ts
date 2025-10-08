@@ -16,6 +16,9 @@ interface RewardsConfig {
   show_conversion_rate: boolean;
   vip_multiplier: number;
   seasonal_multiplier: number;
+  include_tax_in_points: boolean;
+  include_shipping_in_points: boolean;
+  calculation_notes: string | null;
 }
 
 export const useRewardsConfig = () => {

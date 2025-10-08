@@ -142,8 +142,20 @@ serve(async (req) => {
         }
       }
 
-      // CRÍTICO: Calcular puntos SOLO sobre subtotal (sin tax, sin envío)
-      const purchasePoints = Math.round(subtotal * 0.01); // 1% del subtotal
+      // Calcular puntos usando la función de base de datos (configuración dinámica)
+      const { data: pointsData, error: pointsError } = await supabaseClient
+        .rpc('calculate_purchase_points', {
+          p_subtotal: subtotal,
+          p_tax: taxAmount,
+          p_shipping: shippingCost,
+          p_store_id: 'wincova_main'
+        });
+
+      if (pointsError) {
+        console.error('Error calculating points:', pointsError);
+      }
+
+      const purchasePoints = pointsData || 0;
       
       if (purchasePoints > 0) {
         await supabaseClient.from("rewards").insert({

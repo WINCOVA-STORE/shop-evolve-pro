@@ -673,12 +673,15 @@ export type Database = {
       }
       rewards_config: {
         Row: {
+          calculation_notes: string | null
           created_at: string
           default_expiration_days: number | null
           earning_fixed_amount: number | null
           earning_percentage: number | null
           earning_type: Database["public"]["Enums"]["earning_type"]
           id: string
+          include_shipping_in_points: boolean
+          include_tax_in_points: boolean
           last_changed_by: string | null
           max_usage_percentage: number
           min_points_to_use: number
@@ -691,12 +694,15 @@ export type Database = {
           vip_multiplier: number | null
         }
         Insert: {
+          calculation_notes?: string | null
           created_at?: string
           default_expiration_days?: number | null
           earning_fixed_amount?: number | null
           earning_percentage?: number | null
           earning_type?: Database["public"]["Enums"]["earning_type"]
           id?: string
+          include_shipping_in_points?: boolean
+          include_tax_in_points?: boolean
           last_changed_by?: string | null
           max_usage_percentage?: number
           min_points_to_use?: number
@@ -709,12 +715,15 @@ export type Database = {
           vip_multiplier?: number | null
         }
         Update: {
+          calculation_notes?: string | null
           created_at?: string
           default_expiration_days?: number | null
           earning_fixed_amount?: number | null
           earning_percentage?: number | null
           earning_type?: Database["public"]["Enums"]["earning_type"]
           id?: string
+          include_shipping_in_points?: boolean
+          include_tax_in_points?: boolean
           last_changed_by?: string | null
           max_usage_percentage?: number
           min_points_to_use?: number
@@ -916,6 +925,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_purchase_points: {
+        Args: {
+          p_shipping?: number
+          p_store_id?: string
+          p_subtotal: number
+          p_tax?: number
+        }
+        Returns: number
+      }
       get_active_campaign: {
         Args: {
           p_campaign_type: Database["public"]["Enums"]["campaign_type"]

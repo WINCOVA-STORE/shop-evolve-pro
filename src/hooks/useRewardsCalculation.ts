@@ -46,6 +46,8 @@ export const useRewardsCalculation = () => {
     /**
      * Calculate points earned from a purchase
      * Based on earning_percentage and points_per_dollar from config
+     * NOTE: Por defecto calcula sobre SUBTOTAL (excluye tax y shipping)
+     * siguiendo el estándar global de Shopify, WooCommerce, Amazon, etc.
      */
     const calculateEarningPoints = (amount: number): number => {
       // Convert percentage to decimal (1% = 0.01)

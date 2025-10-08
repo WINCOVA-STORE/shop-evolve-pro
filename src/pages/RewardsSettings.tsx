@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Gift, TrendingUp, DollarSign, Settings as SettingsIcon, Plus, Percent, Calendar, AlertTriangle } from "lucide-react";
+import { Gift, TrendingUp, DollarSign, Settings as SettingsIcon, Plus, Percent, Calendar, AlertTriangle, Info } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,8 @@ export default function RewardsSettings() {
   const [minPointsToUse, setMinPointsToUse] = useState(config?.min_points_to_use?.toString() || '1000');
   const [showPercentage, setShowPercentage] = useState(config?.show_percentage_to_users || false);
   const [showConversion, setShowConversion] = useState(config?.show_conversion_rate || false);
+  const [includeTax, setIncludeTax] = useState(config?.include_tax_in_points || false);
+  const [includeShipping, setIncludeShipping] = useState(config?.include_shipping_in_points || false);
 
   // Campaign form state
   const [isCreating, setIsCreating] = useState(false);
@@ -72,11 +75,13 @@ export default function RewardsSettings() {
         min_points_to_use: parseInt(minPointsToUse),
         show_percentage_to_users: showPercentage,
         show_conversion_rate: showConversion,
+        include_tax_in_points: includeTax,
+        include_shipping_in_points: includeShipping,
       });
 
       toast({
         title: "Configuración guardada",
-        description: "Los cambios se han aplicado correctamente.",
+        description: "Los cambios se han aplicado correctamente y se reflejarán en toda la aplicación.",
       });
     } catch (error) {
       toast({
@@ -320,6 +325,78 @@ export default function RewardsSettings() {
                   <p className="text-sm text-yellow-800 dark:text-yellow-200">
                     💡 <strong>Recomendado:</strong> Desactivar ambos para hacer los puntos más atractivos
                   </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Configuración Multi-Plataforma
+                </CardTitle>
+                <CardDescription>
+                  Compatible con Shopify, WooCommerce y tiendas personalizadas
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>Estándar Global:</strong> Amazon, Shopify, WooCommerce y las principales plataformas 
+                    calculan puntos <strong>solo sobre el subtotal de productos</strong>, excluyendo impuestos y envío.
+                  </AlertDescription>
+                </Alert>
+
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-start justify-between p-4 rounded-lg border bg-card">
+                    <div className="space-y-1 flex-1">
+                      <Label htmlFor="include-tax" className="text-base font-medium">
+                        Incluir impuestos en cálculo de puntos
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        ⚠️ <strong>No recomendado:</strong> Los impuestos no son ganancia de la tienda, son obligaciones gubernamentales.
+                        Diferentes países tienen diferentes tasas (México 16%, USA varía, Europa 21-27%).
+                      </p>
+                    </div>
+                    <Switch 
+                      id="include-tax" 
+                      checked={includeTax} 
+                      onCheckedChange={setIncludeTax}
+                      className="ml-4 mt-1"
+                    />
+                  </div>
+
+                  <div className="flex items-start justify-between p-4 rounded-lg border bg-card">
+                    <div className="space-y-1 flex-1">
+                      <Label htmlFor="include-shipping" className="text-base font-medium">
+                        Incluir envío en cálculo de puntos
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        ⚠️ <strong>No recomendado:</strong> El costo de envío no es valor de productos. 
+                        Las principales plataformas de ecommerce excluyen el envío del cálculo de puntos de lealtad.
+                      </p>
+                    </div>
+                    <Switch 
+                      id="include-shipping" 
+                      checked={includeShipping} 
+                      onCheckedChange={setIncludeShipping}
+                      className="ml-4 mt-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="p-4 bg-primary/5 rounded-lg border border-primary/20 mt-4">
+                  <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                    <span className="text-2xl">✅</span>
+                    Configuración Recomendada (Internacional)
+                  </h4>
+                  <ul className="space-y-1 text-sm text-muted-foreground">
+                    <li>• <strong>Incluir impuestos:</strong> NO ❌</li>
+                    <li>• <strong>Incluir envío:</strong> NO ❌</li>
+                    <li>• <strong>Calcular sobre:</strong> Subtotal de productos únicamente ✅</li>
+                    <li>• <strong>Razón:</strong> Es justo para clientes en todos los países y sigue el estándar global</li>
+                  </ul>
                 </div>
               </CardContent>
             </Card>
