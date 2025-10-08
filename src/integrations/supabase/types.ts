@@ -590,6 +590,144 @@ export type Database = {
           },
         ]
       }
+      rewards_campaigns: {
+        Row: {
+          allow_stacking: boolean | null
+          auto_pause_on_budget: boolean | null
+          budget_alert_threshold: number | null
+          budget_limit_dollars: number | null
+          budget_spent_dollars: number | null
+          campaign_type: Database["public"]["Enums"]["campaign_type"]
+          conditions: Json | null
+          created_at: string
+          created_by: string | null
+          current_uses: number | null
+          description: string | null
+          end_date: string | null
+          frequency: Database["public"]["Enums"]["campaign_frequency"]
+          id: string
+          max_uses_per_user: number | null
+          max_uses_total: number | null
+          name: string
+          priority: number | null
+          reward_value: number
+          start_date: string | null
+          status: Database["public"]["Enums"]["campaign_status"]
+          store_id: string
+          updated_at: string
+          value_type: Database["public"]["Enums"]["earning_type"]
+        }
+        Insert: {
+          allow_stacking?: boolean | null
+          auto_pause_on_budget?: boolean | null
+          budget_alert_threshold?: number | null
+          budget_limit_dollars?: number | null
+          budget_spent_dollars?: number | null
+          campaign_type: Database["public"]["Enums"]["campaign_type"]
+          conditions?: Json | null
+          created_at?: string
+          created_by?: string | null
+          current_uses?: number | null
+          description?: string | null
+          end_date?: string | null
+          frequency?: Database["public"]["Enums"]["campaign_frequency"]
+          id?: string
+          max_uses_per_user?: number | null
+          max_uses_total?: number | null
+          name: string
+          priority?: number | null
+          reward_value: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["campaign_status"]
+          store_id?: string
+          updated_at?: string
+          value_type?: Database["public"]["Enums"]["earning_type"]
+        }
+        Update: {
+          allow_stacking?: boolean | null
+          auto_pause_on_budget?: boolean | null
+          budget_alert_threshold?: number | null
+          budget_limit_dollars?: number | null
+          budget_spent_dollars?: number | null
+          campaign_type?: Database["public"]["Enums"]["campaign_type"]
+          conditions?: Json | null
+          created_at?: string
+          created_by?: string | null
+          current_uses?: number | null
+          description?: string | null
+          end_date?: string | null
+          frequency?: Database["public"]["Enums"]["campaign_frequency"]
+          id?: string
+          max_uses_per_user?: number | null
+          max_uses_total?: number | null
+          name?: string
+          priority?: number | null
+          reward_value?: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["campaign_status"]
+          store_id?: string
+          updated_at?: string
+          value_type?: Database["public"]["Enums"]["earning_type"]
+        }
+        Relationships: []
+      }
+      rewards_config: {
+        Row: {
+          created_at: string
+          default_expiration_days: number | null
+          earning_fixed_amount: number | null
+          earning_percentage: number | null
+          earning_type: Database["public"]["Enums"]["earning_type"]
+          id: string
+          last_changed_by: string | null
+          max_usage_percentage: number
+          min_points_to_use: number
+          points_per_dollar: number
+          seasonal_multiplier: number | null
+          show_conversion_rate: boolean
+          show_percentage_to_users: boolean
+          store_id: string
+          updated_at: string
+          vip_multiplier: number | null
+        }
+        Insert: {
+          created_at?: string
+          default_expiration_days?: number | null
+          earning_fixed_amount?: number | null
+          earning_percentage?: number | null
+          earning_type?: Database["public"]["Enums"]["earning_type"]
+          id?: string
+          last_changed_by?: string | null
+          max_usage_percentage?: number
+          min_points_to_use?: number
+          points_per_dollar?: number
+          seasonal_multiplier?: number | null
+          show_conversion_rate?: boolean
+          show_percentage_to_users?: boolean
+          store_id?: string
+          updated_at?: string
+          vip_multiplier?: number | null
+        }
+        Update: {
+          created_at?: string
+          default_expiration_days?: number | null
+          earning_fixed_amount?: number | null
+          earning_percentage?: number | null
+          earning_type?: Database["public"]["Enums"]["earning_type"]
+          id?: string
+          last_changed_by?: string | null
+          max_usage_percentage?: number
+          min_points_to_use?: number
+          points_per_dollar?: number
+          seasonal_multiplier?: number | null
+          show_conversion_rate?: boolean
+          show_percentage_to_users?: boolean
+          store_id?: string
+          updated_at?: string
+          vip_multiplier?: number | null
+        }
+        Relationships: []
+      }
       shipping_config: {
         Row: {
           api_credentials: Json | null
@@ -778,6 +916,33 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_active_campaign: {
+        Args: {
+          p_campaign_type: Database["public"]["Enums"]["campaign_type"]
+          p_store_id?: string
+        }
+        Returns: {
+          conditions: Json
+          frequency: Database["public"]["Enums"]["campaign_frequency"]
+          id: string
+          name: string
+          reward_value: number
+          value_type: Database["public"]["Enums"]["earning_type"]
+        }[]
+      }
+      get_active_rewards_config: {
+        Args: { p_store_id?: string }
+        Returns: {
+          default_expiration_days: number
+          earning_fixed_amount: number
+          earning_percentage: number
+          earning_type: Database["public"]["Enums"]["earning_type"]
+          id: string
+          max_usage_percentage: number
+          min_points_to_use: number
+          points_per_dollar: number
+        }[]
+      }
       get_active_shipping_config: {
         Args: { p_store_id?: string }
         Returns: {
@@ -801,9 +966,25 @@ export type Database = {
         }
         Returns: boolean
       }
+      track_campaign_usage: {
+        Args: { p_campaign_id: string; p_points_awarded: number }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "user"
+      campaign_frequency: "once" | "daily" | "per_event" | "unlimited"
+      campaign_status: "active" | "paused" | "completed" | "scheduled"
+      campaign_type:
+        | "welcome"
+        | "review"
+        | "referral"
+        | "purchase"
+        | "birthday"
+        | "share"
+        | "social_follow"
+        | "custom"
+      earning_type: "percentage" | "fixed"
       order_status:
         | "pending"
         | "processing"
@@ -940,6 +1121,19 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      campaign_frequency: ["once", "daily", "per_event", "unlimited"],
+      campaign_status: ["active", "paused", "completed", "scheduled"],
+      campaign_type: [
+        "welcome",
+        "review",
+        "referral",
+        "purchase",
+        "birthday",
+        "share",
+        "social_follow",
+        "custom",
+      ],
+      earning_type: ["percentage", "fixed"],
       order_status: [
         "pending",
         "processing",

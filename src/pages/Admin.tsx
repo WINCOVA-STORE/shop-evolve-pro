@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Package, ShoppingBag, Users, DollarSign, ArrowLeft, Shield, RefreshCw, Truck } from "lucide-react";
+import { Loader2, Package, ShoppingBag, Users, DollarSign, ArrowLeft, Shield, RefreshCw, Truck, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -232,6 +232,10 @@ const Admin = () => {
             <Button onClick={() => navigate("/admin/shipping-settings")} variant="outline">
               <Truck className="mr-2 h-4 w-4" />
               Configuración de Envíos
+            </Button>
+            <Button onClick={() => navigate("/admin/rewards-settings")} variant="outline">
+              <Gift className="mr-2 h-4 w-4" />
+              Sistema de Recompensas
             </Button>
           </div>
 
