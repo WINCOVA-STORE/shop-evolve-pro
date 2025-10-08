@@ -273,7 +273,9 @@ export const CartSheet = () => {
                         <div>
                           <span className="text-sm font-medium text-primary block">Ganarás con esta compra</span>
                           {(showPercentage || showConversion) && (
-                            <span className="text-xs text-primary/70">{getEarningDescription()}</span>
+                            <span className="text-xs text-primary/70">
+                              {typeof getEarningDescription === 'function' ? getEarningDescription() : 'Puntos de recompensa'}
+                            </span>
                           )}
                         </div>
                       </div>

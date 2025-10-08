@@ -259,10 +259,12 @@ const ProductDetail = () => {
                       <div className="p-2 rounded-full bg-primary/20">
                         <Gift className="h-5 w-5 text-primary" />
                       </div>
-                      <div>
-                        <p className="text-sm font-medium">Ganas con esta compra</p>
-                        <p className="text-xs text-muted-foreground">{getEarningDescription()}</p>
-                      </div>
+      <div>
+        <p className="text-sm font-medium">Ganas con esta compra</p>
+        <p className="text-xs text-muted-foreground">
+          {typeof getEarningDescription === 'function' ? getEarningDescription() : 'Puntos de recompensa'}
+        </p>
+      </div>
                     </div>
                     <div className="text-right">
                       <p className="text-2xl font-bold text-primary">

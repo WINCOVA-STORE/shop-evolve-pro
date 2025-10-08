@@ -9,29 +9,31 @@ export const useRewardsCalculation = () => {
   const { config, loading } = useRewardsConfig();
 
   const calculations = useMemo(() => {
+    // Define all functions first to ensure they're always available
+    const defaultCalculations = {
+      loading: !config,
+      earningPercentage: 1,
+      maxUsagePercentage: 2,
+      pointsPerDollar: 1000,
+      minPointsToUse: 1000,
+      showPercentage: false,
+      showConversion: false,
+      calculateEarningPoints: (amount: number) => Math.floor(amount * 10),
+      getMaxUsablePoints: (purchaseAmount: number, availablePoints: number) => {
+        const maxDollars = purchaseAmount * 0.02;
+        const maxPoints = Math.floor(maxDollars * 1000);
+        return Math.min(maxPoints, availablePoints);
+      },
+      pointsToDollars: (points: number) => points / 1000,
+      dollarsToPoints: (dollars: number) => Math.floor(dollars * 1000),
+      formatEarningDisplay: (points: number) => `+${points.toLocaleString()} pts`,
+      formatUsageDisplay: (maxPoints: number, percentage?: number) => 
+        `Máximo: ${maxPoints.toLocaleString()} pts${percentage ? ` (${percentage}%)` : ''}`,
+      getEarningDescription: () => 'Puntos de recompensa',
+    };
+    
     if (!config) {
-      // Default fallback values
-      return {
-        loading: true,
-        earningPercentage: 1,
-        maxUsagePercentage: 2,
-        pointsPerDollar: 1000,
-        minPointsToUse: 1000,
-        showPercentage: false,
-        showConversion: false,
-        calculateEarningPoints: (amount: number) => Math.floor(amount * 10),
-        getMaxUsablePoints: (purchaseAmount: number, availablePoints: number) => {
-          const maxDollars = purchaseAmount * 0.02;
-          const maxPoints = Math.floor(maxDollars * 1000);
-          return Math.min(maxPoints, availablePoints);
-        },
-        pointsToDollars: (points: number) => points / 1000,
-        dollarsToPoints: (dollars: number) => Math.floor(dollars * 1000),
-        formatEarningDisplay: (points: number) => `+${points.toLocaleString()} pts`,
-        formatUsageDisplay: (maxPoints: number, percentage?: number) => 
-          `Máximo: ${maxPoints.toLocaleString()} pts${percentage ? ` (${percentage}%)` : ''}`,
-        getEarningDescription: () => 'Puntos de recompensa',
-      };
+      return defaultCalculations;
     }
 
     const earningPercentage = Number(config.earning_percentage) || 1;
