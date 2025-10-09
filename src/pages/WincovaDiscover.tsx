@@ -8,6 +8,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { 
   Zap, 
   Shield, 
@@ -17,7 +30,9 @@ import {
   Target,
   Loader2,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  ChevronsUpDown,
+  Check
 } from "lucide-react";
 
 export default function WincovaDiscover() {
@@ -28,6 +43,17 @@ export default function WincovaDiscover() {
   const [competitors, setCompetitors] = useState<string[]>([]);
   const [competitorInput, setCompetitorInput] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  // Lista de sitios web populares para autocompletado
+  const popularSites = [
+    "amazon.com", "shopify.com", "etsy.com", "ebay.com", "walmart.com",
+    "target.com", "alibaba.com", "mercadolibre.com", "bestbuy.com",
+    "nike.com", "adidas.com", "zara.com", "h&m.com", "asos.com",
+    "booking.com", "airbnb.com", "expedia.com", "hotels.com",
+    "netflix.com", "spotify.com", "apple.com", "microsoft.com",
+    "google.com", "facebook.com", "instagram.com", "twitter.com"
+  ];
 
   const handleAddCompetitor = () => {
     if (competitorInput.trim() && competitors.length < 3) {
@@ -173,18 +199,66 @@ export default function WincovaDiscover() {
                 Competidores (opcional, máx. 3)
               </label>
               <div className="flex gap-2">
-                <Input
-                  type="url"
-                  placeholder="https://competidor.com"
-                  value={competitorInput}
-                  onChange={(e) => setCompetitorInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddCompetitor()}
-                  disabled={isAnalyzing || competitors.length >= 3}
-                />
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={open}
+                      className="flex-1 justify-between"
+                      disabled={isAnalyzing || competitors.length >= 3}
+                    >
+                      {competitorInput || "Buscar sitio web..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[400px] p-0">
+                    <Command>
+                      <CommandInput 
+                        placeholder="Escribe el sitio web..." 
+                        value={competitorInput}
+                        onValueChange={setCompetitorInput}
+                      />
+                      <CommandList>
+                        <CommandEmpty>
+                          <div className="p-4 text-sm">
+                            <p className="text-muted-foreground">
+                              {competitorInput ? `Presiona Enter para agregar "${competitorInput}"` : "Escribe para buscar"}
+                            </p>
+                          </div>
+                        </CommandEmpty>
+                        <CommandGroup heading="Sitios Populares">
+                          {popularSites
+                            .filter(site => 
+                              site.toLowerCase().includes(competitorInput.toLowerCase())
+                            )
+                            .slice(0, 10)
+                            .map((site) => (
+                              <CommandItem
+                                key={site}
+                                value={site}
+                                onSelect={(currentValue) => {
+                                  setCompetitorInput(currentValue);
+                                  setOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={`mr-2 h-4 w-4 ${
+                                    competitors.includes(site) ? "opacity-100" : "opacity-0"
+                                  }`}
+                                />
+                                {site}
+                              </CommandItem>
+                            ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
                 <Button
                   onClick={handleAddCompetitor}
                   disabled={isAnalyzing || competitors.length >= 3 || !competitorInput.trim()}
-                  variant="outline"
+                  variant="default"
                 >
                   Agregar
                 </Button>
@@ -195,7 +269,7 @@ export default function WincovaDiscover() {
                     <Badge
                       key={idx}
                       variant="secondary"
-                      className="cursor-pointer"
+                      className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors"
                       onClick={() => handleRemoveCompetitor(idx)}
                     >
                       {comp} ×

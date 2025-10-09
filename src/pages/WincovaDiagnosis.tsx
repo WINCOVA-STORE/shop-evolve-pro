@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -82,6 +82,7 @@ export default function WincovaDiagnosis() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [generatingVisuals, setGeneratingVisuals] = useState<string | null>(null);
+  const changeRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
     fetchDiagnosis();
@@ -123,9 +124,12 @@ export default function WincovaDiagnosis() {
 
   const handleGenerateVisuals = async (change: Change) => {
     if (!diagnosis) return;
-    
+
     try {
       setGeneratingVisuals(change.id);
+
+      // Guardar la posición del scroll antes de generar
+      const changeElement = changeRefs.current[change.id];
       
       const { data, error } = await supabase.functions.invoke('wincova-generate-visuals', {
         body: {
@@ -154,7 +158,15 @@ export default function WincovaDiagnosis() {
         description: "Las imágenes de antes/después están listas",
       });
 
-      fetchDiagnosis();
+      await fetchDiagnosis();
+      
+      // Mantener el scroll en la misma posición después de actualizar
+      setTimeout(() => {
+        if (changeElement) {
+          changeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+      
     } catch (error: any) {
       console.error("Error generating visuals:", error);
       toast({
@@ -477,7 +489,8 @@ export default function WincovaDiagnosis() {
               <div className="space-y-6">
                 {filteredChanges.map((change) => (
                   <Card 
-                    key={change.id} 
+                    key={change.id}
+                    ref={(el) => changeRefs.current[change.id] = el}
                     className="border-l-4 hover:shadow-md transition-shadow" 
                     style={{
                       borderLeftColor: change.risk_level === 'low' ? 'hsl(var(--primary))' :
