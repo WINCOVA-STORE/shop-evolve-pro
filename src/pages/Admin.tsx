@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Package, ShoppingBag, Users, DollarSign, ArrowLeft, Shield, RefreshCw, Truck, Gift } from "lucide-react";
+import { Loader2, Package, ShoppingBag, Users, DollarSign, ArrowLeft, Shield, RefreshCw, Truck, Gift, FolderKanban } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -163,6 +163,10 @@ const Admin = () => {
             <p className="text-muted-foreground">{t("admin.subtitle")}</p>
           </div>
           <div className="flex gap-2">
+            <Button variant="default" onClick={() => navigate("/admin/project")}>
+              <FolderKanban className="mr-2 h-4 w-4" />
+              Panel de Proyecto
+            </Button>
             <Button variant="outline" onClick={() => navigate("/admin/woocommerce-sync")}>
               <RefreshCw className="mr-2 h-4 w-4" />
               WooCommerce Sync

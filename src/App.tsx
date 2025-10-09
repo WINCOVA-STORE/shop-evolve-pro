@@ -28,6 +28,7 @@ import Compare from "./pages/Compare";
 import WooCommerceSync from "./pages/WooCommerceSync";
 import ShippingSettings from "./pages/ShippingSettings";
 import RewardsSettings from "./pages/RewardsSettings";
+import AdminProject from "./pages/AdminProject";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ const App = () => (
                   <Route path="/admin/woocommerce-sync" element={<WooCommerceSync />} />
                   <Route path="/admin/shipping-settings" element={<ShippingSettings />} />
                   <Route path="/admin/rewards-settings" element={<RewardsSettings />} />
+                  <Route path="/admin/project/*" element={<AdminProject />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
