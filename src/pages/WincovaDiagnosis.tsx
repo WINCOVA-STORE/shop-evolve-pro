@@ -10,18 +10,30 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  TrendingUp,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Search,
   Shield,
   Eye,
   Zap,
   CheckCircle2,
   XCircle,
-  AlertTriangle,
   ArrowLeft,
-  Play,
   FileText,
-  DollarSign,
+  HelpCircle,
+  Info,
 } from "lucide-react";
 
 interface Diagnosis {
@@ -104,21 +116,24 @@ export default function WincovaDiagnosis() {
     }
   };
 
-  const handleApproveChange = async (changeId: string) => {
+  const handleToggleApproval = async (changeId: string, currentStatus: string) => {
     try {
+      const newStatus = currentStatus === 'approved' ? 'proposed' : 'approved';
       const { error } = await supabase
         .from('wincova_changes')
         .update({
-          status: 'approved',
-          approved_at: new Date().toISOString(),
+          status: newStatus,
+          approved_at: newStatus === 'approved' ? new Date().toISOString() : null,
         })
         .eq('id', changeId);
 
       if (error) throw error;
 
       toast({
-        title: "Cambio aprobado",
-        description: "El cambio ha sido marcado para implementación",
+        title: newStatus === 'approved' ? "Cambio aprobado" : "Aprobación cancelada",
+        description: newStatus === 'approved' 
+          ? "El cambio ha sido marcado para implementación" 
+          : "El cambio ha vuelto a estado propuesto",
       });
 
       fetchDiagnosis();
@@ -128,6 +143,25 @@ export default function WincovaDiagnosis() {
         description: error.message,
         variant: "destructive",
       });
+    }
+  };
+
+  const glossary = {
+    "Safety Score": {
+      title: "Nivel de Seguridad",
+      description: "Indica qué tan seguro es implementar este cambio. Un puntaje alto significa que el cambio no afectará negativamente tu sitio."
+    },
+    "Impact Score": {
+      title: "Impacto Esperado",
+      description: "Mide el beneficio que este cambio traerá a tu sitio. Un puntaje alto significa mayor mejora en rendimiento, conversiones o experiencia del usuario."
+    },
+    "Complexity": {
+      title: "Nivel de Complejidad",
+      description: "Indica qué tan complejo es implementar este cambio. Un puntaje bajo significa que es fácil y rápido de implementar."
+    },
+    "AI Confidence": {
+      title: "Confianza de la IA",
+      description: "Nivel de certeza de nuestra IA en la recomendación. Un puntaje alto significa que la IA está muy segura de que este cambio es beneficioso."
     }
   };
 
@@ -168,8 +202,8 @@ export default function WincovaDiagnosis() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <p>Diagnóstico no encontrado</p>
+          <XCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
+          <p className="text-muted-foreground">Diagnóstico no encontrado</p>
           <Button onClick={() => navigate('/wincova')} className="mt-4">
             Volver
           </Button>
@@ -178,255 +212,389 @@ export default function WincovaDiagnosis() {
     );
   }
 
-  const totalRevenue = changes.reduce((sum, c) => sum + (c.estimated_revenue_impact || 0), 0);
-
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Header />
+    <TooltipProvider>
+      <div className="min-h-screen flex flex-col bg-muted/30">
+        <Header />
 
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <Button variant="ghost" onClick={() => navigate('/wincova')} className="mb-4">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver a Wincova Discover
-        </Button>
-
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">{diagnosis.client_name}</h1>
-          <a href={diagnosis.site_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-            {diagnosis.site_url}
-          </a>
-        </div>
-
-        {/* Scores Dashboard */}
-        <div className="grid md:grid-cols-6 gap-4 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Overall</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`text-3xl font-bold ${getScoreColor(diagnosis.overall_score)}`}>
-                {Math.round(diagnosis.overall_score)}
+        <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
+          {/* Branding Header */}
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <Button variant="ghost" onClick={() => navigate('/wincova')} className="mb-4 -ml-4">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Volver
+              </Button>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-12 bg-gradient-to-b from-primary to-primary/50 rounded-full" />
+                <div>
+                  <h1 className="text-4xl font-bold tracking-tight">{diagnosis.client_name}</h1>
+                  <a 
+                    href={diagnosis.site_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {diagnosis.site_url}
+                  </a>
+                </div>
               </div>
-              <Progress value={diagnosis.overall_score} className="mt-2" />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <Zap className="w-4 h-4 text-yellow-500 mb-1" />
-              <CardTitle className="text-sm">Performance</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${getScoreColor(diagnosis.performance_score)}`}>
-                {Math.round(diagnosis.performance_score)}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <Search className="w-4 h-4 text-blue-500 mb-1" />
-              <CardTitle className="text-sm">SEO</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${getScoreColor(diagnosis.seo_score)}`}>
-                {Math.round(diagnosis.seo_score)}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <Shield className="w-4 h-4 text-green-500 mb-1" />
-              <CardTitle className="text-sm">Security</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${getScoreColor(diagnosis.security_score)}`}>
-                {Math.round(diagnosis.security_score)}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <Eye className="w-4 h-4 text-purple-500 mb-1" />
-              <CardTitle className="text-sm">Accessibility</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${getScoreColor(diagnosis.accessibility_score)}`}>
-                {Math.round(diagnosis.accessibility_score)}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <FileText className="w-4 h-4 text-orange-500 mb-1" />
-              <CardTitle className="text-sm">Compliance</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${getScoreColor(diagnosis.compliance_score)}`}>
-                {Math.round(diagnosis.compliance_score)}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Revenue Impact */}
-        <Card className="mb-8 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <DollarSign className="w-5 h-5" />
-              Impacto Estimado en Ingresos
-            </CardTitle>
-            <CardDescription>
-              Si implementas todos los cambios propuestos
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold text-green-600">
-              ${totalRevenue.toLocaleString()}/mes
             </div>
-          </CardContent>
-        </Card>
+            
+            {/* Glossary Button */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <HelpCircle className="w-4 h-4 mr-2" />
+                  Glosario
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Glosario de Términos</DialogTitle>
+                  <DialogDescription>
+                    Explicación de las métricas utilizadas en el diagnóstico
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 mt-4">
+                  {Object.entries(glossary).map(([key, value]) => (
+                    <div key={key} className="border-l-4 border-primary pl-4">
+                      <h4 className="font-semibold text-lg">{value.title}</h4>
+                      <p className="text-sm text-muted-foreground mt-1">{value.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
 
-        {/* Changes Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Cambios Propuestos ({changes.length})</CardTitle>
-            <CardDescription>
-              Priorizados por AI Guardian Layer según impacto y seguridad
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {/* Category Filter */}
-            <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-6">
-              <TabsList className="flex-wrap h-auto">
-                {categories.map(cat => (
-                  <TabsTrigger key={cat} value={cat} className="capitalize">
-                    {cat} ({cat === "all" ? changes.length : changes.filter(c => c.category === cat).length})
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
+          {/* Scores Dashboard */}
+          <div className="grid md:grid-cols-6 gap-4 mb-8">
+            <Card className="bg-card border-2">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Puntuación General</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className={`text-5xl font-bold ${getScoreColor(diagnosis.overall_score)}`}>
+                  {Math.round(diagnosis.overall_score)}
+                  <span className="text-2xl text-muted-foreground">/100</span>
+                </div>
+                <Progress value={diagnosis.overall_score} className="mt-3 h-2" />
+              </CardContent>
+            </Card>
 
-            {/* Changes List */}
-            <div className="space-y-4">
-              {filteredChanges.map((change) => (
-                <Card key={change.id} className="border-l-4" style={{
-                  borderLeftColor: change.risk_level === 'low' ? '#22c55e' :
-                    change.risk_level === 'medium' ? '#eab308' :
-                    change.risk_level === 'high' ? '#ef4444' : '#dc2626'
-                }}>
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline" className="capitalize">{change.category}</Badge>
-                          {getRiskBadge(change.risk_level)}
-                        </div>
-                        <CardTitle className="text-lg">{change.title}</CardTitle>
-                        <CardDescription className="mt-2">{change.description}</CardDescription>
-                      </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Card className="bg-card hover:border-primary/50 transition-colors cursor-help">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-primary" />
+                      <CardTitle className="text-sm">Velocidad</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    {/* AI Scores */}
-                    <div className="grid md:grid-cols-4 gap-4 mb-4">
-                      <div>
-                        <div className="text-sm text-muted-foreground">Safety Score</div>
-                        <div className="flex items-center gap-2">
-                          <Progress value={change.safety_score} className="flex-1" />
-                          <span className="text-sm font-medium">{Math.round(change.safety_score)}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-muted-foreground">Impact Score</div>
-                        <div className="flex items-center gap-2">
-                          <Progress value={change.impact_score} className="flex-1" />
-                          <span className="text-sm font-medium">{Math.round(change.impact_score)}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-muted-foreground">Complexity</div>
-                        <div className="flex items-center gap-2">
-                          <Progress value={change.complexity_score} className="flex-1" />
-                          <span className="text-sm font-medium">{Math.round(change.complexity_score)}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-muted-foreground">AI Confidence</div>
-                        <div className="flex items-center gap-2">
-                          <Progress value={change.confidence_score} className="flex-1" />
-                          <span className="text-sm font-medium">{Math.round(change.confidence_score)}</span>
-                        </div>
-                      </div>
+                    <div className={`text-3xl font-bold ${getScoreColor(diagnosis.performance_score)}`}>
+                      {Math.round(diagnosis.performance_score)}
+                      <span className="text-lg text-muted-foreground">/100</span>
                     </div>
-
-                    {/* Estimated Gains */}
-                    <div className="grid md:grid-cols-3 gap-4 mb-4 bg-muted p-3 rounded-lg">
-                      {change.estimated_performance_gain && (
-                        <div>
-                          <div className="text-xs text-muted-foreground">Performance Gain</div>
-                          <div className="text-sm font-semibold text-green-600">
-                            +{change.estimated_performance_gain}%
-                          </div>
-                        </div>
-                      )}
-                      {change.estimated_conversion_gain && (
-                        <div>
-                          <div className="text-xs text-muted-foreground">Conversion Gain</div>
-                          <div className="text-sm font-semibold text-blue-600">
-                            +{change.estimated_conversion_gain}%
-                          </div>
-                        </div>
-                      )}
-                      {change.estimated_revenue_impact && (
-                        <div>
-                          <div className="text-xs text-muted-foreground">Revenue Impact</div>
-                          <div className="text-sm font-semibold text-purple-600">
-                            +${change.estimated_revenue_impact}/mes
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Technical Details (Collapsible) */}
-                    <details className="mb-4">
-                      <summary className="cursor-pointer text-sm font-medium mb-2">
-                        Ver detalles técnicos
-                      </summary>
-                      <div className="bg-muted p-3 rounded text-sm whitespace-pre-wrap">
-                        {change.technical_details}
-                      </div>
-                    </details>
-
-                    {/* Action Button */}
-                    {change.status === 'proposed' && (
-                      <Button
-                        onClick={() => handleApproveChange(change.id)}
-                        className="w-full"
-                      >
-                        <CheckCircle2 className="w-4 h-4 mr-2" />
-                        Aprobar para implementación
-                      </Button>
-                    )}
-                    {change.status === 'approved' && (
-                      <Badge variant="secondary" className="w-full justify-center py-2">
-                        <CheckCircle2 className="w-4 h-4 mr-2" />
-                        Aprobado - Listo para deploy
-                      </Badge>
-                    )}
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </main>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="font-semibold">Velocidad de Carga</p>
+                <p className="text-sm">Qué tan rápido carga tu sitio web. Un sitio más rápido mantiene a los visitantes y mejora las ventas.</p>
+              </TooltipContent>
+            </Tooltip>
 
-      <Footer />
-    </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Card className="bg-card hover:border-primary/50 transition-colors cursor-help">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2">
+                      <Search className="w-4 h-4 text-primary" />
+                      <CardTitle className="text-sm">SEO</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className={`text-3xl font-bold ${getScoreColor(diagnosis.seo_score)}`}>
+                      {Math.round(diagnosis.seo_score)}
+                      <span className="text-lg text-muted-foreground">/100</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="font-semibold">Posicionamiento en Google</p>
+                <p className="text-sm">Qué tan fácil es que Google encuentre y muestre tu sitio. Mejor SEO = más visitantes orgánicos.</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Card className="bg-card hover:border-primary/50 transition-colors cursor-help">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-primary" />
+                      <CardTitle className="text-sm">Seguridad</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className={`text-3xl font-bold ${getScoreColor(diagnosis.security_score)}`}>
+                      {Math.round(diagnosis.security_score)}
+                      <span className="text-lg text-muted-foreground">/100</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="font-semibold">Protección del Sitio</p>
+                <p className="text-sm">Qué tan protegido está tu sitio contra amenazas. Un sitio seguro genera confianza en tus clientes.</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Card className="bg-card hover:border-primary/50 transition-colors cursor-help">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2">
+                      <Eye className="w-4 h-4 text-primary" />
+                      <CardTitle className="text-sm">Accesibilidad</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className={`text-3xl font-bold ${getScoreColor(diagnosis.accessibility_score)}`}>
+                      {Math.round(diagnosis.accessibility_score)}
+                      <span className="text-lg text-muted-foreground">/100</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="font-semibold">Facilidad de Uso</p>
+                <p className="text-sm">Qué tan fácil es usar tu sitio para todos, incluyendo personas con discapacidades.</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Card className="bg-card hover:border-primary/50 transition-colors cursor-help">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-primary" />
+                      <CardTitle className="text-sm">Cumplimiento</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className={`text-3xl font-bold ${getScoreColor(diagnosis.compliance_score)}`}>
+                      {Math.round(diagnosis.compliance_score)}
+                      <span className="text-lg text-muted-foreground">/100</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="font-semibold">Normativas Legales</p>
+                <p className="text-sm">Si tu sitio cumple con leyes de privacidad y regulaciones web internacionales.</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+
+          {/* Changes Section */}
+          <Card className="border-none shadow-none bg-transparent">
+            <CardHeader className="px-0">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-1 h-8 bg-primary rounded-full" />
+                <CardTitle className="text-2xl">Mejoras Recomendadas ({changes.length})</CardTitle>
+              </div>
+              <CardDescription>
+                Ordenadas por impacto y facilidad de implementación
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="px-0">
+              {/* Category Filter */}
+              <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-6">
+                <TabsList className="bg-muted/50">
+                  {categories.map(cat => (
+                    <TabsTrigger key={cat} value={cat} className="capitalize">
+                      {cat === "all" ? "Todas" : cat} ({cat === "all" ? changes.length : changes.filter(c => c.category === cat).length})
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+
+              {/* Changes List */}
+              <div className="space-y-6">
+                {filteredChanges.map((change) => (
+                  <Card 
+                    key={change.id} 
+                    className="border-l-4 hover:shadow-md transition-shadow" 
+                    style={{
+                      borderLeftColor: change.risk_level === 'low' ? 'hsl(var(--primary))' :
+                        change.risk_level === 'medium' ? '#eab308' :
+                        change.risk_level === 'high' ? '#ef4444' : '#dc2626'
+                    }}
+                  >
+                    <CardHeader>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Badge variant="outline" className="capitalize font-medium">{change.category}</Badge>
+                            <Badge 
+                              variant={change.risk_level === 'low' ? 'secondary' : change.risk_level === 'high' ? 'destructive' : 'default'}
+                              className="capitalize"
+                            >
+                              {change.risk_level === 'low' ? 'Fácil' : change.risk_level === 'medium' ? 'Medio' : 'Complejo'}
+                            </Badge>
+                          </div>
+                          <CardTitle className="text-xl mb-2">{change.title}</CardTitle>
+                          <CardDescription className="text-base leading-relaxed">
+                            {change.description}
+                          </CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      {/* AI Scores with Tooltips */}
+                      <div className="grid md:grid-cols-4 gap-4">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="space-y-2 cursor-help">
+                              <div className="flex items-center gap-2 text-sm">
+                                <Shield className="w-4 h-4 text-primary" />
+                                <span className="font-medium">Seguridad</span>
+                                <Info className="w-3 h-3 text-muted-foreground" />
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <Progress value={change.safety_score} className="flex-1 h-2" />
+                                <span className="text-lg font-bold min-w-[3ch]">
+                                  {Math.round(change.safety_score)}
+                                  <span className="text-xs text-muted-foreground">/100</span>
+                                </span>
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="font-semibold">Nivel de Seguridad</p>
+                            <p className="text-sm">Qué tan seguro es este cambio. Un puntaje alto significa bajo riesgo.</p>
+                          </TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="space-y-2 cursor-help">
+                              <div className="flex items-center gap-2 text-sm">
+                                <Zap className="w-4 h-4 text-primary" />
+                                <span className="font-medium">Impacto</span>
+                                <Info className="w-3 h-3 text-muted-foreground" />
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <Progress value={change.impact_score} className="flex-1 h-2" />
+                                <span className="text-lg font-bold min-w-[3ch]">
+                                  {Math.round(change.impact_score)}
+                                  <span className="text-xs text-muted-foreground">/100</span>
+                                </span>
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="font-semibold">Beneficio Esperado</p>
+                            <p className="text-sm">Cuánto mejorará tu sitio. Mayor puntaje = mayor beneficio.</p>
+                          </TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="space-y-2 cursor-help">
+                              <div className="flex items-center gap-2 text-sm">
+                                <FileText className="w-4 h-4 text-primary" />
+                                <span className="font-medium">Dificultad</span>
+                                <Info className="w-3 h-3 text-muted-foreground" />
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <Progress value={change.complexity_score} className="flex-1 h-2" />
+                                <span className="text-lg font-bold min-w-[3ch]">
+                                  {Math.round(change.complexity_score)}
+                                  <span className="text-xs text-muted-foreground">/100</span>
+                                </span>
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="font-semibold">Nivel de Complejidad</p>
+                            <p className="text-sm">Qué tan difícil es implementar. Menor puntaje = más fácil.</p>
+                          </TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="space-y-2 cursor-help">
+                              <div className="flex items-center gap-2 text-sm">
+                                <CheckCircle2 className="w-4 h-4 text-primary" />
+                                <span className="font-medium">Confianza</span>
+                                <Info className="w-3 h-3 text-muted-foreground" />
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <Progress value={change.confidence_score} className="flex-1 h-2" />
+                                <span className="text-lg font-bold min-w-[3ch]">
+                                  {Math.round(change.confidence_score)}
+                                  <span className="text-xs text-muted-foreground">/100</span>
+                                </span>
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="font-semibold">Confianza de la IA</p>
+                            <p className="text-sm">Certeza en la recomendación. Mayor puntaje = más segura.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+
+                      {/* Technical Details */}
+                      <details className="group">
+                        <summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                          <span className="group-open:rotate-90 transition-transform">▶</span>
+                          Detalles técnicos
+                        </summary>
+                        <div className="mt-3 p-4 bg-muted/50 rounded-lg text-sm leading-relaxed border">
+                          {change.technical_details}
+                        </div>
+                      </details>
+
+                      {/* Action Button */}
+                      <Button
+                        onClick={() => handleToggleApproval(change.id, change.status)}
+                        variant={change.status === 'approved' ? 'secondary' : 'default'}
+                        className="w-full"
+                        size="lg"
+                      >
+                        {change.status === 'approved' ? (
+                          <>
+                            <XCircle className="w-4 h-4 mr-2" />
+                            Cancelar Aprobación
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 className="w-4 h-4 mr-2" />
+                            Aprobar para Implementación
+                          </>
+                        )}
+                      </Button>
+                      
+                      {change.status === 'approved' && (
+                        <p className="text-xs text-center text-muted-foreground">
+                          Este cambio está listo para ser implementado por el equipo de Wincova
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+
+        <Footer />
+      </div>
+    </TooltipProvider>
   );
 }
