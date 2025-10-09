@@ -29,6 +29,8 @@ import WooCommerceSync from "./pages/WooCommerceSync";
 import ShippingSettings from "./pages/ShippingSettings";
 import RewardsSettings from "./pages/RewardsSettings";
 import AdminProject from "./pages/AdminProject";
+import WincovaDiscover from "./pages/WincovaDiscover";
+import WincovaDiagnosis from "./pages/WincovaDiagnosis";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -66,6 +68,8 @@ const App = () => (
                   <Route path="/admin/shipping-settings" element={<ShippingSettings />} />
                   <Route path="/admin/rewards-settings" element={<RewardsSettings />} />
                   <Route path="/admin/project/*" element={<AdminProject />} />
+                  <Route path="/wincova" element={<WincovaDiscover />} />
+                  <Route path="/wincova/diagnosis/:diagnosisId" element={<WincovaDiagnosis />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

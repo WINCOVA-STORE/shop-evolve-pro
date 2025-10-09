@@ -1384,6 +1384,458 @@ export type Database = {
           },
         ]
       }
+      wincova_ab_tests: {
+        Row: {
+          auto_deploy_on_success: boolean
+          completed_at: string | null
+          control_metrics: Json | null
+          created_at: string
+          deployed: boolean
+          deployment_id: string
+          duration_hours: number
+          id: string
+          metadata: Json | null
+          started_at: string | null
+          statistical_significance: number | null
+          status: string
+          test_name: string
+          traffic_percentage: number
+          updated_at: string
+          variant_metrics: Json | null
+          winner: string | null
+        }
+        Insert: {
+          auto_deploy_on_success?: boolean
+          completed_at?: string | null
+          control_metrics?: Json | null
+          created_at?: string
+          deployed?: boolean
+          deployment_id: string
+          duration_hours?: number
+          id?: string
+          metadata?: Json | null
+          started_at?: string | null
+          statistical_significance?: number | null
+          status?: string
+          test_name: string
+          traffic_percentage?: number
+          updated_at?: string
+          variant_metrics?: Json | null
+          winner?: string | null
+        }
+        Update: {
+          auto_deploy_on_success?: boolean
+          completed_at?: string | null
+          control_metrics?: Json | null
+          created_at?: string
+          deployed?: boolean
+          deployment_id?: string
+          duration_hours?: number
+          id?: string
+          metadata?: Json | null
+          started_at?: string | null
+          statistical_significance?: number | null
+          status?: string
+          test_name?: string
+          traffic_percentage?: number
+          updated_at?: string
+          variant_metrics?: Json | null
+          winner?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wincova_ab_tests_deployment_id_fkey"
+            columns: ["deployment_id"]
+            isOneToOne: false
+            referencedRelation: "wincova_deployments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wincova_change_logs: {
+        Row: {
+          action: string
+          change_id: string | null
+          created_at: string
+          details: string | null
+          diagnosis_id: string
+          id: string
+          metadata: Json | null
+          performed_by: string | null
+          performed_by_name: string | null
+        }
+        Insert: {
+          action: string
+          change_id?: string | null
+          created_at?: string
+          details?: string | null
+          diagnosis_id: string
+          id?: string
+          metadata?: Json | null
+          performed_by?: string | null
+          performed_by_name?: string | null
+        }
+        Update: {
+          action?: string
+          change_id?: string | null
+          created_at?: string
+          details?: string | null
+          diagnosis_id?: string
+          id?: string
+          metadata?: Json | null
+          performed_by?: string | null
+          performed_by_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wincova_change_logs_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "wincova_changes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wincova_change_logs_diagnosis_id_fkey"
+            columns: ["diagnosis_id"]
+            isOneToOne: false
+            referencedRelation: "wincova_diagnoses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wincova_changes: {
+        Row: {
+          approval_notes: string | null
+          approval_required: boolean
+          approved_at: string | null
+          approved_by: string | null
+          category: string
+          code_changes: Json | null
+          complexity_score: number
+          confidence_score: number
+          created_at: string
+          description: string | null
+          diagnosis_id: string
+          estimated_conversion_gain: number | null
+          estimated_performance_gain: number | null
+          estimated_revenue_impact: number | null
+          estimated_seo_gain: number | null
+          id: string
+          impact_score: number
+          implementation_method: string | null
+          metadata: Json | null
+          risk_level: string
+          safety_score: number
+          status: string
+          technical_details: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          approval_notes?: string | null
+          approval_required?: boolean
+          approved_at?: string | null
+          approved_by?: string | null
+          category: string
+          code_changes?: Json | null
+          complexity_score: number
+          confidence_score: number
+          created_at?: string
+          description?: string | null
+          diagnosis_id: string
+          estimated_conversion_gain?: number | null
+          estimated_performance_gain?: number | null
+          estimated_revenue_impact?: number | null
+          estimated_seo_gain?: number | null
+          id?: string
+          impact_score: number
+          implementation_method?: string | null
+          metadata?: Json | null
+          risk_level?: string
+          safety_score: number
+          status?: string
+          technical_details?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          approval_notes?: string | null
+          approval_required?: boolean
+          approved_at?: string | null
+          approved_by?: string | null
+          category?: string
+          code_changes?: Json | null
+          complexity_score?: number
+          confidence_score?: number
+          created_at?: string
+          description?: string | null
+          diagnosis_id?: string
+          estimated_conversion_gain?: number | null
+          estimated_performance_gain?: number | null
+          estimated_revenue_impact?: number | null
+          estimated_seo_gain?: number | null
+          id?: string
+          impact_score?: number
+          implementation_method?: string | null
+          metadata?: Json | null
+          risk_level?: string
+          safety_score?: number
+          status?: string
+          technical_details?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wincova_changes_diagnosis_id_fkey"
+            columns: ["diagnosis_id"]
+            isOneToOne: false
+            referencedRelation: "wincova_diagnoses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wincova_compliance_checks: {
+        Row: {
+          compliance_score: number | null
+          core_web_vitals_metrics: Json | null
+          core_web_vitals_pass: boolean | null
+          created_at: string
+          critical_issues_count: number | null
+          diagnosis_id: string
+          gdpr_compliant: boolean | null
+          gdpr_issues: Json | null
+          id: string
+          metadata: Json | null
+          ssl_issues: Json | null
+          ssl_secure: boolean | null
+          status: string
+          updated_at: string
+          wcag_compliant: boolean | null
+          wcag_issues: Json | null
+          wcag_level: string | null
+        }
+        Insert: {
+          compliance_score?: number | null
+          core_web_vitals_metrics?: Json | null
+          core_web_vitals_pass?: boolean | null
+          created_at?: string
+          critical_issues_count?: number | null
+          diagnosis_id: string
+          gdpr_compliant?: boolean | null
+          gdpr_issues?: Json | null
+          id?: string
+          metadata?: Json | null
+          ssl_issues?: Json | null
+          ssl_secure?: boolean | null
+          status?: string
+          updated_at?: string
+          wcag_compliant?: boolean | null
+          wcag_issues?: Json | null
+          wcag_level?: string | null
+        }
+        Update: {
+          compliance_score?: number | null
+          core_web_vitals_metrics?: Json | null
+          core_web_vitals_pass?: boolean | null
+          created_at?: string
+          critical_issues_count?: number | null
+          diagnosis_id?: string
+          gdpr_compliant?: boolean | null
+          gdpr_issues?: Json | null
+          id?: string
+          metadata?: Json | null
+          ssl_issues?: Json | null
+          ssl_secure?: boolean | null
+          status?: string
+          updated_at?: string
+          wcag_compliant?: boolean | null
+          wcag_issues?: Json | null
+          wcag_level?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wincova_compliance_checks_diagnosis_id_fkey"
+            columns: ["diagnosis_id"]
+            isOneToOne: false
+            referencedRelation: "wincova_diagnoses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wincova_deployments: {
+        Row: {
+          changes_deployed: Json
+          completed_at: string | null
+          created_at: string
+          deployment_method: string
+          diagnosis_id: string
+          id: string
+          metadata: Json | null
+          metrics_after: Json | null
+          metrics_before: Json | null
+          rollback_at: string | null
+          rollback_enabled: boolean
+          rollback_reason: string | null
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          changes_deployed?: Json
+          completed_at?: string | null
+          created_at?: string
+          deployment_method: string
+          diagnosis_id: string
+          id?: string
+          metadata?: Json | null
+          metrics_after?: Json | null
+          metrics_before?: Json | null
+          rollback_at?: string | null
+          rollback_enabled?: boolean
+          rollback_reason?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          changes_deployed?: Json
+          completed_at?: string | null
+          created_at?: string
+          deployment_method?: string
+          diagnosis_id?: string
+          id?: string
+          metadata?: Json | null
+          metrics_after?: Json | null
+          metrics_before?: Json | null
+          rollback_at?: string | null
+          rollback_enabled?: boolean
+          rollback_reason?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wincova_deployments_diagnosis_id_fkey"
+            columns: ["diagnosis_id"]
+            isOneToOne: false
+            referencedRelation: "wincova_diagnoses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wincova_diagnoses: {
+        Row: {
+          accessibility_score: number | null
+          client_name: string
+          competitors_data: Json | null
+          compliance_score: number | null
+          created_at: string
+          diagnosis_data: Json
+          id: string
+          metadata: Json | null
+          overall_score: number | null
+          performance_score: number | null
+          platform: string | null
+          security_score: number | null
+          seo_score: number | null
+          site_url: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          accessibility_score?: number | null
+          client_name: string
+          competitors_data?: Json | null
+          compliance_score?: number | null
+          created_at?: string
+          diagnosis_data?: Json
+          id?: string
+          metadata?: Json | null
+          overall_score?: number | null
+          performance_score?: number | null
+          platform?: string | null
+          security_score?: number | null
+          seo_score?: number | null
+          site_url: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          accessibility_score?: number | null
+          client_name?: string
+          competitors_data?: Json | null
+          compliance_score?: number | null
+          created_at?: string
+          diagnosis_data?: Json
+          id?: string
+          metadata?: Json | null
+          overall_score?: number | null
+          performance_score?: number | null
+          platform?: string | null
+          security_score?: number | null
+          seo_score?: number | null
+          site_url?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      wincova_intelligence_data: {
+        Row: {
+          change_category: string
+          change_type: string
+          conversion_improvement: number | null
+          created_at: string
+          id: string
+          industry: string | null
+          initial_score: number | null
+          metadata: Json | null
+          performance_improvement: number | null
+          platform: string | null
+          revenue_impact: number | null
+          seo_improvement: number | null
+          site_size: string | null
+          success: boolean
+        }
+        Insert: {
+          change_category: string
+          change_type: string
+          conversion_improvement?: number | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          initial_score?: number | null
+          metadata?: Json | null
+          performance_improvement?: number | null
+          platform?: string | null
+          revenue_impact?: number | null
+          seo_improvement?: number | null
+          site_size?: string | null
+          success: boolean
+        }
+        Update: {
+          change_category?: string
+          change_type?: string
+          conversion_improvement?: number | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          initial_score?: number | null
+          metadata?: Json | null
+          performance_improvement?: number | null
+          platform?: string | null
+          revenue_impact?: number | null
+          seo_improvement?: number | null
+          site_size?: string | null
+          success?: boolean
+        }
+        Relationships: []
+      }
       woocommerce_category_mapping: {
         Row: {
           created_at: string
