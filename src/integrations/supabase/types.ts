@@ -65,6 +65,109 @@ export type Database = {
           },
         ]
       }
+      ai_assistant_logs: {
+        Row: {
+          action_type: string
+          created_at: string
+          execution_time_ms: number | null
+          id: string
+          input_data: Json
+          model_used: string | null
+          organization_id: string
+          output_data: Json
+          tokens_used: number | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          execution_time_ms?: number | null
+          id?: string
+          input_data: Json
+          model_used?: string | null
+          organization_id: string
+          output_data: Json
+          tokens_used?: number | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          execution_time_ms?: number | null
+          id?: string
+          input_data?: Json
+          model_used?: string | null
+          organization_id?: string
+          output_data?: Json
+          tokens_used?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_assistant_logs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_snapshots: {
+        Row: {
+          avg_completion_time_hours: number | null
+          blocked_tasks: number
+          completed_tasks: number
+          created_at: string
+          id: string
+          metrics_json: Json | null
+          organization_id: string
+          overdue_tasks: number
+          risk_score: number | null
+          snapshot_date: string
+          team_utilization_pct: number | null
+          total_tasks: number
+          velocity_tasks_per_day: number | null
+        }
+        Insert: {
+          avg_completion_time_hours?: number | null
+          blocked_tasks?: number
+          completed_tasks?: number
+          created_at?: string
+          id?: string
+          metrics_json?: Json | null
+          organization_id: string
+          overdue_tasks?: number
+          risk_score?: number | null
+          snapshot_date?: string
+          team_utilization_pct?: number | null
+          total_tasks?: number
+          velocity_tasks_per_day?: number | null
+        }
+        Update: {
+          avg_completion_time_hours?: number | null
+          blocked_tasks?: number
+          completed_tasks?: number
+          created_at?: string
+          id?: string
+          metrics_json?: Json | null
+          organization_id?: string
+          overdue_tasks?: number
+          risk_score?: number | null
+          snapshot_date?: string
+          team_utilization_pct?: number | null
+          total_tasks?: number
+          velocity_tasks_per_day?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_snapshots_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cart_items: {
         Row: {
           cart_id: string
@@ -1180,6 +1283,103 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_deliveries: {
+        Row: {
+          attempt_count: number
+          created_at: string
+          delivered_at: string | null
+          event_type: string
+          id: string
+          payload: Json
+          response_body: string | null
+          response_status: number | null
+          webhook_id: string
+        }
+        Insert: {
+          attempt_count?: number
+          created_at?: string
+          delivered_at?: string | null
+          event_type: string
+          id?: string
+          payload: Json
+          response_body?: string | null
+          response_status?: number | null
+          webhook_id: string
+        }
+        Update: {
+          attempt_count?: number
+          created_at?: string
+          delivered_at?: string | null
+          event_type?: string
+          id?: string
+          payload?: Json
+          response_body?: string | null
+          response_status?: number | null
+          webhook_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_deliveries_webhook_id_fkey"
+            columns: ["webhook_id"]
+            isOneToOne: false
+            referencedRelation: "webhooks_config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhooks_config: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          events: string[]
+          headers: Json | null
+          id: string
+          is_active: boolean
+          name: string
+          organization_id: string
+          retry_count: number
+          timeout_seconds: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          events?: string[]
+          headers?: Json | null
+          id?: string
+          is_active?: boolean
+          name: string
+          organization_id: string
+          retry_count?: number
+          timeout_seconds?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          events?: string[]
+          headers?: Json | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          organization_id?: string
+          retry_count?: number
+          timeout_seconds?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhooks_config_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]

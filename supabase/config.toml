@@ -11,3 +11,15 @@ verify_jwt = false
 
 [functions.verify-payment]
 verify_jwt = true
+
+[functions.ai-suggest-tasks]
+verify_jwt = true
+
+[functions.ai-detect-risks]
+verify_jwt = true
+
+[functions.send-webhook]
+verify_jwt = false
+
+[functions.calculate-analytics]
+verify_jwt = true
