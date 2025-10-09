@@ -32,7 +32,8 @@ import {
   CheckCircle2,
   AlertCircle,
   ChevronsUpDown,
-  Check
+  Check,
+  Globe
 } from "lucide-react";
 
 export default function WincovaDiscover() {
@@ -44,9 +45,11 @@ export default function WincovaDiscover() {
   const [competitorInput, setCompetitorInput] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [open, setOpen] = useState(false);
+  const [siteUrlOpen, setSiteUrlOpen] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [recentSiteUrls, setRecentSiteUrls] = useState<string[]>([]);
 
-  // Lista de sitios populares principales + búsquedas recientes
+  // Lista de sitios populares principales para competidores
   const popularSites = [
     "amazon.com", "shopify.com", "etsy.com", "ebay.com", "walmart.com",
     "target.com", "alibaba.com", "mercadolibre.com", "bestbuy.com",
@@ -55,20 +58,51 @@ export default function WincovaDiscover() {
     "booking.com", "airbnb.com", "expedia.com", "hotels.com",
   ];
 
+  // Sitios de ejemplo para el campo URL
+  const commonSiteExamples = [
+    "mitienda.com",
+    "ejemplo.com",
+    "tienda-online.com",
+    "shop.com",
+    "mystore.com"
+  ];
+
+  // Cargar búsquedas recientes desde localStorage
+  useState(() => {
+    const savedCompetitors = localStorage.getItem('wincova_recent_competitors');
+    if (savedCompetitors) {
+      setRecentSearches(JSON.parse(savedCompetitors));
+    }
+    
+    const savedUrls = localStorage.getItem('wincova_recent_site_urls');
+    if (savedUrls) {
+      setRecentSiteUrls(JSON.parse(savedUrls));
+    }
+  });
+
   const handleAddCompetitor = () => {
     if (competitorInput.trim() && competitors.length < 3 && !competitors.includes(competitorInput.trim())) {
       const newCompetitor = competitorInput.trim();
       setCompetitors([...competitors, newCompetitor]);
       
       // Agregar a búsquedas recientes (máx 5)
-      setRecentSearches(prev => {
-        const updated = [newCompetitor, ...prev.filter(s => s !== newCompetitor)];
-        return updated.slice(0, 5);
-      });
+      const updated = [newCompetitor, ...recentSearches.filter(s => s !== newCompetitor)].slice(0, 5);
+      setRecentSearches(updated);
+      localStorage.setItem('wincova_recent_competitors', JSON.stringify(updated));
       
       setCompetitorInput("");
       setOpen(false);
     }
+  };
+
+  const handleSiteUrlSelect = (url: string) => {
+    setSiteUrl(url);
+    setSiteUrlOpen(false);
+    
+    // Agregar a búsquedas recientes (máx 5)
+    const updated = [url, ...recentSiteUrls.filter(s => s !== url)].slice(0, 5);
+    setRecentSiteUrls(updated);
+    localStorage.setItem('wincova_recent_site_urls', JSON.stringify(updated));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -190,13 +224,81 @@ export default function WincovaDiscover() {
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <label className="text-sm font-medium">URL del Sitio Web *</label>
-              <Input
-                type="url"
-                placeholder="https://ejemplo.com"
-                value={siteUrl}
-                onChange={(e) => setSiteUrl(e.target.value)}
-                disabled={isAnalyzing}
-              />
+              <Popover open={siteUrlOpen} onOpenChange={setSiteUrlOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={siteUrlOpen}
+                    className="w-full justify-between font-normal"
+                    disabled={isAnalyzing}
+                  >
+                    {siteUrl || "Escribe o selecciona tu dominio..."}
+                    <Globe className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[400px] p-0" align="start">
+                  <Command>
+                    <CommandInput 
+                      placeholder="Escribe el dominio de tu sitio..." 
+                      value={siteUrl}
+                      onValueChange={setSiteUrl}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && siteUrl) {
+                          e.preventDefault();
+                          handleSiteUrlSelect(siteUrl);
+                        }
+                      }}
+                    />
+                    <CommandList>
+                      <CommandEmpty>
+                        <div className="p-4 text-sm">
+                          <p className="text-muted-foreground">
+                            {siteUrl ? `Presiona Enter para usar "${siteUrl}"` : "Escribe tu dominio"}
+                          </p>
+                        </div>
+                      </CommandEmpty>
+                      
+                      {recentSiteUrls.length > 0 && (
+                        <CommandGroup heading="Búsquedas Recientes">
+                          {recentSiteUrls
+                            .filter(site => 
+                              site.toLowerCase().includes(siteUrl.toLowerCase())
+                            )
+                            .map((site) => (
+                              <CommandItem
+                                key={`recent-url-${site}`}
+                                value={site}
+                                onSelect={() => handleSiteUrlSelect(site)}
+                              >
+                                <Globe className="mr-2 h-4 w-4" />
+                                {site}
+                              </CommandItem>
+                            ))}
+                        </CommandGroup>
+                      )}
+
+                      <CommandGroup heading="Ejemplos">
+                        {commonSiteExamples
+                          .filter(site => 
+                            site.toLowerCase().includes(siteUrl.toLowerCase()) &&
+                            !recentSiteUrls.includes(site)
+                          )
+                          .map((site) => (
+                            <CommandItem
+                              key={site}
+                              value={site}
+                              onSelect={() => handleSiteUrlSelect(site)}
+                            >
+                              <Globe className="mr-2 h-4 w-4 opacity-50" />
+                              {site}
+                            </CommandItem>
+                          ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="space-y-2">
