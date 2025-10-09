@@ -44,21 +44,37 @@ export default function WincovaDiscover() {
   const [competitorInput, setCompetitorInput] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [open, setOpen] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
-  // Lista de sitios web populares para autocompletado
+  // Lista de sitios populares principales + búsquedas recientes
   const popularSites = [
     "amazon.com", "shopify.com", "etsy.com", "ebay.com", "walmart.com",
     "target.com", "alibaba.com", "mercadolibre.com", "bestbuy.com",
     "nike.com", "adidas.com", "zara.com", "h&m.com", "asos.com",
+    "temu.com", "shein.com", "aliexpress.com", "wish.com",
     "booking.com", "airbnb.com", "expedia.com", "hotels.com",
-    "netflix.com", "spotify.com", "apple.com", "microsoft.com",
-    "google.com", "facebook.com", "instagram.com", "twitter.com"
   ];
 
   const handleAddCompetitor = () => {
-    if (competitorInput.trim() && competitors.length < 3) {
-      setCompetitors([...competitors, competitorInput.trim()]);
+    if (competitorInput.trim() && competitors.length < 3 && !competitors.includes(competitorInput.trim())) {
+      const newCompetitor = competitorInput.trim();
+      setCompetitors([...competitors, newCompetitor]);
+      
+      // Agregar a búsquedas recientes (máx 5)
+      setRecentSearches(prev => {
+        const updated = [newCompetitor, ...prev.filter(s => s !== newCompetitor)];
+        return updated.slice(0, 5);
+      });
+      
       setCompetitorInput("");
+      setOpen(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && competitorInput.trim()) {
+      e.preventDefault();
+      handleAddCompetitor();
     }
   };
 
@@ -218,6 +234,7 @@ export default function WincovaDiscover() {
                         placeholder="Escribe el sitio web..." 
                         value={competitorInput}
                         onValueChange={setCompetitorInput}
+                        onKeyDown={handleKeyDown}
                       />
                       <CommandList>
                         <CommandEmpty>
@@ -227,19 +244,46 @@ export default function WincovaDiscover() {
                             </p>
                           </div>
                         </CommandEmpty>
+                        
+                        {recentSearches.length > 0 && (
+                          <CommandGroup heading="Búsquedas Recientes">
+                            {recentSearches
+                              .filter(site => 
+                                site.toLowerCase().includes(competitorInput.toLowerCase())
+                              )
+                              .map((site) => (
+                                <CommandItem
+                                  key={`recent-${site}`}
+                                  value={site}
+                                  onSelect={(currentValue) => {
+                                    setCompetitorInput(currentValue);
+                                    handleAddCompetitor();
+                                  }}
+                                >
+                                  <Check
+                                    className={`mr-2 h-4 w-4 ${
+                                      competitors.includes(site) ? "opacity-100" : "opacity-0"
+                                    }`}
+                                  />
+                                  {site}
+                                </CommandItem>
+                              ))}
+                          </CommandGroup>
+                        )}
+                        
                         <CommandGroup heading="Sitios Populares">
                           {popularSites
                             .filter(site => 
                               site.toLowerCase().includes(competitorInput.toLowerCase())
                             )
-                            .slice(0, 10)
+                            .slice(0, 8)
                             .map((site) => (
                               <CommandItem
                                 key={site}
                                 value={site}
                                 onSelect={(currentValue) => {
                                   setCompetitorInput(currentValue);
-                                  setOpen(false);
+                                  handleAddCompetitor();
                                 }}
                               >
                                 <Check

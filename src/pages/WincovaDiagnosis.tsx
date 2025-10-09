@@ -234,6 +234,40 @@ export default function WincovaDiagnosis() {
     return "text-red-500";
   };
 
+  const getProgressColor = (score: number): string => {
+    if (score >= 80) return "bg-green-500";
+    if (score >= 60) return "bg-yellow-500";
+    return "bg-red-500";
+  };
+
+  const shouldGenerateVisuals = (category: string, title: string): boolean => {
+    // Categorías que NO necesitan visualización
+    const noVisualCategories = ['backend', 'database', 'api', 'security', 'server'];
+    
+    // Keywords que indican cambios de código sin impacto visual
+    const noVisualKeywords = [
+      'código', 'función', 'backend', 'servidor', 'base de datos', 
+      'api', 'endpoint', 'cache', 'log', 'error handling',
+      'authentication', 'authorization', 'token', 'session'
+    ];
+    
+    const lowerCategory = category.toLowerCase();
+    const lowerTitle = title.toLowerCase();
+    
+    // No generar si es categoría técnica
+    if (noVisualCategories.some(cat => lowerCategory.includes(cat))) {
+      return false;
+    }
+    
+    // No generar si el título contiene keywords técnicos
+    if (noVisualKeywords.some(keyword => lowerTitle.includes(keyword))) {
+      return false;
+    }
+    
+    // SÍ generar para cambios visuales/UX
+    return true;
+  };
+
   const getRiskBadge = (risk: string) => {
     const variants: { [key: string]: "default" | "secondary" | "destructive" | "outline" } = {
       low: "secondary",
@@ -360,6 +394,12 @@ export default function WincovaDiagnosis() {
                       {Math.round(diagnosis.performance_score)}
                       <span className="text-lg text-muted-foreground">/100</span>
                     </div>
+                    <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full transition-all ${getProgressColor(diagnosis.performance_score)}`}
+                        style={{ width: `${diagnosis.performance_score}%` }}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
               </TooltipTrigger>
@@ -382,6 +422,12 @@ export default function WincovaDiagnosis() {
                     <div className={`text-3xl font-bold ${getScoreColor(diagnosis.seo_score)}`}>
                       {Math.round(diagnosis.seo_score)}
                       <span className="text-lg text-muted-foreground">/100</span>
+                    </div>
+                    <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full transition-all ${getProgressColor(diagnosis.seo_score)}`}
+                        style={{ width: `${diagnosis.seo_score}%` }}
+                      />
                     </div>
                   </CardContent>
                 </Card>
@@ -406,6 +452,12 @@ export default function WincovaDiagnosis() {
                       {Math.round(diagnosis.security_score)}
                       <span className="text-lg text-muted-foreground">/100</span>
                     </div>
+                    <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full transition-all ${getProgressColor(diagnosis.security_score)}`}
+                        style={{ width: `${diagnosis.security_score}%` }}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
               </TooltipTrigger>
@@ -429,6 +481,12 @@ export default function WincovaDiagnosis() {
                       {Math.round(diagnosis.accessibility_score)}
                       <span className="text-lg text-muted-foreground">/100</span>
                     </div>
+                    <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full transition-all ${getProgressColor(diagnosis.accessibility_score)}`}
+                        style={{ width: `${diagnosis.accessibility_score}%` }}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
               </TooltipTrigger>
@@ -451,6 +509,12 @@ export default function WincovaDiagnosis() {
                     <div className={`text-3xl font-bold ${getScoreColor(diagnosis.compliance_score)}`}>
                       {Math.round(diagnosis.compliance_score)}
                       <span className="text-lg text-muted-foreground">/100</span>
+                    </div>
+                    <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full transition-all ${getProgressColor(diagnosis.compliance_score)}`}
+                        style={{ width: `${diagnosis.compliance_score}%` }}
+                      />
                     </div>
                   </CardContent>
                 </Card>
@@ -614,65 +678,73 @@ export default function WincovaDiagnosis() {
                       </div>
 
                       {/* Visual Before/After Section */}
-                      {change.before_image_url && change.after_image_url ? (
-                        <div className="border rounded-lg overflow-hidden bg-muted/30">
-                          <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-3 border-b">
-                            <div className="flex items-center gap-2">
-                              <ImageIcon className="w-4 h-4 text-primary" />
-                              <h4 className="font-semibold text-sm">Visualización del Cambio</h4>
-                            </div>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Compara cómo se ve ahora vs. cómo se verá después del cambio
-                            </p>
-                          </div>
-                          <div className="grid md:grid-cols-2 gap-0">
-                            <div className="relative group">
-                              <div className="absolute top-3 left-3 z-10">
-                                <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm">
-                                  ❌ Antes
-                                </Badge>
+                      {shouldGenerateVisuals(change.category, change.title) ? (
+                        change.before_image_url && change.after_image_url ? (
+                          <div className="border rounded-lg overflow-hidden bg-muted/30">
+                            <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-3 border-b">
+                              <div className="flex items-center gap-2">
+                                <ImageIcon className="w-4 h-4 text-primary" />
+                                <h4 className="font-semibold text-sm">Visualización del Cambio</h4>
                               </div>
-                              <img 
-                                src={change.before_image_url} 
-                                alt="Estado actual"
-                                className="w-full h-auto object-cover"
-                              />
-                              <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors" />
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Compara cómo se ve ahora vs. cómo se verá después del cambio
+                              </p>
                             </div>
-                            <div className="relative group border-l">
-                              <div className="absolute top-3 left-3 z-10">
-                                <Badge variant="default" className="bg-primary text-primary-foreground">
-                                  ✅ Después
-                                </Badge>
+                            <div className="grid md:grid-cols-2 gap-0">
+                              <div className="relative group">
+                                <div className="absolute top-3 left-3 z-10">
+                                  <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm">
+                                    ❌ Antes
+                                  </Badge>
+                                </div>
+                                <img 
+                                  src={change.before_image_url} 
+                                  alt="Estado actual"
+                                  className="w-full h-auto object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors" />
                               </div>
-                              <img 
-                                src={change.after_image_url} 
-                                alt="Estado mejorado"
-                                className="w-full h-auto object-cover"
-                              />
-                              <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/0 transition-colors" />
+                              <div className="relative group border-l">
+                                <div className="absolute top-3 left-3 z-10">
+                                  <Badge variant="default" className="bg-primary text-primary-foreground">
+                                    ✅ Después
+                                  </Badge>
+                                </div>
+                                <img 
+                                  src={change.after_image_url} 
+                                  alt="Estado mejorado"
+                                  className="w-full h-auto object-cover"
+                                />
+                                <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/0 transition-colors" />
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        ) : (
+                          <Button
+                            onClick={() => handleGenerateVisuals(change)}
+                            variant="outline"
+                            className="w-full border-dashed"
+                            disabled={generatingVisuals === change.id}
+                          >
+                            {generatingVisuals === change.id ? (
+                              <>
+                                <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full mr-2" />
+                                Generando visualización real...
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="w-4 h-4 mr-2" />
+                                Ver Antes/Después Real
+                              </>
+                            )}
+                          </Button>
+                        )
                       ) : (
-                        <Button
-                          onClick={() => handleGenerateVisuals(change)}
-                          variant="outline"
-                          className="w-full border-dashed"
-                          disabled={generatingVisuals === change.id}
-                        >
-                          {generatingVisuals === change.id ? (
-                            <>
-                              <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full mr-2" />
-                              Generando visualización...
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="w-4 h-4 mr-2" />
-                              Ver Antes/Después con IA
-                            </>
-                          )}
-                        </Button>
+                        <div className="text-center p-4 bg-muted/30 rounded-lg border border-dashed">
+                          <p className="text-sm text-muted-foreground">
+                            Este cambio es técnico y no requiere visualización
+                          </p>
+                        </div>
                       )}
 
                       {/* Technical Details */}
