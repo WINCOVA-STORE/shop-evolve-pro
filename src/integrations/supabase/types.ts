@@ -1505,10 +1505,12 @@ export type Database = {
       }
       wincova_changes: {
         Row: {
+          after_image_url: string | null
           approval_notes: string | null
           approval_required: boolean
           approved_at: string | null
           approved_by: string | null
+          before_image_url: string | null
           category: string
           code_changes: Json | null
           complexity_score: number
@@ -1532,10 +1534,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          after_image_url?: string | null
           approval_notes?: string | null
           approval_required?: boolean
           approved_at?: string | null
           approved_by?: string | null
+          before_image_url?: string | null
           category: string
           code_changes?: Json | null
           complexity_score: number
@@ -1559,10 +1563,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          after_image_url?: string | null
           approval_notes?: string | null
           approval_required?: boolean
           approved_at?: string | null
           approved_by?: string | null
+          before_image_url?: string | null
           category?: string
           code_changes?: Json | null
           complexity_score?: number

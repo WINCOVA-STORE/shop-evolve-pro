@@ -29,3 +29,6 @@ verify_jwt = true
 
 [functions.wincova-compliance-check]
 verify_jwt = true
+
+[functions.wincova-generate-visuals]
+verify_jwt = true

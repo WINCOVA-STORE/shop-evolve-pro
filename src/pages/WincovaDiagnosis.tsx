@@ -34,6 +34,8 @@ import {
   FileText,
   HelpCircle,
   Info,
+  Image as ImageIcon,
+  Sparkles,
 } from "lucide-react";
 
 interface Diagnosis {
@@ -67,6 +69,8 @@ interface Change {
   estimated_revenue_impact: number;
   status: string;
   approval_required: boolean;
+  before_image_url: string | null;
+  after_image_url: string | null;
 }
 
 export default function WincovaDiagnosis() {
@@ -77,6 +81,7 @@ export default function WincovaDiagnosis() {
   const [changes, setChanges] = useState<Change[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [generatingVisuals, setGeneratingVisuals] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDiagnosis();
@@ -113,6 +118,52 @@ export default function WincovaDiagnosis() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGenerateVisuals = async (change: Change) => {
+    if (!diagnosis) return;
+    
+    try {
+      setGeneratingVisuals(change.id);
+      
+      const { data, error } = await supabase.functions.invoke('wincova-generate-visuals', {
+        body: {
+          changeTitle: change.title,
+          changeDescription: change.description,
+          category: change.category,
+          siteUrl: diagnosis.site_url
+        }
+      });
+
+      if (error) throw error;
+
+      // Update the change with the generated images
+      const { error: updateError } = await supabase
+        .from('wincova_changes')
+        .update({
+          before_image_url: data.beforeImageUrl,
+          after_image_url: data.afterImageUrl,
+        })
+        .eq('id', change.id);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "Visualización generada",
+        description: "Las imágenes de antes/después están listas",
+      });
+
+      fetchDiagnosis();
+    } catch (error: any) {
+      console.error("Error generating visuals:", error);
+      toast({
+        title: "Error",
+        description: "No se pudieron generar las visualizaciones: " + error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setGeneratingVisuals(null);
     }
   };
 
@@ -548,6 +599,68 @@ export default function WincovaDiagnosis() {
                           </TooltipContent>
                         </Tooltip>
                       </div>
+
+                      {/* Visual Before/After Section */}
+                      {change.before_image_url && change.after_image_url ? (
+                        <div className="border rounded-lg overflow-hidden bg-muted/30">
+                          <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-3 border-b">
+                            <div className="flex items-center gap-2">
+                              <ImageIcon className="w-4 h-4 text-primary" />
+                              <h4 className="font-semibold text-sm">Visualización del Cambio</h4>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Compara cómo se ve ahora vs. cómo se verá después del cambio
+                            </p>
+                          </div>
+                          <div className="grid md:grid-cols-2 gap-0">
+                            <div className="relative group">
+                              <div className="absolute top-3 left-3 z-10">
+                                <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm">
+                                  ❌ Antes
+                                </Badge>
+                              </div>
+                              <img 
+                                src={change.before_image_url} 
+                                alt="Estado actual"
+                                className="w-full h-auto object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors" />
+                            </div>
+                            <div className="relative group border-l">
+                              <div className="absolute top-3 left-3 z-10">
+                                <Badge variant="default" className="bg-primary text-primary-foreground">
+                                  ✅ Después
+                                </Badge>
+                              </div>
+                              <img 
+                                src={change.after_image_url} 
+                                alt="Estado mejorado"
+                                className="w-full h-auto object-cover"
+                              />
+                              <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/0 transition-colors" />
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <Button
+                          onClick={() => handleGenerateVisuals(change)}
+                          variant="outline"
+                          className="w-full border-dashed"
+                          disabled={generatingVisuals === change.id}
+                        >
+                          {generatingVisuals === change.id ? (
+                            <>
+                              <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full mr-2" />
+                              Generando visualización...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-4 h-4 mr-2" />
+                              Ver Antes/Después con IA
+                            </>
+                          )}
+                        </Button>
+                      )}
 
                       {/* Technical Details */}
                       <details className="group">
