@@ -296,6 +296,184 @@ export type Database = {
           },
         ]
       }
+      organization_members: {
+        Row: {
+          created_at: string
+          id: string
+          organization_id: string
+          permissions: Json | null
+          role: Database["public"]["Enums"]["project_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          organization_id: string
+          permissions?: Json | null
+          role?: Database["public"]["Enums"]["project_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          organization_id?: string
+          permissions?: Json | null
+          role?: Database["public"]["Enums"]["project_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          created_at: string
+          id: string
+          max_phases: number
+          max_tasks_per_phase: number
+          max_users: number
+          name: string
+          plan_tier: string
+          stripe_subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          max_phases?: number
+          max_tasks_per_phase?: number
+          max_users?: number
+          name: string
+          plan_tier?: string
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          max_phases?: number
+          max_tasks_per_phase?: number
+          max_users?: number
+          name?: string
+          plan_tier?: string
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      phases: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          end_date: string | null
+          goal: string | null
+          id: string
+          name: string
+          notes: string | null
+          order_index: number
+          organization_id: string
+          owner_user_id: string | null
+          progress_pct: number | null
+          risk_level: Database["public"]["Enums"]["risk_level"] | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["phase_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          goal?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          order_index?: number
+          organization_id: string
+          owner_user_id?: string | null
+          progress_pct?: number | null
+          risk_level?: Database["public"]["Enums"]["risk_level"] | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["phase_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          goal?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          order_index?: number
+          organization_id?: string
+          owner_user_id?: string | null
+          progress_pct?: number | null
+          risk_level?: Database["public"]["Enums"]["risk_level"] | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["phase_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phases_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plan_features: {
+        Row: {
+          enable_ai_assistant: boolean
+          enable_api_access: boolean
+          enable_gantt: boolean
+          enable_time_tracking: boolean
+          enable_webhooks: boolean
+          id: string
+          max_phases: number
+          max_tasks_per_phase: number
+          max_users_per_org: number
+          plan_tier: string
+          price_monthly_usd: number
+        }
+        Insert: {
+          enable_ai_assistant?: boolean
+          enable_api_access?: boolean
+          enable_gantt?: boolean
+          enable_time_tracking?: boolean
+          enable_webhooks?: boolean
+          id?: string
+          max_phases: number
+          max_tasks_per_phase: number
+          max_users_per_org: number
+          plan_tier: string
+          price_monthly_usd?: number
+        }
+        Update: {
+          enable_ai_assistant?: boolean
+          enable_api_access?: boolean
+          enable_gantt?: boolean
+          enable_time_tracking?: boolean
+          enable_webhooks?: boolean
+          id?: string
+          max_phases?: number
+          max_tasks_per_phase?: number
+          max_users_per_org?: number
+          plan_tier?: string
+          price_monthly_usd?: number
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category_id: string | null
@@ -782,6 +960,201 @@ export type Database = {
         }
         Relationships: []
       }
+      task_comments: {
+        Row: {
+          author_user_id: string
+          body: string
+          created_at: string
+          id: string
+          task_id: string
+          updated_at: string
+        }
+        Insert: {
+          author_user_id: string
+          body: string
+          created_at?: string
+          id?: string
+          task_id: string
+          updated_at?: string
+        }
+        Update: {
+          author_user_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          task_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_history: {
+        Row: {
+          changed_at: string
+          changed_by: string
+          field_name: string
+          id: string
+          new_value: string | null
+          old_value: string | null
+          task_id: string
+        }
+        Insert: {
+          changed_at?: string
+          changed_by: string
+          field_name: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          task_id: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string
+          field_name?: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_history_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_timelogs: {
+        Row: {
+          created_at: string
+          hours: number
+          id: string
+          logged_at: string
+          note: string | null
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          hours: number
+          id?: string
+          logged_at?: string
+          note?: string | null
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          hours?: number
+          id?: string
+          logged_at?: string
+          note?: string | null
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_timelogs_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          assignee_user_id: string | null
+          blocked_by: string[] | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          estimate_hours: number | null
+          id: string
+          links: Json | null
+          order_index: number
+          organization_id: string
+          phase_id: string
+          priority: Database["public"]["Enums"]["task_priority"]
+          progress_pct: number | null
+          risk_level: Database["public"]["Enums"]["risk_level"] | null
+          status: Database["public"]["Enums"]["task_status"]
+          tags: string[] | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          assignee_user_id?: string | null
+          blocked_by?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          estimate_hours?: number | null
+          id?: string
+          links?: Json | null
+          order_index?: number
+          organization_id: string
+          phase_id: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          progress_pct?: number | null
+          risk_level?: Database["public"]["Enums"]["risk_level"] | null
+          status?: Database["public"]["Enums"]["task_status"]
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          assignee_user_id?: string | null
+          blocked_by?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          estimate_hours?: number | null
+          id?: string
+          links?: Json | null
+          order_index?: number
+          organization_id?: string
+          phase_id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          progress_pct?: number | null
+          risk_level?: Database["public"]["Enums"]["risk_level"] | null
+          status?: Database["public"]["Enums"]["task_status"]
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_phase_id_fkey"
+            columns: ["phase_id"]
+            isOneToOne: false
+            referencedRelation: "phases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -973,6 +1346,10 @@ export type Database = {
           show_free_badge: boolean
         }[]
       }
+      get_user_org_role: {
+        Args: { _org_id: string; _user_id: string }
+        Returns: Database["public"]["Enums"]["project_role"]
+      }
       grant_birthday_points: {
         Args: { target_user_id: string }
         Returns: boolean
@@ -987,6 +1364,10 @@ export type Database = {
       track_campaign_usage: {
         Args: { p_campaign_id: string; p_points_awarded: number }
         Returns: undefined
+      }
+      user_has_org_access: {
+        Args: { _org_id: string; _user_id: string }
+        Returns: boolean
       }
     }
     Enums: {
@@ -1010,7 +1391,12 @@ export type Database = {
         | "delivered"
         | "cancelled"
       payment_status: "pending" | "completed" | "failed" | "refunded"
+      phase_status: "planned" | "in_progress" | "blocked" | "completed"
+      project_role: "owner" | "admin" | "dev" | "viewer"
+      risk_level: "low" | "medium" | "high" | "critical"
       shipping_mode: "free" | "manual" | "api" | "dropshipping"
+      task_priority: "low" | "medium" | "high" | "urgent"
+      task_status: "todo" | "in_progress" | "blocked" | "done" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1160,7 +1546,12 @@ export const Constants = {
         "cancelled",
       ],
       payment_status: ["pending", "completed", "failed", "refunded"],
+      phase_status: ["planned", "in_progress", "blocked", "completed"],
+      project_role: ["owner", "admin", "dev", "viewer"],
+      risk_level: ["low", "medium", "high", "critical"],
       shipping_mode: ["free", "manual", "api", "dropshipping"],
+      task_priority: ["low", "medium", "high", "urgent"],
+      task_status: ["todo", "in_progress", "blocked", "done", "cancelled"],
     },
   },
 } as const
