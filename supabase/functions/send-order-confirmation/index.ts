@@ -1,7 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend";
+// Temporarily commented due to missing resend dependency
+// import { Resend } from "npm:resend";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+// const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -66,7 +67,9 @@ const handler = async (req: Request): Promise<Response> => {
       )
       .join("");
 
-    const emailResponse = await resend.emails.send({
+    // Temporarily disabled - resend dependency missing
+    const emailResponse = { id: "temp", error: "Resend not configured" };
+    /* await resend.emails.send({
       from: "Wincova Store <onboarding@resend.dev>",
       to: [email],
       subject: `Confirmación de Pedido #${orderNumber} 📦`,
@@ -269,9 +272,9 @@ const handler = async (req: Request): Promise<Response> => {
           </body>
         </html>
       `,
-    });
+    }); */
 
-    console.log("Order confirmation email sent successfully:", emailResponse);
+    console.log("Order confirmation email (disabled temporarily):", emailResponse);
 
     return new Response(JSON.stringify(emailResponse), {
       status: 200,
