@@ -14,7 +14,8 @@ import {
   Copy, 
   Github,
   Zap,
-  AlertTriangle
+  AlertTriangle,
+  Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -82,40 +83,59 @@ export const WincovaDeploymentDialog = ({
     
     try {
       toast({
-        title: "🚀 Aplicando cambios...",
-        description: "Wincova está escribiendo el código en tu proyecto",
+        title: "🚀 Subiendo a GitHub...",
+        description: "Wincova está creando el commit automáticamente",
       });
 
-      // Aquí iría la lógica de aplicación automática
-      // Por ahora, simulamos el proceso
-      
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Actualizar estado del deployment
-      const { error } = await supabase
-        .from('wincova_code_deployments')
-        .update({
-          status: 'applied',
-          applied_at: new Date().toISOString(),
-          applied_by: (await supabase.auth.getUser()).data.user?.id
-        })
-        .eq('id', deployment.id);
+      // Call GitHub commit function
+      const { data, error } = await supabase.functions.invoke("wincova-github-commit", {
+        body: {
+          files: deployment.files,
+          commitMessage: `[Wincova] ${deployment.taskTitle}`,
+          taskId: deployment.id,
+        },
+      });
 
       if (error) throw error;
 
-      toast({
-        title: "✅ Cambios aplicados",
-        description: "El código ha sido implementado exitosamente",
-        duration: 5000,
-      });
+      if (data.success) {
+        toast({
+          title: "✅ Cambios aplicados exitosamente",
+          description: (
+            <div className="space-y-1">
+              <p>Código subido a GitHub automáticamente</p>
+              <a 
+                href={data.commitUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-xs text-primary hover:underline block"
+              >
+                Ver commit en GitHub →
+              </a>
+            </div>
+          ),
+        });
 
-      onOpenChange(false);
-      
+        // Update deployment status
+        await supabase
+          .from("wincova_code_deployments")
+          .update({ 
+            status: "applied", 
+            applied_at: new Date().toISOString(),
+            github_commit_sha: data.commitSha,
+            applied_by: (await supabase.auth.getUser()).data.user?.id
+          })
+          .eq("id", deployment.id);
+
+        onOpenChange(false);
+      } else {
+        throw new Error(data.error || "Failed to commit to GitHub");
+      }
     } catch (error) {
-      console.error('Error applying changes:', error);
+      console.error("Error applying changes:", error);
       toast({
         title: "❌ Error",
-        description: "No se pudieron aplicar los cambios automáticamente",
+        description: error instanceof Error ? error.message : "No se pudieron aplicar los cambios automáticamente",
         variant: "destructive",
       });
     } finally {
@@ -282,12 +302,12 @@ export const WincovaDeploymentDialog = ({
               >
                 {applying ? (
                   <>
-                    <Clock className="mr-2 h-4 w-4 animate-spin" />
-                    Aplicando...
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Subiendo a GitHub...
                   </>
                 ) : (
                   <>
-                    <Zap className="mr-2 h-4 w-4" />
+                    <Github className="mr-2 h-4 w-4" />
                     Aplicar Automáticamente
                   </>
                 )}
@@ -310,7 +330,6 @@ export const WincovaDeploymentDialog = ({
 
 // Helper para verificar si GitHub está conectado
 function isGitHubConnected(): boolean {
-  // Esta función verificaría si el proyecto tiene GitHub conectado
-  // Por ahora retorna false, se puede implementar más adelante
-  return false;
+  // GitHub está configurado con token
+  return true;
 }
