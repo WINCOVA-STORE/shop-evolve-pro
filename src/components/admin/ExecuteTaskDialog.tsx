@@ -63,7 +63,7 @@ export const ExecuteTaskDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Zap className="h-5 w-5 text-yellow-500" />
@@ -74,7 +74,7 @@ export const ExecuteTaskDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="flex-1 overflow-y-auto pr-1 space-y-4">
           {/* Task Info */}
           <div className="p-4 bg-muted rounded-lg space-y-3">
             <div className="flex items-center gap-2">
@@ -185,7 +185,7 @@ export const ExecuteTaskDialog = ({
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="sticky bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/75 border-t mt-2">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}

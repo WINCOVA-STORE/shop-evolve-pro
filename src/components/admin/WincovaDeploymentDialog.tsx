@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -145,7 +145,7 @@ export const WincovaDeploymentDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh]">
+      <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Zap className="h-5 w-5 text-yellow-500" />
@@ -156,7 +156,7 @@ export const WincovaDeploymentDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="flex-1 overflow-y-auto pr-1 space-y-4">
           {/* Modo de ejecución */}
           <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
             <div className="flex items-center gap-3">
@@ -286,7 +286,7 @@ export const WincovaDeploymentDialog = ({
           </Tabs>
 
           {/* Botones de acción */}
-          <div className="flex justify-end gap-2 pt-4 border-t">
+          <DialogFooter className="sticky bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/75 border-t">
             <Button
               variant="outline"
               onClick={() => onOpenChange(false)}
@@ -321,7 +321,7 @@ export const WincovaDeploymentDialog = ({
                 Copiar e Implementar Manualmente
               </Button>
             )}
-          </div>
+          </DialogFooter>
         </div>
       </DialogContent>
     </Dialog>
