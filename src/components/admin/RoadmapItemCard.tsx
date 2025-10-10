@@ -159,41 +159,78 @@ export const RoadmapItemCard = ({ item, onStatusChange, onExecute }: RoadmapItem
           </div>
         </div>
 
-        {/* Metadata */}
-        <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
-          <div className="flex items-center gap-1">
-            <Target className="h-3 w-3" />
-            <span>Impacto: {item.impact}</span>
+        {/* Información Detallada de la Tarea */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* Estimación de Horas */}
+          <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              <Timer className="h-4 w-4 text-blue-600" />
+              <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">⏱️ Estimación</span>
+            </div>
+            <p className="text-sm font-bold text-blue-600">
+              {item.metadata?.estimated_hours ? `${item.metadata.estimated_hours}h` : 'Por definir'}
+            </p>
           </div>
-          <div className="flex items-center gap-1">
-            <Zap className="h-3 w-3" />
-            <span>Esfuerzo: {item.effort}</span>
+
+          {/* Nivel de Impacto */}
+          <div className="p-3 bg-green-50 dark:bg-green-950/30 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              <Target className="h-4 w-4 text-green-600" />
+              <span className="text-xs font-semibold text-green-700 dark:text-green-300">🎯 Impacto</span>
+            </div>
+            <p className="text-sm font-bold text-green-600 uppercase">
+              {item.impact}
+            </p>
           </div>
-          {item.files_affected && item.files_affected.length > 0 && (
-            <div className="flex items-center gap-1">
-              <FileCode className="h-3 w-3" />
-              <span>{item.files_affected.length} archivos</span>
+
+          {/* Esfuerzo */}
+          <div className="p-3 bg-purple-50 dark:bg-purple-950/30 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              <Zap className="h-4 w-4 text-purple-600" />
+              <span className="text-xs font-semibold text-purple-700 dark:text-purple-300">⚡ Esfuerzo</span>
             </div>
-          )}
-          {item.metadata?.estimated_hours && (
-            <div className="flex items-center gap-1 text-blue-600">
-              <Timer className="h-3 w-3" />
-              <span>{item.metadata.estimated_hours}h estimadas</span>
-            </div>
-          )}
-          {item.metadata?.implementation_order && (
-            <div className="flex items-center gap-1 text-purple-600">
-              <ArrowRight className="h-3 w-3" />
-              <span>Orden: #{item.metadata.implementation_order}</span>
-            </div>
-          )}
-          {item.metadata?.generated_by_ai && (
-            <div className="flex items-center gap-1 text-indigo-600">
-              <Sparkles className="h-3 w-3" />
-              <span>AI</span>
-            </div>
-          )}
+            <p className="text-sm font-bold text-purple-600 uppercase">
+              {item.effort}
+            </p>
+          </div>
         </div>
+
+        {/* Archivos que se Modificarán */}
+        {item.files_affected && item.files_affected.length > 0 && (
+          <div className="p-3 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <FileCode className="h-4 w-4 text-orange-600" />
+              <span className="text-xs font-semibold text-orange-700 dark:text-orange-300">
+                📁 Archivos que se modificarán ({item.files_affected.length})
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {item.files_affected.map((file, idx) => (
+                <Badge key={idx} variant="outline" className="text-xs font-mono bg-white dark:bg-gray-800">
+                  {file}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Metadata adicional */}
+        {(item.metadata?.implementation_order || item.metadata?.generated_by_ai) && (
+          <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+            {item.metadata?.implementation_order && (
+              <div className="flex items-center gap-1 text-purple-600">
+                <ArrowRight className="h-3 w-3" />
+                <span>Orden: #{item.metadata.implementation_order}</span>
+              </div>
+            )}
+            {item.metadata?.generated_by_ai && (
+              <div className="flex items-center gap-1 text-indigo-600">
+                <Sparkles className="h-3 w-3" />
+                <span>Generado por IA</span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* AI Analysis - Dependencies */}
         {item.metadata?.dependencies && item.metadata.dependencies.length > 0 && (
