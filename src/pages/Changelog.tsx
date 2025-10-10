@@ -72,34 +72,46 @@ export default function Changelog() {
               }
             });
             
-            const customerBenefit = benefitData?.customerBenefit || feature.description;
+            const originalName = feature.feature_name;
+            const customerBenefit = benefitData?.customerBenefit || feature.description || feature.feature_name;
             
             // Then translate to current language if not Spanish
             if (i18n.language !== 'es') {
-              const { data: translatedData } = await supabase.functions.invoke('translate-feature', {
-                body: {
-                  featureName: feature.feature_name,
-                  description: customerBenefit,
-                  targetLanguage: i18n.language
+              try {
+                const { data: translatedData, error: translationError } = await supabase.functions.invoke('translate-feature', {
+                  body: {
+                    featureName: originalName,
+                    description: customerBenefit,
+                    targetLanguage: i18n.language
+                  }
+                });
+                
+                // Only use translation if it's valid and not empty
+                if (translatedData && translatedData.translatedName && translatedData.translatedDescription) {
+                  return {
+                    ...feature,
+                    feature_name: translatedData.translatedName,
+                    customer_benefit: translatedData.translatedDescription
+                  };
                 }
-              });
-              
-              return {
-                ...feature,
-                feature_name: translatedData?.translatedName || feature.feature_name,
-                customer_benefit: translatedData?.translatedDescription || customerBenefit
-              };
+              } catch (translationError) {
+                console.error('Translation error, using original:', translationError);
+              }
             }
             
+            // Fallback: use original text if translation fails or if in Spanish
             return {
               ...feature,
+              feature_name: originalName,
               customer_benefit: customerBenefit
             };
           } catch (error) {
             console.error('Error processing feature:', error);
+            // Always return something, never leave empty
             return {
               ...feature,
-              customer_benefit: feature.description
+              feature_name: feature.feature_name,
+              customer_benefit: feature.description || feature.feature_name || 'Feature description'
             };
           }
         })
@@ -359,7 +371,7 @@ export default function Changelog() {
                                 <div className="flex items-center gap-3 mb-3">
                                   {getImpactIcon(feature.impact)}
                                   <h3 className="font-bold text-xl group-hover:text-primary transition-colors flex items-center gap-2">
-                                    {feature.feature_name}
+                                    {feature.feature_name || 'Feature'}
                                     {isClickable && (
                                       <ExternalLink className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     )}
@@ -369,7 +381,7 @@ export default function Changelog() {
                                 {/* Customer Benefit - Main focus */}
                                 <div className="mb-4 p-4 bg-primary/5 rounded-lg border-l-4 border-primary">
                                   <p className="text-base leading-relaxed text-foreground font-medium">
-                                    {feature.customer_benefit || feature.description || 'Mejora en tu experiencia de compra'}
+                                    {feature.customer_benefit || feature.description || t('changelog.no_improvements')}
                                   </p>
                                 </div>
 

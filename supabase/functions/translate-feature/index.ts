@@ -10,37 +10,50 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const { featureName, description, targetLanguage } = await req.json();
-    
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
-    }
+    try {
+      const { featureName, description, targetLanguage } = await req.json();
+      
+      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+      if (!LOVABLE_API_KEY) {
+        throw new Error('LOVABLE_API_KEY not configured');
+      }
 
-    console.log(`Translating to ${targetLanguage}:`, featureName);
+      console.log(`Translating to ${targetLanguage}:`, featureName);
 
-    // Map language codes to full language names
-    const languageNames: Record<string, string> = {
-      'en': 'English',
-      'es': 'Spanish',
-      'fr': 'French',
-      'pt': 'Portuguese',
-      'zh': 'Chinese'
-    };
+      // Map language codes to full language names
+      const languageNames: Record<string, string> = {
+        'en': 'English',
+        'es': 'Spanish',
+        'fr': 'French',
+        'pt': 'Portuguese',
+        'zh': 'Chinese'
+      };
 
-    const targetLangName = languageNames[targetLanguage] || 'English';
+      const targetLangName = languageNames[targetLanguage] || 'English';
 
-    // If already in target language, skip translation
-    if (targetLanguage === 'es') {
-      return new Response(
-        JSON.stringify({ 
-          translatedName: featureName,
-          translatedDescription: description 
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+      // If already in target language, skip translation
+      if (targetLanguage === 'es') {
+        return new Response(
+          JSON.stringify({ 
+            translatedName: featureName,
+            translatedDescription: description 
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Validate input
+      if (!featureName || !description) {
+        console.error('Missing required fields');
+        return new Response(
+          JSON.stringify({ 
+            translatedName: featureName || 'Feature',
+            translatedDescription: description || 'Description',
+            error: 'Missing data'
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
 
     const systemPrompt = `You are a professional translator specializing in e-commerce and customer-facing content.
 Your task is to translate feature names and descriptions while maintaining:
@@ -96,11 +109,42 @@ Remember: Keep it customer-focused, natural, and appealing. Make it sound like n
     const content = data.choices?.[0]?.message?.content;
 
     if (!content) {
-      throw new Error('No content in AI response');
+      console.error('No content in AI response, returning original');
+      return new Response(
+        JSON.stringify({ 
+          translatedName: featureName,
+          translatedDescription: description 
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Parse the JSON response
-    const translationData = JSON.parse(content);
+    let translationData;
+    try {
+      translationData = JSON.parse(content);
+    } catch (parseError) {
+      console.error('Failed to parse AI response, returning original:', parseError);
+      return new Response(
+        JSON.stringify({ 
+          translatedName: featureName,
+          translatedDescription: description 
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate translation data
+    if (!translationData.translatedName || !translationData.translatedDescription) {
+      console.error('Invalid translation data, returning original');
+      return new Response(
+        JSON.stringify({ 
+          translatedName: featureName,
+          translatedDescription: description 
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     console.log('Translation successful:', translationData.translatedName);
 
@@ -112,12 +156,22 @@ Remember: Keep it customer-focused, natural, and appealing. Make it sound like n
     console.error('Error translating feature:', error);
     const errorMessage = error instanceof Error ? error.message : 'Translation failed';
     
-    // Return original text on error
-    const { featureName, description } = await req.json().catch(() => ({ featureName: '', description: '' }));
+    // Always return original text on error - NEVER return empty
+    let originalName = 'Feature';
+    let originalDesc = 'Description';
+    
+    try {
+      const body = await req.json();
+      originalName = body.featureName || 'Feature';
+      originalDesc = body.description || 'Description';
+    } catch (parseError) {
+      console.error('Could not parse request body:', parseError);
+    }
+    
     return new Response(
       JSON.stringify({ 
-        translatedName: featureName || 'Feature',
-        translatedDescription: description || 'Description',
+        translatedName: originalName,
+        translatedDescription: originalDesc,
         error: errorMessage
       }),
       { 
