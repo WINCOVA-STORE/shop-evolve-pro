@@ -1,226 +1,291 @@
-import { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { ProductCard } from "@/components/ProductCard";
-import { FeaturedSidebar } from "@/components/FeaturedSidebar";
-import { StickyFilters } from "@/components/StickyFilters";
-import { SponsoredProduct } from "@/components/SponsoredProduct";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Search as SearchIcon, X } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { Product } from "@/hooks/useProducts";
+import React, { useState, useEffect } from 'react';
+import { useAdvancedSearch } from '@/hooks/useAdvancedSearch';
 
-const Search = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
-  const [sortBy, setSortBy] = useState("relevance");
+// Shadcn/ui components
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Slider } from '@/components/ui/slider';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Menu } from 'lucide-react'; // Icono para el drawer en mobile
+
+const SearchPage: React.FC = () => {
+  const {
+    searchQuery,
+    setSearchQuery,
+    filters,
+    setFilters,
+    results,
+    totalResults,
+    suggestions,
+    availableCategories,
+    loading,
+    error,
+    currentPage,
+    totalPages,
+    handlePageChange,
+  } = useAdvancedSearch({ pageSize: 12 }); // Mostrar 12 productos por página
+
+  // Estado local para el slider de precio (para mostrar el valor actual mientras se arrastra)
+  const [priceRange, setPriceRange] = useState<[number, number]>([filters.minPrice, filters.maxPrice]);
 
   useEffect(() => {
-    const query = searchParams.get("q");
-    if (query) {
-      setSearchQuery(query);
-      performSearch(query);
-    }
-  }, [searchParams]);
+    setPriceRange([filters.minPrice, filters.maxPrice]);
+  }, [filters.minPrice, filters.maxPrice]);
 
-  const performSearch = async (query: string) => {
-    if (!query.trim()) {
-      setProducts([]);
-      return;
-    }
+  const handlePriceChangeCommit = (value: [number, number]) => {
+    setFilters({ minPrice: value[0], maxPrice: value[1] });
+  };
 
-    setLoading(true);
-    try {
-      let dbQuery = supabase
-        .from("products")
-        .select("*")
-        .eq("is_active", true);
-
-      // Search in name, description, and tags
-      dbQuery = dbQuery.or(`name.ilike.%${query}%,description.ilike.%${query}%,tags.cs.{${query}}`);
-
-      // Apply sorting
-      switch (sortBy) {
-        case "price-asc":
-          dbQuery = dbQuery.order("price", { ascending: true });
-          break;
-        case "price-desc":
-          dbQuery = dbQuery.order("price", { ascending: false });
-          break;
-        case "newest":
-          dbQuery = dbQuery.order("created_at", { ascending: false });
-          break;
-        default:
-          dbQuery = dbQuery.order("created_at", { ascending: false });
-      }
-
-      const { data, error } = await dbQuery;
-
-      if (error) throw error;
-
-      setProducts(data || []);
-    } catch (error) {
-      console.error("Error searching products:", error);
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar los resultados",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+  const handleCategoryChange = (category: string, checked: boolean) => {
+    if (checked) {
+      setFilters({ categories: [...filters.categories, category] });
+    } else {
+      setFilters({ categories: filters.categories.filter(c => c !== category) });
     }
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      setSearchParams({ q: searchQuery.trim() });
-    }
+  const handleRatingChange = (value: string) => {
+    setFilters({ minRating: parseFloat(value) });
   };
 
-  const clearSearch = () => {
-    setSearchQuery("");
-    setSearchParams({});
-    setProducts([]);
+  const handleStockChange = (checked: boolean) => {
+    setFilters({ inStock: checked });
   };
+
+  const renderProductCard = (product: typeof results[0]) => (
+    <Card key={product.id} className="flex flex-col h-full hover:shadow-lg transition-shadow duration-200">
+      <CardHeader className="p-0">
+        <img src={product.imageUrl} alt={product.name} className="w-full h-48 object-cover rounded-t-md" />
+      </CardHeader>
+      <CardContent className="p-4 flex-grow flex flex-col">
+        <CardTitle className="text-lg font-semibold mb-1 truncate">{product.name}</CardTitle>
+        <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+        <div className="mt-auto pt-2 border-t border-gray-100 dark:border-gray-800">
+            <div className="flex items-center justify-between text-base font-bold text-gray-900 dark:text-gray-50 mb-1">
+                <span>${product.price.toFixed(2)}</span>
+                <Badge variant="secondary">{product.category}</Badge>
+            </div>
+            <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                <span>Rating: {product.rating} ★</span>
+                <span className="ml-auto">Stock: {product.stock}</span>
+            </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderFilters = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold mb-3">Precio</h3>
+        <div className="px-1">
+          <Slider
+            min={0}
+            max={200} // Asegúrate de que esto coincida con el maxPrice en useAdvancedSearch
+            step={1}
+            value={priceRange}
+            onValueChange={setPriceRange}
+            onValueCommit={handlePriceChangeCommit}
+            className="w-full"
+          />
+          <div className="flex justify-between mt-2 text-sm text-gray-600">
+            <span>${priceRange[0].toFixed(2)}</span>
+            <span>${priceRange[1].toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      <div>
+        <h3 className="text-lg font-semibold mb-3">Categorías</h3>
+        <div className="space-y-2">
+          {availableCategories.map(category => (
+            <div key={category} className="flex items-center space-x-2">
+              <Checkbox
+                id={`category-${category}`}
+                checked={filters.categories.includes(category)}
+                onCheckedChange={(checked) => handleCategoryChange(category, checked as boolean)}
+              />
+              <label htmlFor={`category-${category}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                {category}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Separator />
+
+      <div>
+        <h3 className="text-lg font-semibold mb-3">Rating mínimo</h3>
+        <Select value={filters.minRating.toString()} onValueChange={handleRatingChange}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Selecciona un rating" />
+          </SelectTrigger>
+          <SelectContent>
+            {[0, 1, 2, 3, 4, 5].map(rating => (
+              <SelectItem key={rating} value={rating.toString()}>
+                {rating} Estrellas o más
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Separator />
+
+      <div>
+        <h3 className="text-lg font-semibold mb-3">Disponibilidad</h3>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="in-stock"
+            checked={filters.inStock}
+            onCheckedChange={(checked) => handleStockChange(checked as boolean)}
+          />
+          <label htmlFor="in-stock" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            En Stock
+          </label>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      
-      <div className="container mx-auto px-4 py-8">
-        {/* Search Bar */}
-        <div className="max-w-3xl mx-auto mb-8">
-          <form onSubmit={handleSearch} className="flex gap-2">
-            <div className="relative flex-1">
-              <Input
-                type="search"
-                placeholder="Buscar productos..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pr-10"
-              />
-              {searchQuery && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full"
-                  onClick={clearSearch}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-            <Button type="submit">
-              <SearchIcon className="h-4 w-4 mr-2" />
-              Buscar
-            </Button>
-          </form>
-        </div>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Búsqueda de Productos</h1>
 
-        {searchParams.get("q") && (
-          <>
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold mb-2">
-                Resultados para "{searchParams.get("q")}"
-              </h1>
-              <p className="text-muted-foreground">
-                {loading ? "Buscando..." : `${products.length} ${products.length === 1 ? 'producto encontrado' : 'productos encontrados'}`}
-              </p>
-            </div>
-
-            <StickyFilters sortBy={sortBy} onSortChange={setSortBy} />
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-20 lg:pb-0">
-              {/* Products Grid - Amazon-level responsive */}
-              <div className="lg:col-span-9 order-1">
-                {loading ? (
-                  <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                    {[...Array(8)].map((_, i) => (
-                      <div key={i} className="space-y-3">
-                        <Skeleton className="aspect-square w-full rounded-lg" />
-                        <Skeleton className="h-4 w-3/4" />
-                        <Skeleton className="h-4 w-1/2" />
-                      </div>
-                    ))}
-                  </div>
-                ) : products.length === 0 ? (
-                  <div className="text-center py-12">
-                    <SearchIcon className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                    <h2 className="text-2xl font-bold mb-2">No se encontraron resultados</h2>
-                    <p className="text-muted-foreground mb-6">
-                      Intenta con otros términos de búsqueda
-                    </p>
-                    <Button onClick={() => navigate("/")}>
-                      Explorar todos los productos
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                    {products.map((product, index) => (
-                      <>
-                        <ProductCard key={product.id} {...product} />
-                        {/* Sponsored Product every 6 items */}
-                        {(index + 1) % 6 === 0 && index < products.length - 1 && (
-                          <SponsoredProduct
-                            key={`sponsored-${index}`}
-                            title="Productos Recomendados"
-                            description="Basado en tu búsqueda, te sugerimos estos productos destacados"
-                            image="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=400"
-                            link="/featured"
-                          />
-                        )}
-                      </>
-                    ))}
-                  </div>
-                )}
+      <div className="relative mb-6">
+        <Input
+          type="text"
+          placeholder="Busca productos por nombre..."
+          className="w-full pr-12"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {searchQuery.length >= 3 && suggestions.length > 0 && (
+          <div className="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
+            {suggestions.map((suggestion, index) => (
+              <div
+                key={index}
+                className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm"
+                onClick={() => setSearchQuery(suggestion)}
+              >
+                {suggestion}
               </div>
-
-              {/* Featured Sidebar - Mobile: al final, Desktop: lateral */}
-              <div className="order-2 lg:col-span-3">
-                <FeaturedSidebar />
-              </div>
-            </div>
-          </>
-        )}
-
-        {!searchParams.get("q") && (
-          <div className="text-center py-16">
-            <SearchIcon className="h-20 w-20 mx-auto mb-6 opacity-50" />
-            <h1 className="text-3xl font-bold mb-4">Buscar Productos</h1>
-            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-              Encuentra exactamente lo que estás buscando. Usa palabras clave, marcas o categorías.
-            </p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              <Button variant="outline" onClick={() => setSearchQuery("electronics")}>
-                Electrónica
-              </Button>
-              <Button variant="outline" onClick={() => setSearchQuery("ropa")}>
-                Ropa
-              </Button>
-              <Button variant="outline" onClick={() => setSearchQuery("hogar")}>
-                Hogar
-              </Button>
-              <Button variant="outline" onClick={() => setSearchQuery("deportes")}>
-                Deportes
-              </Button>
-            </div>
+            ))}
           </div>
         )}
       </div>
 
-      <Footer />
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Filtros para desktop */}
+        <aside className="hidden lg:block lg:w-1/4">
+          {renderFilters()}
+        </aside>
+
+        {/* Filtros para mobile (Sheet/Drawer) */}
+        <div className="lg:hidden mb-4">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" className="w-full">
+                <Menu className="mr-2 h-4 w-4" /> Abrir Filtros
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-full sm:w-[300px] overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle>Filtros de Búsqueda</SheetTitle>
+                <SheetDescription>
+                  Ajusta los filtros para encontrar el producto perfecto.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="mt-6">
+                {renderFilters()}
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        {/* Resultados de búsqueda */}
+        <main className="flex-1">
+          {loading && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+              {Array.from({ length: 9 }).map((_, i) => (
+                <Card key={i} className="flex flex-col h-full">
+                  <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-t-md"></div>
+                  <CardContent className="p-4 flex-grow flex flex-col">
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-3"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mt-auto"></div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {error && <p className="text-red-500 text-center">{error}</p>}
+
+          {!loading && !error && results.length === 0 && (
+            <p className="text-center text-gray-500">No se encontraron productos que coincidan con tu búsqueda.</p>
+          )}
+
+          {!loading && !error && results.length > 0 && (
+            <>
+              <p className="text-sm text-gray-600 mb-4">
+                Mostrando {results.length} de {totalResults} resultados.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {results.map(renderProductCard)}
+              </div>
+
+              {totalPages > 1 && (
+                <div className="mt-8">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                          className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                        />
+                      </PaginationItem>
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                        <PaginationItem key={page}>
+                          <PaginationLink
+                            onClick={() => handlePageChange(page)}
+                            isActive={page === currentPage}
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                          className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
+          )}
+        </main>
+      </div>
     </div>
   );
 };
 
-export default Search;
+export default SearchPage;
