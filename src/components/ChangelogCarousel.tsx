@@ -32,27 +32,22 @@ export const ChangelogCarousel = ({ latestFeatures }: { latestFeatures?: Carouse
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   useEffect(() => {
-    if (!isAutoPlaying) return;
-
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % items.length);
-    }, 4000);
+    }, 5000);
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying, items.length]);
+  }, [items.length]);
 
   const goToNext = () => {
-    setIsAutoPlaying(false);
     setCurrentIndex((prev) => (prev + 1) % items.length);
   };
 
   const goToPrev = () => {
-    setIsAutoPlaying(false);
     setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
   };
 
   const goToSlide = (index: number) => {
-    setIsAutoPlaying(false);
     setCurrentIndex(index);
   };
 
@@ -70,9 +65,12 @@ export const ChangelogCarousel = ({ latestFeatures }: { latestFeatures?: Carouse
         </div>
 
         {/* Carousel Content */}
-        <div className="min-h-[120px] flex items-center justify-center">
-          <div className="text-center max-w-2xl mx-auto px-12 transition-all duration-500 animate-fade-in">
-            <div className="text-5xl mb-4">{items[currentIndex].icon}</div>
+        <div className="min-h-[120px] flex items-center justify-center overflow-hidden">
+          <div 
+            key={currentIndex}
+            className="text-center max-w-2xl mx-auto px-12 animate-fade-in"
+          >
+            <div className="text-5xl mb-4 animate-scale-in">{items[currentIndex].icon}</div>
             <h3 className="text-xl font-semibold mb-3 text-foreground">
               {items[currentIndex].title}
             </h3>

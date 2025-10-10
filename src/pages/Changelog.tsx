@@ -247,22 +247,13 @@ export default function Changelog() {
                               
                               {/* Customer Benefit - Main focus */}
                               <div className="mb-4 p-4 bg-primary/5 rounded-lg border-l-4 border-primary">
-                                <p className="text-base leading-relaxed text-foreground">
+                                <p className="text-base leading-relaxed text-foreground font-medium">
                                   {feature.customer_benefit || feature.description || 'Mejora en tu experiencia de compra'}
                                 </p>
                               </div>
 
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <Badge variant="default" className="text-sm">
-                                  {getImpactLabel(feature.impact)}
-                                </Badge>
-                                {feature.execution_mode === 'automatic' && (
-                                  <Badge variant="secondary" className="text-sm">
-                                    <Zap className="h-3 w-3 mr-1" />
-                                    Con IA
-                                  </Badge>
-                                )}
-                                <Badge variant="outline" className="text-sm">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline" className="text-xs">
                                   <Calendar className="h-3 w-3 mr-1" />
                                   {format(new Date(feature.completed_at), "d MMM yyyy", { locale: es })}
                                 </Badge>
