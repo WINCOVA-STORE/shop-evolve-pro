@@ -47,7 +47,7 @@ export default function Changelog() {
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchImplementedFeatures();
-  }, []);
+  }, [i18n.language]); // Re-fetch when language changes
 
   const fetchImplementedFeatures = async () => {
     try {
@@ -59,10 +59,11 @@ export default function Changelog() {
 
       if (error) throw error;
       
-      // Transform technical descriptions to customer benefits
+      // Transform technical descriptions to customer benefits and translate
       const enrichedData = await Promise.all(
         (data || []).map(async (feature) => {
           try {
+            // First get customer benefit in Spanish
             const { data: benefitData } = await supabase.functions.invoke('transform-to-customer-benefits', {
               body: {
                 featureName: feature.feature_name,
@@ -71,12 +72,31 @@ export default function Changelog() {
               }
             });
             
+            const customerBenefit = benefitData?.customerBenefit || feature.description;
+            
+            // Then translate to current language if not Spanish
+            if (i18n.language !== 'es') {
+              const { data: translatedData } = await supabase.functions.invoke('translate-feature', {
+                body: {
+                  featureName: feature.feature_name,
+                  description: customerBenefit,
+                  targetLanguage: i18n.language
+                }
+              });
+              
+              return {
+                ...feature,
+                feature_name: translatedData?.translatedName || feature.feature_name,
+                customer_benefit: translatedData?.translatedDescription || customerBenefit
+              };
+            }
+            
             return {
               ...feature,
-              customer_benefit: benefitData?.customerBenefit || feature.description
+              customer_benefit: customerBenefit
             };
           } catch (error) {
-            console.error('Error transforming feature:', error);
+            console.error('Error processing feature:', error);
             return {
               ...feature,
               customer_benefit: feature.description
