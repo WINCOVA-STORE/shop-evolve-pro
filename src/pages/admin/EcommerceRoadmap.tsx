@@ -71,6 +71,7 @@ const EcommerceRoadmap = () => {
   }, [filteredItems]);
 
   const phases = [
+    { number: 0, name: 'BASE IMPLEMENTADA', color: 'bg-gray-500' },
     { number: 1, name: 'FUNCIONALIDAD CRÍTICA', color: 'bg-red-500' },
     { number: 2, name: 'OPTIMIZACIÓN UX/CONVERSIÓN', color: 'bg-orange-500' },
     { number: 3, name: 'SOPORTE & ENGAGEMENT', color: 'bg-yellow-500' },
