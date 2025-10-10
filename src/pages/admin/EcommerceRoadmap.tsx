@@ -17,6 +17,8 @@ import { RoadmapProgressCard } from "@/components/admin/RoadmapProgressCard";
 import { RoadmapItemCard } from "@/components/admin/RoadmapItemCard";
 import { AITaskGenerator } from "@/components/admin/AITaskGenerator";
 import { RoadmapMetricsCard } from "@/components/admin/RoadmapMetricsCard";
+import { RoadmapLegend } from "@/components/admin/RoadmapLegend";
+import { ProjectOverviewPanel } from "@/components/admin/ProjectOverviewPanel";
 import { Link } from "react-router-dom";
 import { AddTaskDialog } from "@/components/admin/AddTaskDialog";
 import { AutoProgressDetector } from "@/components/admin/AutoProgressDetector";
@@ -118,6 +120,16 @@ const EcommerceRoadmap = () => {
               Volver
             </Button>
           </div>
+        </div>
+
+        {/* Legend */}
+        <div className="mt-6">
+          <RoadmapLegend />
+        </div>
+
+        {/* Project Overview */}
+        <div className="mt-6">
+          <ProjectOverviewPanel items={items} />
         </div>
 
         {/* Metrics Overview */}
