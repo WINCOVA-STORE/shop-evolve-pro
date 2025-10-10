@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/select";
 import { ArrowLeft, Filter, RefreshCw, Download } from "lucide-react";
 import { useRoadmapItems } from "@/hooks/useRoadmapItems";
+import { useRealtimePresence } from "@/hooks/useRealtimePresence";
+import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 import { RoadmapProgressCard } from "@/components/admin/RoadmapProgressCard";
 import { RoadmapItemCard } from "@/components/admin/RoadmapItemCard";
 import { AITaskGenerator } from "@/components/admin/AITaskGenerator";
@@ -20,6 +22,8 @@ import { RoadmapMetricsCard } from "@/components/admin/RoadmapMetricsCard";
 import { RoadmapLegend } from "@/components/admin/RoadmapLegend";
 import { ProjectOverviewPanel } from "@/components/admin/ProjectOverviewPanel";
 import { SmartAlertsPanel } from "@/components/admin/SmartAlertsPanel";
+import { RealtimePresenceIndicator } from "@/components/admin/RealtimePresenceIndicator";
+import { RealtimeNotificationsPanel } from "@/components/admin/RealtimeNotificationsPanel";
 import { Link } from "react-router-dom";
 import { AddTaskDialog } from "@/components/admin/AddTaskDialog";
 import { AutoProgressDetector } from "@/components/admin/AutoProgressDetector";
@@ -29,6 +33,8 @@ import { Footer } from "@/components/Footer";
 const EcommerceRoadmap = () => {
   const navigate = useNavigate();
   const { items, progress, loading, updateItemStatus, refetch } = useRoadmapItems();
+  const { onlineUsers } = useRealtimePresence('roadmap-room');
+  const { notifications, unreadCount, markAsRead, clearNotifications } = useRealtimeNotifications();
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterPhase, setFilterPhase] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');
@@ -105,6 +111,12 @@ const EcommerceRoadmap = () => {
             </p>
           </div>
           <div className="flex gap-2">
+            <RealtimeNotificationsPanel
+              notifications={notifications}
+              unreadCount={unreadCount}
+              onMarkAsRead={markAsRead}
+              onClear={clearNotifications}
+            />
             <Link to="/admin/roadmap-metrics">
               <Button variant="outline">
                 📊 Métricas Históricas
@@ -124,6 +136,13 @@ const EcommerceRoadmap = () => {
             </Button>
           </div>
         </div>
+
+        {/* Realtime Presence */}
+        {onlineUsers.length > 0 && (
+          <div className="mt-6">
+            <RealtimePresenceIndicator users={onlineUsers} />
+          </div>
+        )}
 
         {/* Smart Alerts - PRIORITY */}
         <div className="mt-6">
