@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Filter, RefreshCw, Download } from "lucide-react";
+import { ArrowLeft, Filter, RefreshCw, Download, FileDown } from "lucide-react";
 import { useRoadmapItems, RoadmapItem } from "@/hooks/useRoadmapItems";
 import { useRealtimePresence } from "@/hooks/useRealtimePresence";
 import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
@@ -32,6 +32,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { WincovaDeploymentDialog } from "@/components/admin/WincovaDeploymentDialog";
+import { useRoadmapPDFExport } from "@/hooks/useRoadmapPDFExport";
 
 const EcommerceRoadmap = () => {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ const EcommerceRoadmap = () => {
   const { onlineUsers } = useRealtimePresence('roadmap-room');
   const { notifications, unreadCount, markAsRead, clearNotifications } = useRealtimeNotifications();
   const { toast } = useToast();
+  const { generatePDF } = useRoadmapPDFExport();
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterPhase, setFilterPhase] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');
@@ -185,6 +187,23 @@ const EcommerceRoadmap = () => {
                 📊 Métricas Históricas
               </Button>
             </Link>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                toast({
+                  title: "📄 Generando PDF...",
+                  description: "Creando reporte ejecutivo profesional",
+                });
+                generatePDF(items, progress);
+                toast({
+                  title: "✅ PDF descargado",
+                  description: "Reporte ejecutivo listo para presentar",
+                });
+              }}
+            >
+              <FileDown className="mr-2 h-4 w-4" />
+              Exportar PDF Ejecutivo
+            </Button>
             <Button variant="outline" onClick={refetch}>
               <RefreshCw className="mr-2 h-4 w-4" />
               Actualizar
