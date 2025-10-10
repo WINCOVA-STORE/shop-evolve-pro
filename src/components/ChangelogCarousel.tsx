@@ -46,14 +46,14 @@ export const ChangelogCarousel = ({ latestFeatures }: { latestFeatures?: Carouse
   }, []);
 
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || items.length <= 1) return;
 
     const interval = setInterval(() => {
       goToNext();
-    }, 4000);
+    }, 5000);
 
     return () => clearInterval(interval);
-  }, [isPaused, goToNext]);
+  }, [isPaused, goToNext, items.length]);
 
   return (
     <div className="relative bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-xl p-8 mb-12 overflow-hidden">

@@ -6,11 +6,16 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { useTranslation } from "react-i18next";
 import { Heart, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Wishlist = () => {
   const { items, clearWishlist } = useWishlist();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

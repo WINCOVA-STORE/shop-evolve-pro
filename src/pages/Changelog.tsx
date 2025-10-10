@@ -32,6 +32,7 @@ export default function Changelog() {
   const [filter, setFilter] = useState<'all' | 'recent' | 'high-impact'>('all');
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     fetchImplementedFeatures();
   }, []);
 
@@ -144,7 +145,7 @@ export default function Changelog() {
     if (name.includes('perfil') || name.includes('profile') || name.includes('cuenta')) return '/profile';
     if (name.includes('recompensa') || name.includes('reward') || name.includes('puntos')) return '/profile';
     if (name.includes('referral') || name.includes('referir')) return '/refer-earn';
-    if (name.includes('track') || name.includes('rastreo')) return '/track';
+    if (name.includes('track') || name.includes('rastreo')) return '/track-order';
     if (name.includes('faq')) return '/faq';
     
     // Por descripción
