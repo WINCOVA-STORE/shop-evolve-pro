@@ -159,6 +159,25 @@ Formato de respuesta:
       console.error('Error guardando deployment:', deploymentError);
     }
 
+    // Si es modo automático, marcar la tarea como completada
+    if (task.execution_mode === 'automatic') {
+      const { error: updateError } = await supabase
+        .from('ecommerce_roadmap_items')
+        .update({
+          status: 'done',
+          completed_at: new Date().toISOString(),
+          notes: 'Completado automáticamente por Wincova AI',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', task.id);
+
+      if (updateError) {
+        console.error('Error actualizando estado de tarea:', updateError);
+      } else {
+        console.log('✅ Tarea marcada como completada automáticamente');
+      }
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
