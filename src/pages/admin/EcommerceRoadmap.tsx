@@ -30,6 +30,7 @@ import { AddTaskDialog } from "@/components/admin/AddTaskDialog";
 import { AutoProgressDetector } from "@/components/admin/AutoProgressDetector";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { supabase } from "@/integrations/supabase/client";
 
 const EcommerceRoadmap = () => {
   const navigate = useNavigate();
@@ -95,17 +96,52 @@ const EcommerceRoadmap = () => {
   ];
 
   const handleExecuteTask = async (task: RoadmapItem) => {
-    console.log('🚀 Executing task:', task.feature_name);
+    console.log('🚀 Ejecutando tarea con Wincova:', task);
     
-    // Update status to in_progress
-    await updateItemStatus(task.id, 'in_progress');
-    
-    // Here you would integrate with your AI code generation system
-    // For now, we'll just show it started
-    toast({
-      title: "🤖 IA trabajando",
-      description: `Generando código para: ${task.feature_name}`,
-    });
+    try {
+      // Actualizar estado a "en progreso"
+      await updateItemStatus(task.id, 'in_progress');
+      
+      toast({
+        title: "🤖 Wincova está trabajando",
+        description: "Analizando requisitos y generando código...",
+      });
+
+      // Llamar a la edge function
+      const { data, error } = await supabase.functions.invoke('wincova-execute-task', {
+        body: { task }
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        console.log('✅ Código generado:', data);
+        
+        toast({
+          title: "✅ Código generado exitosamente",
+          description: `${data.files?.length || 0} archivos listos para implementar`,
+          duration: 5000,
+        });
+
+        // Aquí podrías abrir un modal mostrando el código generado
+        // o guardar los resultados en la base de datos
+        
+      } else {
+        throw new Error(data.error || 'Error al generar código');
+      }
+    } catch (error) {
+      console.error('❌ Error ejecutando tarea:', error);
+      
+      // Revertir estado si hay error
+      await updateItemStatus(task.id, 'todo');
+      
+      toast({
+        title: "❌ Error",
+        description: error instanceof Error ? error.message : 'No se pudo ejecutar la tarea',
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
   };
 
   return (

@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.market-sources-health-check]
 verify_jwt = false
+
+[functions.wincova-execute-task]
+verify_jwt = true
