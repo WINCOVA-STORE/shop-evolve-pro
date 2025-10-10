@@ -28,6 +28,11 @@ import {
   Target,
   Zap,
   TrendingUp,
+  Link2,
+  AlertTriangle,
+  Timer,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react";
 import { RoadmapItem } from "@/hooks/useRoadmapItems";
 
@@ -153,7 +158,68 @@ export const RoadmapItemCard = ({ item, onStatusChange }: RoadmapItemCardProps) 
               <span>{item.files_affected.length} archivos</span>
             </div>
           )}
+          {item.metadata?.estimated_hours && (
+            <div className="flex items-center gap-1 text-blue-600">
+              <Timer className="h-3 w-3" />
+              <span>{item.metadata.estimated_hours}h estimadas</span>
+            </div>
+          )}
+          {item.metadata?.implementation_order && (
+            <div className="flex items-center gap-1 text-purple-600">
+              <ArrowRight className="h-3 w-3" />
+              <span>Orden: #{item.metadata.implementation_order}</span>
+            </div>
+          )}
+          {item.metadata?.generated_by_ai && (
+            <div className="flex items-center gap-1 text-indigo-600">
+              <Sparkles className="h-3 w-3" />
+              <span>AI</span>
+            </div>
+          )}
         </div>
+
+        {/* AI Analysis - Dependencies */}
+        {item.metadata?.dependencies && item.metadata.dependencies.length > 0 && (
+          <div className="p-2 bg-blue-50 dark:bg-blue-950/30 rounded-md space-y-1">
+            <div className="flex items-center gap-1 text-xs font-semibold text-blue-700 dark:text-blue-300">
+              <Link2 className="h-3 w-3" />
+              Dependencias detectadas:
+            </div>
+            <div className="text-xs text-blue-600 dark:text-blue-400 pl-4">
+              {item.metadata.dependencies.map((dep: string, idx: number) => (
+                <div key={idx}>• {dep}</div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* AI Analysis - Risks */}
+        {item.metadata?.risks && item.metadata.risks.length > 0 && (
+          <div className="p-2 bg-orange-50 dark:bg-orange-950/30 rounded-md space-y-1">
+            <div className="flex items-center gap-1 text-xs font-semibold text-orange-700 dark:text-orange-300">
+              <AlertTriangle className="h-3 w-3" />
+              Riesgos identificados:
+            </div>
+            <div className="text-xs text-orange-600 dark:text-orange-400 pl-4">
+              {item.metadata.risks.map((risk: string, idx: number) => (
+                <div key={idx}>• {risk}</div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* AI Recommendations */}
+        {item.metadata?.ai_analysis?.recommendations && (
+          <div className="p-2 bg-indigo-50 dark:bg-indigo-950/30 rounded-md">
+            <div className="flex items-center gap-1 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-1">
+              <Sparkles className="h-3 w-3" />
+              Recomendaciones AI:
+            </div>
+            <p className="text-xs text-indigo-600 dark:text-indigo-400">
+              {item.metadata.ai_analysis.recommendations}
+            </p>
+          </div>
+        )}
 
         {/* Status Selector */}
         <div className="flex items-center gap-2">

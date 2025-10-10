@@ -32,6 +32,7 @@ import AdminProject from "./pages/AdminProject";
 import WincovaDiscover from "./pages/WincovaDiscover";
 import WincovaDiagnosis from "./pages/WincovaDiagnosis";
 import EcommerceRoadmap from "./pages/admin/EcommerceRoadmap";
+import { RoadmapMetrics } from "./pages/admin/RoadmapMetrics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -69,6 +70,7 @@ const App = () => (
                   <Route path="/admin/shipping-settings" element={<ShippingSettings />} />
                   <Route path="/admin/rewards-settings" element={<RewardsSettings />} />
                   <Route path="/admin/ecommerce-roadmap" element={<EcommerceRoadmap />} />
+                  <Route path="/admin/roadmap-metrics" element={<RoadmapMetrics />} />
                   <Route path="/admin/project/*" element={<AdminProject />} />
                   <Route path="/wincova" element={<WincovaDiscover />} />
                   <Route path="/wincova/diagnosis/:diagnosisId" element={<WincovaDiagnosis />} />

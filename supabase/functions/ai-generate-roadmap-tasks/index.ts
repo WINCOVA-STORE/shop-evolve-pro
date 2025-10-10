@@ -91,12 +91,11 @@ REGLAS IMPORTANTES:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'google/gemini-2.5-flash-lite',
         messages: [
-          { role: 'system', content: 'Eres un experto en planificación de proyectos de e-commerce. Respondes ÚNICAMENTE con JSON válido.' },
+          { role: 'system', content: 'Experto en e-commerce. Responde solo JSON válido.' },
           { role: 'user', content: aiPrompt }
         ],
-        temperature: 0.7,
       }),
     });
 

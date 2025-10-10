@@ -17,6 +17,7 @@ import { RoadmapProgressCard } from "@/components/admin/RoadmapProgressCard";
 import { RoadmapItemCard } from "@/components/admin/RoadmapItemCard";
 import { AITaskGenerator } from "@/components/admin/AITaskGenerator";
 import { RoadmapMetricsCard } from "@/components/admin/RoadmapMetricsCard";
+import { Link } from "react-router-dom";
 import { AddTaskDialog } from "@/components/admin/AddTaskDialog";
 import { AutoProgressDetector } from "@/components/admin/AutoProgressDetector";
 import { Header } from "@/components/Header";
@@ -99,6 +100,11 @@ const EcommerceRoadmap = () => {
             </p>
           </div>
           <div className="flex gap-2">
+            <Link to="/admin/roadmap-metrics">
+              <Button variant="outline">
+                📊 Métricas Históricas
+              </Button>
+            </Link>
             <Button variant="outline" onClick={refetch}>
               <RefreshCw className="mr-2 h-4 w-4" />
               Actualizar

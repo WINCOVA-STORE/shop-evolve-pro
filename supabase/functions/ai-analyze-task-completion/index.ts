@@ -67,9 +67,9 @@ Responde en formato JSON con esta estructura EXACTA:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'google/gemini-2.5-flash-lite',
         messages: [
-          { role: 'system', content: 'Eres un experto en QA de software. Respondes ÚNICAMENTE con JSON válido.' },
+          { role: 'system', content: 'Experto QA. Responde solo JSON.' },
           { role: 'user', content: aiPrompt }
         ],
       }),
