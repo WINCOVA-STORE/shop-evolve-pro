@@ -20,13 +20,32 @@ serve(async (req) => {
 
     console.log('Generating image for feature:', featureName);
 
-    // Create a detailed prompt for image generation
-    const imagePrompt = `Create a modern, vibrant, minimalist illustration representing: ${featureName}. 
-    Context: ${description}. 
-    Style: Clean, professional e-commerce visual with Wincova brand colors (orange and modern tones), 
-    digital, friendly, focused on the customer benefit. 
-    No text in image, just visual representation. 
-    16:9 aspect ratio, high quality.`;
+    // Create a photorealistic prompt focused on emotional connection
+    const imagePrompt = `Create a professional, photorealistic image showing REAL PEOPLE using/benefiting from: ${featureName}.
+    
+    Customer benefit: ${description}
+    
+    CRITICAL REQUIREMENTS:
+    - PHOTOREALISTIC style (not illustration, not cartoon, not 3D render)
+    - Show REAL PEOPLE (diverse, happy, satisfied customers)
+    - People should be smiling, enjoying the experience, showing satisfaction
+    - Capture the EMOTIONAL benefit: relief, joy, convenience, empowerment
+    - Modern, clean e-commerce setting with warm orange/amber lighting (Wincova brand)
+    - Show the person actively using or enjoying the feature benefit
+    - Professional photography quality, natural lighting, authentic expressions
+    - Background should be clean, uncluttered, modern
+    - Convey: This makes my life easier and better
+    - 16:9 landscape format, high resolution
+    - NO text, logos, or graphics overlaid
+    - Focus on human connection and positive emotions
+    
+    Examples of good scenarios:
+    - Smart shopping: Person confidently selecting products with filters on tablet, satisfied smile
+    - Rewards: Happy customer checking phone showing points and benefits, excited expression
+    - Fast checkout: Relaxed person completing purchase easily, peaceful satisfaction
+    - Personalized experience: Customer discovering perfect products, delighted surprise
+    
+    The image should make viewers think: I want that experience! That looks so easy and satisfying!`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
