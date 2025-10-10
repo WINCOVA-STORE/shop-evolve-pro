@@ -65,34 +65,71 @@ serve(async (req) => {
 
 
     // GENERAR IMAGEN "DESPUÉS" basada en la imagen REAL del sitio
-    const afterPrompt = `You are a professional web design assistant creating an IMPROVED VERSION of this website screenshot.
+    const afterPrompt = `You are a professional web design expert creating a VISUAL SIMULATION showing how this website will look AFTER implementing a specific change.
 
-BEFORE IMAGE: This is the ACTUAL current state of ${siteUrl}
+🎯 YOUR MISSION: Make the improvement VISUALLY OBVIOUS and COMPELLING to sell the change to the client.
 
-SPECIFIC IMPROVEMENT TO APPLY:
-Title: ${changeTitle}
-Details: ${changeDescription}
-Category: ${category}
+BEFORE IMAGE: Current state of ${siteUrl}
 
-CRITICAL INSTRUCTIONS - FOLLOW EXACTLY:
-1. START with the exact screenshot provided (before image) - maintain EVERYTHING unchanged
-2. ONLY modify the specific element/aspect mentioned in "${changeTitle}"
-3. Apply the improvement described in: "${changeDescription}"
-4. KEEP 100% IDENTICAL: layout, structure, other colors, fonts, images, text, positioning, spacing
-5. The change must be REALISTIC and look like it was actually implemented by a developer
-6. NO artistic interpretation - this must look like a real before/after screenshot comparison
-7. Maintain photorealistic quality - must look like a real website screenshot
-8. Same viewport dimensions (1280x800), same browser chrome if visible
-9. The improvement should be CLEAR and VISIBLE but PROFESSIONAL
-10. Match the exact visual style and design language of the original site
+CHANGE TO IMPLEMENT:
+📌 Title: ${changeTitle}
+📋 Details: ${changeDescription}
+🏷️ Category: ${category}
 
-EXAMPLE:
-- If the change is "Add red CTA button", only the button color changes to red
-- If it's "Improve typography", only font styling changes
-- If it's "Add hero image", only add that specific image in that location
-- If it's "Change background to blue", only the background color changes to blue
+⚠️ CRITICAL INSTRUCTIONS - THIS IS A SALES TOOL:
 
-This is for a real client presentation - accuracy and professionalism are critical.`;
+1. **MAKE THE CHANGE OBVIOUS**: The client must immediately see the difference
+   - If improving titles/descriptions → Show MORE DESCRIPTIVE, KEYWORD-RICH text that's clearly better
+   - If improving CTAs → Make buttons MORE PROMINENT, better positioned, with action-oriented text
+   - If improving layout → Show CLEARER hierarchy, better spacing, improved flow
+   - If improving colors → Apply PROFESSIONAL color scheme that enhances conversion
+   - If improving images → Use HIGHER QUALITY, more relevant imagery
+
+2. **SPECIFIC IMPROVEMENTS BY CATEGORY**:
+   ${category === 'SEO' ? `
+   - Add/improve H1 tags with clear hierarchy
+   - Show meta descriptions and title tags more prominently
+   - Display structured data, breadcrumbs, or schema markup visually
+   - Enhance heading structure with proper H2, H3 tags
+   ` : ''}
+   ${category === 'Conversión' ? `
+   - Make CTAs larger, better colored, more prominent
+   - Add trust signals (testimonials, ratings, guarantees)
+   - Improve form layouts and reduce friction
+   - Show clearer value propositions
+   ` : ''}
+   ${category === 'Diseño' ? `
+   - Apply modern design patterns and trends
+   - Improve spacing, typography, and visual hierarchy
+   - Add professional color schemes
+   - Enhance visual appeal dramatically
+   ` : ''}
+
+3. **KEEP UNCHANGED**: Everything else must remain identical
+   - Same layout structure
+   - Same images (unless the change is specifically about images)
+   - Same general positioning
+   - Same overall design language
+
+4. **QUALITY REQUIREMENTS**:
+   - Photorealistic website screenshot quality
+   - Professional implementation (as if done by expert developer)
+   - 1280x800 viewport, same browser chrome if visible
+   - The change must look ACHIEVABLE and REALISTIC
+
+5. **PSYCHOLOGICAL IMPACT**:
+   - The client should think: "Wow, that's clearly better!"
+   - Make them feel they NEED this improvement
+   - Show the VALUE visually
+
+EXAMPLES OF GOOD CHANGES:
+❌ BAD: Showing identical image with no visible change
+✅ GOOD: "Improve meta descriptions" → Show longer, more descriptive, keyword-rich titles and descriptions
+✅ GOOD: "Add CTA button" → Show prominent, well-colored button in strategic location
+✅ GOOD: "Improve typography" → Show clearer, more readable fonts with better hierarchy
+✅ GOOD: "Enhance product images" → Show higher quality, better positioned product photos
+
+This simulation will be shown to a PAYING CLIENT who needs to be CONVINCED to invest in these changes. Make the improvement UNDENIABLY better.`;
 
     console.log("Generando imagen DESPUÉS basada en screenshot real...");
     console.log(`Aplicando cambio específico: ${changeTitle}`);

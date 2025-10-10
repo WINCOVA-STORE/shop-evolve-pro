@@ -1011,7 +1011,25 @@ export default function WincovaDiagnosis() {
                             <div className="space-y-4">
                               <div className="flex items-center justify-between mb-2">
                                 <h4 className="font-semibold">Tu Sitio Actual (Imagen Real)</h4>
-                                <Badge variant="secondary">Antes</Badge>
+                                <div className="flex gap-2">
+                                  <Badge variant="secondary">Antes</Badge>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={async () => {
+                                      await supabase
+                                        .from('wincova_changes')
+                                        .update({ before_image_url: null, after_image_url: null })
+                                        .eq('id', change.id);
+                                      await fetchChanges();
+                                      toast({ title: "Imagen eliminada", description: "Puedes subir una nueva" });
+                                    }}
+                                    className="h-7 px-2 text-destructive hover:text-destructive"
+                                  >
+                                    <X className="h-4 w-4 mr-1" />
+                                    Eliminar
+                                  </Button>
+                                </div>
                               </div>
                               <div className="relative group cursor-pointer" onClick={() => setExpandedImage({ url: change.before_image_url, type: 'before' })}>
                                 <img 
