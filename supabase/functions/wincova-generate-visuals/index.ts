@@ -65,30 +65,37 @@ serve(async (req) => {
 
 
     // GENERAR IMAGEN "DESPUÉS" basada en la imagen REAL del sitio
-    const afterPrompt = `You are creating an IMPROVED VERSION of this exact website screenshot.
+    const afterPrompt = `You are a professional web design assistant creating an IMPROVED VERSION of this website screenshot.
 
 BEFORE IMAGE: This is the ACTUAL current state of ${siteUrl}
 
-TASK: Apply ONLY this specific improvement:
-Change: ${changeTitle}
+SPECIFIC IMPROVEMENT TO APPLY:
+Title: ${changeTitle}
 Details: ${changeDescription}
 Category: ${category}
 
-CRITICAL REQUIREMENTS:
-1. Start from the REAL screenshot provided (the before image)
-2. Apply ONLY the specific change described - nothing else
-3. Keep layout, colors, branding IDENTICAL to the original
-4. Make the improvement look PROFESSIONAL and REALISTIC
-5. The result must look like a REAL screenshot, not AI art
-6. Show clear visual difference in the improved area
-7. Maintain photorealistic quality
-8. Same browser UI, same dimensions (1280x800)
-9. The improvement should be obvious but subtle
-10. Must be recognizable as the same site, just improved
+CRITICAL INSTRUCTIONS - FOLLOW EXACTLY:
+1. START with the exact screenshot provided (before image) - maintain EVERYTHING unchanged
+2. ONLY modify the specific element/aspect mentioned in "${changeTitle}"
+3. Apply the improvement described in: "${changeDescription}"
+4. KEEP 100% IDENTICAL: layout, structure, other colors, fonts, images, text, positioning, spacing
+5. The change must be REALISTIC and look like it was actually implemented by a developer
+6. NO artistic interpretation - this must look like a real before/after screenshot comparison
+7. Maintain photorealistic quality - must look like a real website screenshot
+8. Same viewport dimensions (1280x800), same browser chrome if visible
+9. The improvement should be CLEAR and VISIBLE but PROFESSIONAL
+10. Match the exact visual style and design language of the original site
 
-This is a REAL before/after comparison for a client - it must be accurate and professional.`;
+EXAMPLE:
+- If the change is "Add red CTA button", only the button color changes to red
+- If it's "Improve typography", only font styling changes
+- If it's "Add hero image", only add that specific image in that location
+- If it's "Change background to blue", only the background color changes to blue
+
+This is for a real client presentation - accuracy and professionalism are critical.`;
 
     console.log("Generando imagen DESPUÉS basada en screenshot real...");
+    console.log(`Aplicando cambio específico: ${changeTitle}`);
 
     const afterResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

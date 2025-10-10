@@ -51,6 +51,7 @@ import {
   ChevronUp,
   ChevronDown,
   AlertCircle,
+  Maximize2,
 } from "lucide-react";
 
 interface Diagnosis {
@@ -101,6 +102,7 @@ export default function WincovaDiagnosis() {
   const [collapsedImages, setCollapsedImages] = useState<Set<string>>(new Set());
   const [showRoiExplanation, setShowRoiExplanation] = useState(false);
   const [isDragging, setIsDragging] = useState<string | null>(null);
+  const [expandedImage, setExpandedImage] = useState<{ url: string; type: 'before' | 'after' } | null>(null);
   const changeRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const dropZoneRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -186,8 +188,13 @@ export default function WincovaDiagnosis() {
       
       toast({
         title: "✅ Imagen cargada",
-        description: "Ahora genera la versión mejorada"
+        description: "Generando simulación con los cambios propuestos..."
       });
+
+      // Auto-generar el "después" inmediatamente
+      setTimeout(() => {
+        handleGenerateVisuals(changeId);
+      }, 500);
 
     } catch (error: any) {
       console.error('Error subiendo imagen:', error);
@@ -944,7 +951,7 @@ export default function WincovaDiagnosis() {
                                 ) : (
                                   <>
                                     <Zap className="h-5 w-5 mr-2" />
-                                    Capturar Automáticamente
+                                    Capturar y Simular Cambios Automáticamente
                                   </>
                                 )}
                               </Button>
@@ -954,7 +961,7 @@ export default function WincovaDiagnosis() {
                                   <span className="w-full border-t" />
                                 </div>
                                 <div className="relative flex justify-center text-xs uppercase">
-                                  <span className="bg-muted/30 px-2 text-muted-foreground">o sube tu imagen</span>
+                                  <span className="bg-muted/30 px-2 text-muted-foreground">o sube imagen de tu sitio</span>
                                 </div>
                               </div>
 
@@ -1003,31 +1010,40 @@ export default function WincovaDiagnosis() {
                           ) : !change.after_image_url ? (
                             <div className="space-y-4">
                               <div className="flex items-center justify-between mb-2">
-                                <h4 className="font-semibold">Imagen Actual de Tu Sitio (REAL)</h4>
+                                <h4 className="font-semibold">Tu Sitio Actual (Imagen Real)</h4>
                                 <Badge variant="secondary">Antes</Badge>
                               </div>
-                              <img 
-                                src={change.before_image_url} 
-                                alt="Estado actual" 
-                                className="w-full rounded-lg border shadow-sm"
-                              />
+                              <div className="relative group cursor-pointer" onClick={() => setExpandedImage({ url: change.before_image_url, type: 'before' })}>
+                                <img 
+                                  src={change.before_image_url} 
+                                  alt="Estado actual" 
+                                  className="w-full rounded-lg border shadow-sm"
+                                />
+                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                  <Maximize2 className="h-8 w-8 text-white" />
+                                </div>
+                              </div>
                               <Button
                                 onClick={() => handleGenerateVisuals(change.id)}
                                 disabled={generatingVisuals === change.id}
                                 className="w-full"
+                                size="lg"
                               >
                                 {generatingVisuals === change.id ? (
                                   <>
-                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    Generando Versión Mejorada con IA...
+                                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                                    Aplicando Cambios Propuestos con IA...
                                   </>
                                 ) : (
                                   <>
-                                    <Zap className="h-4 w-4 mr-2" />
-                                    Generar Versión Mejorada con IA
+                                    <Sparkles className="h-5 w-5 mr-2" />
+                                    Generar Simulación con los Cambios Propuestos
                                   </>
                                 )}
                               </Button>
+                              <p className="text-xs text-center text-muted-foreground">
+                                La IA aplicará "{change.title}" sobre tu imagen real
+                              </p>
                             </div>
                           ) : (
                             <div className="space-y-4">
@@ -1058,26 +1074,36 @@ export default function WincovaDiagnosis() {
                                     <div className="flex items-center justify-between">
                                       <Badge variant="secondary">Antes (Real)</Badge>
                                     </div>
-                                    <img 
-                                      src={change.before_image_url} 
-                                      alt="Estado actual" 
-                                      className="w-full rounded-lg border shadow-sm"
-                                    />
+                                    <div className="relative group cursor-pointer" onClick={() => setExpandedImage({ url: change.before_image_url, type: 'before' })}>
+                                      <img 
+                                        src={change.before_image_url} 
+                                        alt="Estado actual" 
+                                        className="w-full rounded-lg border shadow-sm"
+                                      />
+                                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                        <Maximize2 className="h-8 w-8 text-white" />
+                                      </div>
+                                    </div>
                                     <p className="text-xs text-muted-foreground text-center">
                                       Imagen real de tu sitio actual
                                     </p>
                                   </div>
                                   <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                      <Badge className="bg-green-500">Después (Con mejora)</Badge>
+                                      <Badge className="bg-green-500">Después (Simulación IA)</Badge>
                                     </div>
-                                    <img 
-                                      src={change.after_image_url} 
-                                      alt="Con mejora aplicada" 
-                                      className="w-full rounded-lg border shadow-sm"
-                                    />
+                                    <div className="relative group cursor-pointer" onClick={() => setExpandedImage({ url: change.after_image_url, type: 'after' })}>
+                                      <img 
+                                        src={change.after_image_url} 
+                                        alt="Con mejora aplicada" 
+                                        className="w-full rounded-lg border shadow-sm"
+                                      />
+                                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                        <Maximize2 className="h-8 w-8 text-white" />
+                                      </div>
+                                    </div>
                                     <p className="text-xs text-muted-foreground text-center">
-                                      Simulación IA del cambio aplicado
+                                      Simulación IA aplicando: "{change.title}"
                                     </p>
                                   </div>
                                 </div>
@@ -1200,6 +1226,34 @@ export default function WincovaDiagnosis() {
                     <li>• Cada recomendación está respaldada por investigación verificable</li>
                   </ul>
                 </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Image Expansion Dialog */}
+        <Dialog open={!!expandedImage} onOpenChange={() => setExpandedImage(null)}>
+          <DialogContent className="max-w-5xl max-h-[90vh] p-0">
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 z-10 bg-background/80 backdrop-blur"
+                onClick={() => setExpandedImage(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+              <div className="p-6">
+                <div className="mb-4">
+                  <Badge variant={expandedImage?.type === 'before' ? 'secondary' : 'default'} className="text-lg px-4 py-1">
+                    {expandedImage?.type === 'before' ? 'Antes (Imagen Real)' : 'Después (Simulación IA)'}
+                  </Badge>
+                </div>
+                <img 
+                  src={expandedImage?.url || ''} 
+                  alt={expandedImage?.type === 'before' ? 'Imagen real del sitio' : 'Simulación con cambios aplicados'}
+                  className="w-full rounded-lg"
+                />
               </div>
             </div>
           </DialogContent>
