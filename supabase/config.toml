@@ -25,10 +25,13 @@ verify_jwt = false
 verify_jwt = true
 
 [functions.wincova-diagnose]
-verify_jwt = true
+verify_jwt = false
 
 [functions.wincova-compliance-check]
-verify_jwt = true
+verify_jwt = false
 
 [functions.wincova-generate-visuals]
-verify_jwt = true
+verify_jwt = false
+
+[functions.market-sources-health-check]
+verify_jwt = false

@@ -21,19 +21,24 @@ serve(async (req) => {
 
     console.log('🔍 Iniciando diagnóstico para:', site_url);
 
-    // Crear registro de diagnóstico inicial
-    const { data: { user } } = await supabase.auth.getUser(
-      req.headers.get('Authorization')?.replace('Bearer ', '') ?? ''
-    );
-
-    if (!user) {
-      throw new Error('Usuario no autenticado');
+    // Intentar obtener usuario autenticado (opcional)
+    let userId = null;
+    try {
+      const authHeader = req.headers.get('Authorization');
+      if (authHeader) {
+        const { data: { user } } = await supabase.auth.getUser(
+          authHeader.replace('Bearer ', '')
+        );
+        userId = user?.id || null;
+      }
+    } catch (error) {
+      console.log('ℹ️  Usuario no autenticado - continuando con diagnóstico público');
     }
 
     const { data: diagnosis, error: diagnosisError } = await supabase
       .from('wincova_diagnoses')
       .insert({
-        user_id: user.id,
+        user_id: userId, // NULL si no está autenticado
         client_name,
         site_url,
         status: 'analyzing',
