@@ -282,6 +282,8 @@ export type Database = {
           completed_at: string | null
           completed_by: string | null
           created_at: string
+          customer_facing_description: string | null
+          customer_facing_title: string | null
           description: string | null
           effort: string
           execution_mode: string | null
@@ -292,6 +294,7 @@ export type Database = {
           item_number: string
           metadata: Json | null
           notes: string | null
+          notify_customers: boolean | null
           phase_name: string
           phase_number: number
           priority: string
@@ -308,6 +311,8 @@ export type Database = {
           completed_at?: string | null
           completed_by?: string | null
           created_at?: string
+          customer_facing_description?: string | null
+          customer_facing_title?: string | null
           description?: string | null
           effort?: string
           execution_mode?: string | null
@@ -318,6 +323,7 @@ export type Database = {
           item_number: string
           metadata?: Json | null
           notes?: string | null
+          notify_customers?: boolean | null
           phase_name: string
           phase_number: number
           priority?: string
@@ -334,6 +340,8 @@ export type Database = {
           completed_at?: string | null
           completed_by?: string | null
           created_at?: string
+          customer_facing_description?: string | null
+          customer_facing_title?: string | null
           description?: string | null
           effort?: string
           execution_mode?: string | null
@@ -344,6 +352,7 @@ export type Database = {
           item_number?: string
           metadata?: Json | null
           notes?: string | null
+          notify_customers?: boolean | null
           phase_name?: string
           phase_number?: number
           priority?: string
