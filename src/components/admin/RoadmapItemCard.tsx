@@ -33,18 +33,22 @@ import {
   Timer,
   ArrowRight,
   Sparkles,
+  Play,
 } from "lucide-react";
 import { RoadmapItem } from "@/hooks/useRoadmapItems";
+import { ExecuteTaskDialog } from "@/components/admin/ExecuteTaskDialog";
 
 interface RoadmapItemCardProps {
   item: RoadmapItem;
   onStatusChange: (itemId: string, status: RoadmapItem['status'], notes?: string) => Promise<any>;
+  onExecute?: (task: RoadmapItem) => Promise<void>;
 }
 
-export const RoadmapItemCard = ({ item, onStatusChange }: RoadmapItemCardProps) => {
+export const RoadmapItemCard = ({ item, onStatusChange, onExecute }: RoadmapItemCardProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [notes, setNotes] = useState(item.notes || '');
   const [showDialog, setShowDialog] = useState(false);
+  const [showExecuteDialog, setShowExecuteDialog] = useState(false);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -139,9 +143,19 @@ export const RoadmapItemCard = ({ item, onStatusChange }: RoadmapItemCardProps) 
             </div>
           </div>
 
-          {/* Status Icon */}
+          {/* Status Icon and Execute Button */}
           <div className="flex items-center gap-2">
             {getStatusIcon(item.status)}
+            {onExecute && item.status === 'todo' && (
+              <Button
+                size="sm"
+                onClick={() => setShowExecuteDialog(true)}
+                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+              >
+                <Play className="h-3 w-3 mr-1" />
+                Ejecutar
+              </Button>
+            )}
           </div>
         </div>
 
@@ -326,6 +340,16 @@ export const RoadmapItemCard = ({ item, onStatusChange }: RoadmapItemCardProps) 
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Execute Task Dialog */}
+        {onExecute && (
+          <ExecuteTaskDialog
+            task={item}
+            open={showExecuteDialog}
+            onOpenChange={setShowExecuteDialog}
+            onExecute={onExecute}
+          />
+        )}
       </CardContent>
     </Card>
   );

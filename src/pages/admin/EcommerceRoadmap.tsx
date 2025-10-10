@@ -12,9 +12,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ArrowLeft, Filter, RefreshCw, Download } from "lucide-react";
-import { useRoadmapItems } from "@/hooks/useRoadmapItems";
+import { useRoadmapItems, RoadmapItem } from "@/hooks/useRoadmapItems";
 import { useRealtimePresence } from "@/hooks/useRealtimePresence";
 import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
+import { useToast } from "@/hooks/use-toast";
 import { RoadmapProgressCard } from "@/components/admin/RoadmapProgressCard";
 import { RoadmapItemCard } from "@/components/admin/RoadmapItemCard";
 import { AITaskGenerator } from "@/components/admin/AITaskGenerator";
@@ -35,6 +36,7 @@ const EcommerceRoadmap = () => {
   const { items, progress, loading, updateItemStatus, refetch } = useRoadmapItems();
   const { onlineUsers } = useRealtimePresence('roadmap-room');
   const { notifications, unreadCount, markAsRead, clearNotifications } = useRealtimeNotifications();
+  const { toast } = useToast();
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterPhase, setFilterPhase] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');
@@ -91,6 +93,20 @@ const EcommerceRoadmap = () => {
     { number: 4, name: 'ADMIN & ANALYTICS', color: 'bg-green-500' },
     { number: 5, name: 'OPTIMIZACIÓN & GO-LIVE', color: 'bg-blue-500' },
   ];
+
+  const handleExecuteTask = async (task: RoadmapItem) => {
+    console.log('🚀 Executing task:', task.feature_name);
+    
+    // Update status to in_progress
+    await updateItemStatus(task.id, 'in_progress');
+    
+    // Here you would integrate with your AI code generation system
+    // For now, we'll just show it started
+    toast({
+      title: "🤖 IA trabajando",
+      description: `Generando código para: ${task.feature_name}`,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -329,6 +345,7 @@ const EcommerceRoadmap = () => {
                             key={item.id}
                             item={item}
                             onStatusChange={updateItemStatus}
+                            onExecute={handleExecuteTask}
                           />
                         ))}
                     </div>
@@ -369,6 +386,7 @@ const EcommerceRoadmap = () => {
                           key={item.id}
                           item={item}
                           onStatusChange={updateItemStatus}
+                          onExecute={handleExecuteTask}
                         />
                       ))}
                   </div>
