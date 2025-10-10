@@ -158,6 +158,47 @@ export const getDataDisclaimer = () => {
 };
 
 /**
+ * SISTEMA DE VERIFICACIÓN DE SALUD DE FUENTES
+ * Integrado con la tabla wincova_market_sources_health en Supabase
+ * Se ejecuta automáticamente cada 6 horas mediante cron job
+ */
+export const getSourceHealthStatus = async () => {
+  // Esta función puede ser llamada desde componentes React para mostrar el estado
+  // de las fuentes en tiempo real
+  try {
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(
+      import.meta.env.VITE_SUPABASE_URL,
+      import.meta.env.VITE_SUPABASE_ANON_KEY
+    );
+
+    const { data, error } = await supabase
+      .from('wincova_market_sources_health')
+      .select('*')
+      .order('last_check_at', { ascending: false });
+
+    if (error) throw error;
+
+    return {
+      sources: data,
+      allHealthy: data?.every(s => s.status === 'active') ?? false,
+      lastCheck: data?.[0]?.last_check_at,
+      hasWarnings: data?.some(s => s.status === 'warning') ?? false,
+      hasErrors: data?.some(s => s.status === 'error') ?? false
+    };
+  } catch (error) {
+    console.error('Error fetching source health:', error);
+    return {
+      sources: [],
+      allHealthy: false,
+      lastCheck: null,
+      hasWarnings: false,
+      hasErrors: false
+    };
+  }
+};
+
+/**
  * OBTENER FUENTE ACTUALIZADA PARA UI
  */
 export const getSourceDisplay = (sourceKey: keyof typeof MARKET_SOURCES) => {

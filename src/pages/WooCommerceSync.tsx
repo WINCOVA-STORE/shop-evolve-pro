@@ -166,7 +166,7 @@ const WooCommerceSync = () => {
             <div>
               <h1 className="text-3xl font-bold">WooCommerce Synchronization</h1>
               <p className="text-muted-foreground mt-2">
-                Sync products from your WooCommerce store to Lovable
+                Sync products from your WooCommerce store to Wincova
               </p>
             </div>
             <Button 

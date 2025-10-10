@@ -59,12 +59,12 @@ export const ManualVsAIComparison = ({
   };
   
   // TIEMPOS BASADOS EN EXPERIENCIA REAL
-  // Nuestros tiempos con Lovable + IA vs. tiempos tradicionales verificables
+  // Nuestros tiempos con ecosistema Wincova + IA vs. tiempos tradicionales verificables
   const manualTime = category === 'SEO' ? '2-3 semanas' : 
                      category === 'Diseño' ? '3-4 semanas' :
                      category === 'Performance' ? '1-2 semanas' : '2-3 semanas';
   
-  // TIEMPOS REALES CON WINCOVA (verificables en nuestros proyectos)
+  // TIEMPOS REALES CON AGENTE IA WINCOVA (verificables en nuestros proyectos)
   const aiTime = category === 'SEO' ? '24-48 horas' :
                  category === 'Diseño' ? '48-72 horas' :
                  category === 'Performance' ? '12-24 horas' : '24-48 horas';
@@ -281,7 +281,7 @@ export const ManualVsAIComparison = ({
                             <Info className="h-3 w-3" />
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Automatizado con Lovable + IA
+                            Automatizado con ecosistema Wincova + IA
                           </p>
                         </div>
                       </TooltipTrigger>
