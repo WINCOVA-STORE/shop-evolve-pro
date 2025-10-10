@@ -21,88 +21,42 @@ serve(async (req) => {
 
     console.log(`Generating REAL visuals for change: ${changeTitle}`);
 
-    // ESTRATEGIA 1: Intentar captura real con API de screenshots
-    // Usamos screenshotapi.net que es más confiable
+    // ESTRATEGIA ÚNICA: Solo screenshots REALES
+    // NO generamos imágenes con IA para el "antes"
     let beforeImageUrl: string;
     
     console.log("Capturando screenshot REAL del sitio...");
-    try {
-      // API de screenshots más confiable (screenshotapi.net)
-      const screenshotUrl = `https://shot.screenshotapi.net/screenshot`;
-      const params = new URLSearchParams({
-        url: siteUrl,
-        output: 'image',
-        file_type: 'png',
-        wait_for_event: 'load',
-        delay: '2000',
-        full_page: 'false',
-        fresh: 'true',
-        width: '1280',
-        height: '800',
-      });
+    
+    // API de screenshots (screenshotapi.net)
+    const screenshotUrl = `https://shot.screenshotapi.net/screenshot`;
+    const params = new URLSearchParams({
+      url: siteUrl,
+      output: 'image',
+      file_type: 'png',
+      wait_for_event: 'load',
+      delay: '2000',
+      full_page: 'false',
+      fresh: 'true',
+      width: '1280',
+      height: '800',
+    });
 
-      const screenshotResponse = await fetch(`${screenshotUrl}?${params}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'image/png',
-        },
-      });
+    const screenshotResponse = await fetch(`${screenshotUrl}?${params}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'image/png',
+      },
+    });
 
-      if (screenshotResponse.ok) {
-        const arrayBuffer = await screenshotResponse.arrayBuffer();
-        const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-        beforeImageUrl = `data:image/png;base64,${base64}`;
-        console.log("✅ Screenshot REAL capturado exitosamente del sitio actual");
-      } else {
-        throw new Error(`Screenshot API respondió con: ${screenshotResponse.status}`);
-      }
-    } catch (screenshotError) {
-      console.warn("⚠️ Screenshot API falló, usando método alternativo:", screenshotError);
-      
-      // ESTRATEGIA 2: Crear representación ultra-realista con IA
-      // Esta estrategia crea una imagen que parece screenshot pero está optimizada
-      const beforePrompt = `You are capturing a REAL screenshot of this exact website: ${siteUrl}
-
-CRITICAL INSTRUCTIONS:
-1. This must look EXACTLY like a real screenshot taken from a browser
-2. Show the ACTUAL current state with this problem: ${changeDescription}
-3. Category context: ${category}
-4. Include browser UI (address bar showing ${siteUrl}, tabs, buttons)
-5. Desktop view at 1280x800 resolution
-6. Make it look like a PHOTOGRAPH of a real computer screen showing this website
-7. Show realistic UI elements, text, images, buttons, navigation
-8. The design should match what ${siteUrl} actually looks like
-9. Professional, clean, and realistic appearance
-10. Include realistic shadows, anti-aliasing, and screen texture
-
-Style: Photorealistic browser screenshot, not a mockup or design concept`;
-
-      const beforeResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash-image-preview",
-          messages: [{ role: "user", content: beforePrompt }],
-          modalities: ["image", "text"]
-        })
-      });
-
-      if (!beforeResponse.ok) {
-        throw new Error(`Failed to generate realistic before image: ${beforeResponse.status}`);
-      }
-
-      const beforeData = await beforeResponse.json();
-      beforeImageUrl = beforeData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-      
-      if (!beforeImageUrl) {
-        throw new Error("No realistic before image generated");
-      }
-      
-      console.log("✅ Imagen ultra-realista del estado actual generada");
+    if (!screenshotResponse.ok) {
+      // Si falla, devolver error para que el cliente pueda subir su imagen
+      throw new Error(`NO_SCREENSHOT: No se pudo capturar el screenshot del sitio. El cliente debe subir una imagen real de su sitio.`);
     }
+
+    const arrayBuffer = await screenshotResponse.arrayBuffer();
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    beforeImageUrl = `data:image/png;base64,${base64}`;
+    console.log("✅ Screenshot REAL capturado exitosamente");
 
 
     // GENERAR IMAGEN "DESPUÉS" basada en la imagen REAL del sitio
