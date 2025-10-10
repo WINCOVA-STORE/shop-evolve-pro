@@ -67,6 +67,11 @@ export const Footer = () => {
             <h3 className="font-semibold mb-4">{t('footer.customer_service')}</h3>
             <ul className="space-y-2 text-sm">
               <li>
+                <Link to="/changelog" className="hover:text-primary transition-colors">
+                  ✨ Novedades
+                </Link>
+              </li>
+              <li>
                 <Link to="/profile" className="hover:text-primary transition-colors">
                   {t('footer.my_account')}
                 </Link>

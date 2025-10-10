@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { CategoryCard } from "@/components/CategoryCard";
 import { FeaturedSidebar } from "@/components/FeaturedSidebar";
+import { ChangelogBanner } from "@/components/ChangelogBanner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -96,6 +97,11 @@ const Index = () => {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Changelog Banner */}
+      <section className="container mx-auto px-4 py-8">
+        <ChangelogBanner />
       </section>
 
       {/* Categories */}

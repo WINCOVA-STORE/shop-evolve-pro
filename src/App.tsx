@@ -33,6 +33,7 @@ import WincovaDiscover from "./pages/WincovaDiscover";
 import WincovaDiagnosis from "./pages/WincovaDiagnosis";
 import EcommerceRoadmap from "./pages/admin/EcommerceRoadmap";
 import { RoadmapMetrics } from "./pages/admin/RoadmapMetrics";
+import Changelog from "./pages/Changelog";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -74,6 +75,7 @@ const App = () => (
                   <Route path="/admin/project/*" element={<AdminProject />} />
                   <Route path="/wincova" element={<WincovaDiscover />} />
                   <Route path="/wincova/diagnosis/:diagnosisId" element={<WincovaDiagnosis />} />
+                  <Route path="/changelog" element={<Changelog />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
