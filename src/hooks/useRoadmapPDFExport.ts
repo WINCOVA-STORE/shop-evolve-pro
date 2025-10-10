@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { format } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
 
 interface RoadmapItem {
   phase_number: number;
@@ -27,46 +28,73 @@ interface RoadmapMetrics {
 }
 
 export const useRoadmapPDFExport = () => {
-  const generatePDF = (items: RoadmapItem[], metrics: RoadmapMetrics) => {
+  const generatePDF = async (items: RoadmapItem[], metrics: RoadmapMetrics) => {
+    // Generar insights con IA
+    const { data: insightsData } = await supabase.functions.invoke('generate-roadmap-insights', {
+      body: { items, metrics }
+    });
+
+    const aiAnalysis = insightsData?.analysis || "Análisis no disponible";
+    
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     let yPosition = 20;
+    
+    // Colores del branding Wincova (tuplas específicas)
+    const WINCOVA_ORANGE: [number, number, number] = [243, 156, 18]; // #F39C12
+    const WINCOVA_BLUE: [number, number, number] = [15, 23, 42]; // #0F172A
+    const LIGHT_GRAY: [number, number, number] = [249, 250, 251];
+    const SUCCESS_GREEN: [number, number, number] = [16, 185, 129];
+    const WARNING_YELLOW: [number, number, number] = [251, 191, 36];
+    const DANGER_RED: [number, number, number] = [239, 68, 68];
 
-    // === PORTADA EJECUTIVA ===
-    // Gradiente simulado con rectángulos
-    doc.setFillColor(102, 126, 234); // Primary color
-    doc.rect(0, 0, pageWidth, 80, "F");
+    // === PORTADA EJECUTIVA CON BRANDING ===
+    // Gradiente naranja de Wincova
+    const [r1, g1, b1] = WINCOVA_ORANGE;
+    doc.setFillColor(r1, g1, b1);
+    doc.rect(0, 0, pageWidth, 90, "F");
+    
+    // Acento azul oscuro
+    const [r2, g2, b2] = WINCOVA_BLUE;
+    doc.setFillColor(r2, g2, b2);
+    doc.rect(0, 90, pageWidth, 15, "F");
     
     // Logo/Título principal
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(32);
+    doc.setFontSize(38);
     doc.setFont("helvetica", "bold");
-    doc.text("WINCOVA STORE", pageWidth / 2, 40, { align: "center" });
+    doc.text("WINCOVA STORE", pageWidth / 2, 35, { align: "center" });
     
-    doc.setFontSize(18);
+    doc.setFontSize(22);
     doc.setFont("helvetica", "normal");
-    doc.text("Roadmap Ejecutivo del Proyecto", pageWidth / 2, 55, { align: "center" });
+    doc.text("Reporte Ejecutivo del Roadmap", pageWidth / 2, 55, { align: "center" });
+    
+    // Badge de progreso
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${metrics.progress_percentage.toFixed(0)}% Completado`, pageWidth / 2, 75, { align: "center" });
     
     // Fecha del reporte
     doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
     doc.text(
       `Generado el ${format(new Date(), "dd/MM/yyyy 'a las' HH:mm")}`,
       pageWidth / 2,
-      70,
+      97,
       { align: "center" }
     );
 
     // Reset color de texto
     doc.setTextColor(0, 0, 0);
-    yPosition = 100;
+    yPosition = 120;
 
     // === RESUMEN EJECUTIVO ===
-    doc.setFontSize(16);
+    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(102, 126, 234);
-    doc.text("📊 Resumen Ejecutivo", 20, yPosition);
-    yPosition += 10;
+    doc.setTextColor(...WINCOVA_ORANGE);
+    doc.text("📊 Panel de Control Ejecutivo", 20, yPosition);
+    yPosition += 12;
 
     // Métricas clave en cards
     const cardWidth = (pageWidth - 50) / 4;
@@ -78,31 +106,31 @@ export const useRoadmapPDFExport = () => {
       {
         label: "Total Tareas",
         value: metrics.total_items.toString(),
-        color: [102, 126, 234], // Primary
+        color: WINCOVA_BLUE,
       },
       {
         label: "Completadas",
         value: metrics.completed_items.toString(),
-        color: [16, 185, 129], // Green
+        color: SUCCESS_GREEN,
       },
       {
         label: "En Progreso",
         value: metrics.in_progress_items.toString(),
-        color: [251, 191, 36], // Yellow
+        color: WARNING_YELLOW,
       },
       {
         label: "Bloqueadas",
         value: metrics.blocked_items.toString(),
-        color: [239, 68, 68], // Red
+        color: DANGER_RED,
       },
     ];
 
     metricsData.forEach((metric, index) => {
       const xPos = 20 + index * (cardWidth + cardSpacing);
       
-      // Card background
-      doc.setFillColor(249, 250, 251);
-      doc.roundedRect(xPos, cardStartY, cardWidth, cardHeight, 3, 3, "F");
+      // Card background con gradiente simulado
+      doc.setFillColor(...LIGHT_GRAY);
+      doc.roundedRect(xPos, cardStartY, cardWidth, cardHeight, 5, 5, "F");
       
       // Border
       const [r, g, b] = metric.color;
@@ -143,22 +171,44 @@ export const useRoadmapPDFExport = () => {
     doc.setFillColor(229, 231, 235);
     doc.roundedRect(20, yPosition, progressBarWidth, progressBarHeight, 3, 3, "F");
     
-    // Progress bar
+    // Progress bar con color Wincova
     const progressWidth = (progressBarWidth * metrics.progress_percentage) / 100;
-    doc.setFillColor(16, 185, 129);
-    doc.roundedRect(20, yPosition, progressWidth, progressBarHeight, 3, 3, "F");
+    doc.setFillColor(...WINCOVA_ORANGE);
+    doc.roundedRect(20, yPosition, progressWidth, progressBarHeight, 5, 5, "F");
 
-    yPosition += 20;
+    yPosition += 25;
+    
+    // === ANÁLISIS INTELIGENTE CON IA ===
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...WINCOVA_ORANGE);
+    doc.text("🤖 Análisis Inteligente", 20, yPosition);
+    yPosition += 10;
+    
+    // Renderizar análisis de IA
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(60, 60, 60);
+    const analysisLines = doc.splitTextToSize(aiAnalysis, pageWidth - 40);
+    
+    // Asegurar que cabe en la página
+    if (yPosition + analysisLines.length * 5 > pageHeight - 30) {
+      doc.addPage();
+      yPosition = 20;
+    }
+    
+    doc.text(analysisLines, 20, yPosition);
+    yPosition += analysisLines.length * 5 + 10;
 
     // === DESGLOSE POR FASES ===
     doc.addPage();
     yPosition = 20;
     
-    doc.setFontSize(16);
+    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(102, 126, 234);
-    doc.text("🎯 Desglose por Fases y Sprints", 20, yPosition);
-    yPosition += 10;
+    doc.setTextColor(...WINCOVA_ORANGE);
+    doc.text("🎯 Desglose Detallado por Fases", 20, yPosition);
+    yPosition += 12;
 
     // Agrupar items por fase y sprint
     const itemsByPhase = items.reduce((acc, item) => {
@@ -186,16 +236,24 @@ export const useRoadmapPDFExport = () => {
         yPosition = 20;
       }
 
-      // Fase header
-      doc.setFillColor(102, 126, 234);
-      doc.rect(20, yPosition, pageWidth - 40, 12, "F");
+      // Fase header con branding
+      doc.setFillColor(...WINCOVA_BLUE);
+      doc.roundedRect(20, yPosition, pageWidth - 40, 14, 3, 3, "F");
       
-      doc.setFontSize(12);
+      doc.setFontSize(13);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(255, 255, 255);
-      doc.text(`FASE ${phaseNum}: ${phaseName}`, 25, yPosition + 8);
+      doc.text(`FASE ${phaseNum}: ${phaseName}`, 25, yPosition + 9);
       
-      yPosition += 15;
+      // Calcular progreso de fase
+      const phaseItems = Object.values(sprints).flat();
+      const phaseCompleted = phaseItems.filter(i => i.status === 'done').length;
+      const phaseProgress = ((phaseCompleted / phaseItems.length) * 100).toFixed(0);
+      
+      doc.setTextColor(...WINCOVA_ORANGE);
+      doc.text(`${phaseProgress}%`, pageWidth - 30, yPosition + 9);
+      
+      yPosition += 17;
 
       // Sprints dentro de la fase
       Object.entries(sprints).forEach(([sprintKey, sprintItems]) => {
@@ -228,10 +286,10 @@ export const useRoadmapPDFExport = () => {
           body: tableData,
           theme: "grid",
           headStyles: {
-            fillColor: [249, 250, 251],
-            textColor: [0, 0, 0],
+            fillColor: WINCOVA_ORANGE,
+            textColor: [255, 255, 255],
             fontStyle: "bold",
-            fontSize: 8,
+            fontSize: 9,
           },
           bodyStyles: {
             fontSize: 8,
@@ -252,14 +310,14 @@ export const useRoadmapPDFExport = () => {
       yPosition += 5;
     });
 
-    // === PÁGINA FINAL: INSIGHTS Y RECOMENDACIONES ===
+    // === PÁGINA FINAL: MÉTRICAS AVANZADAS ===
     doc.addPage();
     yPosition = 20;
 
-    doc.setFontSize(16);
+    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(102, 126, 234);
-    doc.text("💡 Insights y Recomendaciones", 20, yPosition);
+    doc.setTextColor(...WINCOVA_ORANGE);
+    doc.text("📈 Métricas y Proyecciones", 20, yPosition);
     yPosition += 15;
 
     // Velocity calculation
@@ -305,41 +363,58 @@ export const useRoadmapPDFExport = () => {
         yPosition = 20;
       }
 
-      // Insight card
-      doc.setFillColor(249, 250, 251);
-      doc.roundedRect(20, yPosition, pageWidth - 40, 25, 3, 3, "F");
+      // Insight card con borde naranja
+      doc.setFillColor(...LIGHT_GRAY);
+      doc.roundedRect(20, yPosition, pageWidth - 40, 28, 5, 5, "F");
+      
+      // Borde lateral naranja
+      doc.setFillColor(...WINCOVA_ORANGE);
+      doc.roundedRect(20, yPosition, 3, 28, 5, 5, "F");
       
       // Icon
-      doc.setFontSize(16);
-      doc.text(insight.icon, 25, yPosition + 10);
+      doc.setFontSize(18);
+      doc.text(insight.icon, 28, yPosition + 12);
       
       // Title
-      doc.setFontSize(11);
+      doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(0, 0, 0);
-      doc.text(insight.title, 40, yPosition + 10);
+      doc.setTextColor(...WINCOVA_BLUE);
+      doc.text(insight.title, 45, yPosition + 11);
       
       // Text
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(75, 85, 99);
-      const splitText = doc.splitTextToSize(insight.text, pageWidth - 60);
-      doc.text(splitText, 40, yPosition + 17);
+      doc.setTextColor(60, 60, 60);
+      const splitText = doc.splitTextToSize(insight.text, pageWidth - 65);
+      doc.text(splitText, 45, yPosition + 19);
       
-      yPosition += 30;
+      yPosition += 33;
     });
 
-    // Footer en todas las páginas
+    // Footer profesional en todas las páginas
     const totalPages = doc.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i);
+      
+      // Línea naranja en el footer
+      doc.setDrawColor(...WINCOVA_ORANGE);
+      doc.setLineWidth(0.5);
+      doc.line(20, pageHeight - 15, pageWidth - 20, pageHeight - 15);
+      
+      // Texto del footer
       doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(120, 120, 120);
       doc.text(
-        `Wincova Store - Roadmap Ejecutivo | Página ${i} de ${totalPages}`,
-        pageWidth / 2,
+        "Wincova Store - Reporte Ejecutivo Generado con IA",
+        20,
+        pageHeight - 10
+      );
+      doc.text(
+        `Página ${i} de ${totalPages}`,
+        pageWidth - 20,
         pageHeight - 10,
-        { align: "center" }
+        { align: "right" }
       );
     }
 
