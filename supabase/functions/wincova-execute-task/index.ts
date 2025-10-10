@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -16,9 +17,18 @@ serve(async (req) => {
     console.log('🚀 Executing task:', task.item_number, task.feature_name);
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
+    
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error('Supabase credentials not configured');
+    }
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // Construir el prompt para la IA
     const systemPrompt = `Eres un experto desarrollador de código que genera implementaciones precisas y completas.
@@ -129,13 +139,35 @@ Formato de respuesta:
     // Parsear el código generado para extraer archivos
     const files = parseGeneratedCode(generatedCode);
 
+    // Guardar deployment en la base de datos
+    const { data: deploymentData, error: deploymentError } = await supabase
+      .from('wincova_code_deployments')
+      .insert({
+        roadmap_item_id: task.id,
+        generated_code: {
+          raw: generatedCode,
+          files: files,
+          instructions: extractInstructions(generatedCode)
+        },
+        deployment_mode: task.execution_mode || 'manual',
+        status: 'pending'
+      })
+      .select()
+      .single();
+
+    if (deploymentError) {
+      console.error('Error guardando deployment:', deploymentError);
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
         taskId: task.id,
+        deploymentId: deploymentData?.id,
         code: generatedCode,
         files: files,
         instructions: extractInstructions(generatedCode),
+        executionMode: task.execution_mode || 'manual',
         timestamp: new Date().toISOString(),
       }),
       {

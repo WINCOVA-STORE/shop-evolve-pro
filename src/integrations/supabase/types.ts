@@ -284,6 +284,7 @@ export type Database = {
           created_at: string
           description: string | null
           effort: string
+          execution_mode: string | null
           feature_name: string
           files_affected: string[] | null
           id: string
@@ -309,6 +310,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           effort?: string
+          execution_mode?: string | null
           feature_name: string
           files_affected?: string[] | null
           id?: string
@@ -334,6 +336,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           effort?: string
+          execution_mode?: string | null
           feature_name?: string
           files_affected?: string[] | null
           id?: string
@@ -1717,6 +1720,62 @@ export type Database = {
             columns: ["diagnosis_id"]
             isOneToOne: false
             referencedRelation: "wincova_diagnoses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wincova_code_deployments: {
+        Row: {
+          applied_at: string | null
+          applied_by: string | null
+          created_at: string | null
+          deployment_mode: string
+          error_message: string | null
+          generated_code: Json
+          github_commit_sha: string | null
+          github_pr_url: string | null
+          id: string
+          metadata: Json | null
+          roadmap_item_id: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          applied_at?: string | null
+          applied_by?: string | null
+          created_at?: string | null
+          deployment_mode?: string
+          error_message?: string | null
+          generated_code: Json
+          github_commit_sha?: string | null
+          github_pr_url?: string | null
+          id?: string
+          metadata?: Json | null
+          roadmap_item_id: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          applied_at?: string | null
+          applied_by?: string | null
+          created_at?: string | null
+          deployment_mode?: string
+          error_message?: string | null
+          generated_code?: Json
+          github_commit_sha?: string | null
+          github_pr_url?: string | null
+          id?: string
+          metadata?: Json | null
+          roadmap_item_id?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wincova_code_deployments_roadmap_item_id_fkey"
+            columns: ["roadmap_item_id"]
+            isOneToOne: false
+            referencedRelation: "ecommerce_roadmap_items"
             referencedColumns: ["id"]
           },
         ]

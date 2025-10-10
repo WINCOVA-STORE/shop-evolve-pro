@@ -31,10 +31,11 @@ import { AutoProgressDetector } from "@/components/admin/AutoProgressDetector";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
+import { WincovaDeploymentDialog } from "@/components/admin/WincovaDeploymentDialog";
 
 const EcommerceRoadmap = () => {
   const navigate = useNavigate();
-  const { items, progress, loading, updateItemStatus, refetch } = useRoadmapItems();
+  const { items, progress, loading, updateItemStatus, updateExecutionMode, refetch } = useRoadmapItems();
   const { onlineUsers } = useRealtimePresence('roadmap-room');
   const { notifications, unreadCount, markAsRead, clearNotifications } = useRealtimeNotifications();
   const { toast } = useToast();
@@ -42,6 +43,8 @@ const EcommerceRoadmap = () => {
   const [filterPhase, setFilterPhase] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<string>('all');
+  const [showDeploymentDialog, setShowDeploymentDialog] = useState(false);
+  const [currentDeployment, setCurrentDeployment] = useState<any>(null);
 
   // Group items by phase
   const phaseGroups = useMemo(() => {
@@ -117,14 +120,22 @@ const EcommerceRoadmap = () => {
       if (data.success) {
         console.log('✅ Código generado:', data);
         
+        // Mostrar el diálogo con el código generado
+        setCurrentDeployment({
+          id: data.deploymentId,
+          taskTitle: task.feature_name,
+          executionMode: data.executionMode,
+          files: data.files || [],
+          instructions: data.instructions || [],
+          raw: data.code
+        });
+        setShowDeploymentDialog(true);
+        
         toast({
           title: "✅ Código generado exitosamente",
-          description: `${data.files?.length || 0} archivos listos para implementar`,
+          description: `${data.files?.length || 0} archivos listos`,
           duration: 5000,
         });
-
-        // Aquí podrías abrir un modal mostrando el código generado
-        // o guardar los resultados en la base de datos
         
       } else {
         throw new Error(data.error || 'Error al generar código');
@@ -382,6 +393,7 @@ const EcommerceRoadmap = () => {
                             item={item}
                             onStatusChange={updateItemStatus}
                             onExecute={handleExecuteTask}
+                            onModeChange={updateExecutionMode}
                           />
                         ))}
                     </div>
@@ -418,12 +430,13 @@ const EcommerceRoadmap = () => {
                     {(phaseGroups[phase.number] || [])
                       .filter(item => filterStatus === 'all' || item.status === filterStatus)
                       .map((item) => (
-                        <RoadmapItemCard
-                          key={item.id}
-                          item={item}
-                          onStatusChange={updateItemStatus}
-                          onExecute={handleExecuteTask}
-                        />
+                          <RoadmapItemCard
+                            key={item.id}
+                            item={item}
+                            onStatusChange={updateItemStatus}
+                            onExecute={handleExecuteTask}
+                            onModeChange={updateExecutionMode}
+                          />
                       ))}
                   </div>
                 </CardContent>
@@ -432,6 +445,13 @@ const EcommerceRoadmap = () => {
           ))}
         </Tabs>
       </div>
+
+      {/* Deployment Dialog */}
+      <WincovaDeploymentDialog
+        open={showDeploymentDialog}
+        onOpenChange={setShowDeploymentDialog}
+        deployment={currentDeployment}
+      />
 
       <Footer />
     </div>

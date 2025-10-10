@@ -24,6 +24,7 @@ export interface RoadmapItem {
   notes: string | null;
   acceptance_criteria: any[];
   metadata: any;
+  execution_mode: 'manual' | 'automatic';
   created_at: string;
   updated_at: string;
 }
@@ -181,12 +182,40 @@ export const useRoadmapItems = () => {
     }
   };
 
+  const updateExecutionMode = async (itemId: string, mode: 'manual' | 'automatic') => {
+    try {
+      const { error } = await supabase
+        .from('ecommerce_roadmap_items')
+        .update({ execution_mode: mode })
+        .eq('id', itemId);
+
+      if (error) throw error;
+
+      toast({
+        title: '✅ Modo actualizado',
+        description: mode === 'automatic' 
+          ? '🤖 Wincova aplicará cambios automáticamente' 
+          : '👥 Equipo aplicará cambios manualmente',
+      });
+      
+      await fetchAll();
+    } catch (error) {
+      console.error('Error updating execution mode:', error);
+      toast({
+        title: 'Error',
+        description: 'No se pudo actualizar el modo de ejecución',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return {
     items,
     progress,
     loading,
     updateItemStatus,
     assignItem,
+    updateExecutionMode,
     refetch: fetchAll,
   };
 };

@@ -20,6 +20,12 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   CheckCircle2,
   Clock,
   AlertCircle,
@@ -34,6 +40,7 @@ import {
   ArrowRight,
   Sparkles,
   Play,
+  Settings,
 } from "lucide-react";
 import { RoadmapItem } from "@/hooks/useRoadmapItems";
 import { ExecuteTaskDialog } from "@/components/admin/ExecuteTaskDialog";
@@ -42,9 +49,10 @@ interface RoadmapItemCardProps {
   item: RoadmapItem;
   onStatusChange: (itemId: string, status: RoadmapItem['status'], notes?: string) => Promise<any>;
   onExecute?: (task: RoadmapItem) => Promise<void>;
+  onModeChange?: (itemId: string, mode: 'manual' | 'automatic') => Promise<void>;
 }
 
-export const RoadmapItemCard = ({ item, onStatusChange, onExecute }: RoadmapItemCardProps) => {
+export const RoadmapItemCard = ({ item, onStatusChange, onExecute, onModeChange }: RoadmapItemCardProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [notes, setNotes] = useState(item.notes || '');
   const [showDialog, setShowDialog] = useState(false);
@@ -146,15 +154,70 @@ export const RoadmapItemCard = ({ item, onStatusChange, onExecute }: RoadmapItem
           {/* Status Icon and Execute Button */}
           <div className="flex items-center gap-2">
             {getStatusIcon(item.status)}
+            
+            {/* Execution Mode Dropdown */}
+            {onExecute && onModeChange && item.status === 'todo' && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 w-8 p-0"
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => onModeChange(item.id, 'automatic')}
+                    className="cursor-pointer"
+                  >
+                    <Zap className="mr-2 h-4 w-4 text-green-600" />
+                    <div className="flex flex-col">
+                      <span className="font-semibold">Modo Automático</span>
+                      <span className="text-xs text-muted-foreground">
+                        Wincova aplica los cambios directamente
+                      </span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => onModeChange(item.id, 'manual')}
+                    className="cursor-pointer"
+                  >
+                    <FileCode className="mr-2 h-4 w-4 text-blue-600" />
+                    <div className="flex flex-col">
+                      <span className="font-semibold">Modo Manual</span>
+                      <span className="text-xs text-muted-foreground">
+                        Generar instrucciones para tu equipo
+                      </span>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+            
             {onExecute && item.status === 'todo' && (
-              <Button
-                size="sm"
-                onClick={() => setShowExecuteDialog(true)}
-                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
-              >
-                <Play className="h-3 w-3 mr-1" />
-                Ejecutar
-              </Button>
+              <>
+                {item.execution_mode === 'automatic' ? (
+                  <Button
+                    size="sm"
+                    onClick={() => setShowExecuteDialog(true)}
+                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                  >
+                    <Zap className="h-3 w-3 mr-1" />
+                    Auto
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    onClick={() => setShowExecuteDialog(true)}
+                    className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                  >
+                    <Play className="h-3 w-3 mr-1" />
+                    Ejecutar
+                  </Button>
+                )}
+              </>
             )}
           </div>
         </div>
