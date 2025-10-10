@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { changeTitle, changeDescription, category, siteUrl } = await req.json();
+    const { changeTitle, changeDescription, category, siteUrl, beforeImageUrl } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
     if (!LOVABLE_API_KEY) {
@@ -21,42 +21,47 @@ serve(async (req) => {
 
     console.log(`Generating REAL visuals for change: ${changeTitle}`);
 
-    // ESTRATEGIA ÚNICA: Solo screenshots REALES
-    // NO generamos imágenes con IA para el "antes"
-    let beforeImageUrl: string;
+    // ESTRATEGIA: Solo screenshots REALES o imágenes subidas por el usuario
+    let finalBeforeImageUrl: string;
     
-    console.log("Capturando screenshot REAL del sitio...");
-    
-    // API de screenshots (screenshotapi.net)
-    const screenshotUrl = `https://shot.screenshotapi.net/screenshot`;
-    const params = new URLSearchParams({
-      url: siteUrl,
-      output: 'image',
-      file_type: 'png',
-      wait_for_event: 'load',
-      delay: '2000',
-      full_page: 'false',
-      fresh: 'true',
-      width: '1280',
-      height: '800',
-    });
+    // Si el cliente ya proporcionó una imagen "antes", usarla directamente
+    if (beforeImageUrl) {
+      console.log("✅ Usando imagen 'antes' proporcionada por el cliente");
+      finalBeforeImageUrl = beforeImageUrl;
+    } else {
+      // Si no, intentar capturar screenshot REAL
+      console.log("Capturando screenshot REAL del sitio...");
+      
+      const screenshotUrl = `https://shot.screenshotapi.net/screenshot`;
+      const params = new URLSearchParams({
+        url: siteUrl,
+        output: 'image',
+        file_type: 'png',
+        wait_for_event: 'load',
+        delay: '2000',
+        full_page: 'false',
+        fresh: 'true',
+        width: '1280',
+        height: '800',
+      });
 
-    const screenshotResponse = await fetch(`${screenshotUrl}?${params}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'image/png',
-      },
-    });
+      const screenshotResponse = await fetch(`${screenshotUrl}?${params}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'image/png',
+        },
+      });
 
-    if (!screenshotResponse.ok) {
-      // Si falla, devolver error para que el cliente pueda subir su imagen
-      throw new Error(`NO_SCREENSHOT: No se pudo capturar el screenshot del sitio. El cliente debe subir una imagen real de su sitio.`);
+      if (!screenshotResponse.ok) {
+        // Si falla, devolver error para que el cliente pueda subir su imagen
+        throw new Error(`NO_SCREENSHOT: No se pudo capturar el screenshot del sitio. El cliente debe subir una imagen real de su sitio.`);
+      }
+
+      const arrayBuffer = await screenshotResponse.arrayBuffer();
+      const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+      finalBeforeImageUrl = `data:image/png;base64,${base64}`;
+      console.log("✅ Screenshot REAL capturado exitosamente");
     }
-
-    const arrayBuffer = await screenshotResponse.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-    beforeImageUrl = `data:image/png;base64,${base64}`;
-    console.log("✅ Screenshot REAL capturado exitosamente");
 
 
     // GENERAR IMAGEN "DESPUÉS" basada en la imagen REAL del sitio
@@ -98,7 +103,7 @@ This is a REAL before/after comparison for a client - it must be accurate and pr
             role: "user",
             content: [
               { type: "text", text: afterPrompt },
-              { type: "image_url", image_url: { url: beforeImageUrl } }
+              { type: "image_url", image_url: { url: finalBeforeImageUrl } }
             ]
           }
         ],
@@ -124,7 +129,7 @@ This is a REAL before/after comparison for a client - it must be accurate and pr
 
     return new Response(
       JSON.stringify({
-        beforeImageUrl,
+        beforeImageUrl: finalBeforeImageUrl,
         afterImageUrl,
       }),
       { 

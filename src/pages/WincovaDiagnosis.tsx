@@ -5,9 +5,11 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,6 +48,9 @@ import {
   Clock,
   AlertTriangle,
   ArrowRight,
+  ChevronUp,
+  ChevronDown,
+  AlertCircle,
 } from "lucide-react";
 
 interface Diagnosis {
@@ -93,6 +98,10 @@ export default function WincovaDiagnosis() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [generatingVisuals, setGeneratingVisuals] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState<string | null>(null);
+  const [collapsedImages, setCollapsedImages] = useState<Set<string>>(new Set());
+  const [showRoiExplanation, setShowRoiExplanation] = useState(false);
+  const [pasteImageMode, setPasteImageMode] = useState<string | null>(null);
+  const [pastedImageData, setPastedImageData] = useState("");
   const changeRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
@@ -192,12 +201,65 @@ export default function WincovaDiagnosis() {
     }
   };
 
+  const handlePasteImage = async (changeId: string) => {
+    if (!pastedImageData.trim()) {
+      toast({
+        title: "Error",
+        description: "Por favor pega los datos de la imagen en base64",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const imageData = pastedImageData.startsWith('data:image') 
+      ? pastedImageData 
+      : `data:image/png;base64,${pastedImageData}`;
+
+    try {
+      const { error: updateError } = await supabase
+        .from('wincova_changes')
+        .update({ before_image_url: imageData })
+        .eq('id', changeId);
+
+      if (updateError) throw updateError;
+
+      await fetchChanges();
+      setPastedImageData("");
+      setPasteImageMode(null);
+      
+      toast({
+        title: "Imagen pegada exitosamente",
+        description: "Ahora puedes generar la versión mejorada",
+      });
+    } catch (error: any) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo guardar la imagen pegada",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const toggleImageCollapse = (changeId: string) => {
+    setCollapsedImages(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(changeId)) {
+        newSet.delete(changeId);
+      } else {
+        newSet.add(changeId);
+      }
+      return newSet;
+    });
+  };
+
   const handleGenerateVisuals = async (changeId: string) => {
     if (!diagnosis) return;
     
     const change = changes.find(c => c.id === changeId);
     if (!change) return;
 
+    // ESTRATEGIA 1: Si no hay imagen "antes", intentar capturar screenshot automáticamente
     if (!change.before_image_url) {
       setGeneratingVisuals(changeId);
       
@@ -214,32 +276,37 @@ export default function WincovaDiagnosis() {
         if (error) {
           if (error.message?.includes('NO_SCREENSHOT')) {
             toast({
-              title: "Screenshot no disponible",
-              description: "Por favor sube una imagen real de tu sitio",
+              title: "No se pudo capturar screenshot automáticamente",
+              description: "Por favor sube o pega una imagen real de tu sitio para continuar.",
               variant: "destructive"
             });
+            setGeneratingVisuals(null);
             return;
           }
           throw error;
         }
 
-        await supabase
-          .from('wincova_changes')
-          .update({ before_image_url: data.beforeImageUrl })
-          .eq('id', changeId);
+        if (data?.beforeImageUrl && data?.afterImageUrl) {
+          await supabase
+            .from('wincova_changes')
+            .update({ 
+              before_image_url: data.beforeImageUrl,
+              after_image_url: data.afterImageUrl 
+            })
+            .eq('id', changeId);
+            
+          await fetchChanges();
           
-        await fetchChanges();
-        
-        toast({
-          title: "Screenshot capturado",
-          description: "Ahora genera la visualización mejorada"
-        });
-
+          toast({
+            title: "Visuales generadas automáticamente",
+            description: "Las imágenes reales de antes/después han sido creadas exitosamente.",
+          });
+        }
       } catch (error: any) {
         console.error('Error:', error);
         toast({
-          title: "Error",
-          description: error.message || "No se pudo capturar screenshot",
+          title: "Error en captura automática",
+          description: "No se pudo capturar el screenshot. Por favor sube o pega una imagen de tu sitio.",
           variant: "destructive"
         });
       } finally {
@@ -248,6 +315,7 @@ export default function WincovaDiagnosis() {
       return;
     }
 
+    // ESTRATEGIA 2: Si ya existe imagen "antes", generar solo el "después"
     setGeneratingVisuals(changeId);
 
     try {
@@ -256,36 +324,38 @@ export default function WincovaDiagnosis() {
           changeTitle: change.title,
           changeDescription: change.description,
           category: change.category,
-          siteUrl: diagnosis.site_url
+          siteUrl: diagnosis.site_url,
+          beforeImageUrl: change.before_image_url
         }
       });
 
       if (error) throw error;
 
-      await supabase
-        .from('wincova_changes')
-        .update({ after_image_url: data.afterImageUrl })
-        .eq('id', changeId);
+      if (data?.afterImageUrl) {
+        await supabase
+          .from('wincova_changes')
+          .update({ after_image_url: data.afterImageUrl })
+          .eq('id', changeId);
 
-      await fetchChanges();
-      
-      toast({
-        title: "Visualización generada",
-        description: "La mejora se aplicó sobre tu imagen real"
-      });
-
-      setTimeout(() => {
-        changeRefs.current[changeId]?.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center' 
+        await fetchChanges();
+        
+        toast({
+          title: "Versión mejorada generada",
+          description: "La imagen del 'después' ha sido creada con IA basándose en tu imagen real.",
         });
-      }, 100);
 
+        setTimeout(() => {
+          changeRefs.current[changeId]?.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }, 100);
+      }
     } catch (error: any) {
       console.error('Error:', error);
       toast({
         title: "Error",
-        description: error.message || "No se pudo generar visualización",
+        description: "No se pudo generar la versión mejorada.",
         variant: "destructive"
       });
     } finally {
@@ -392,6 +462,8 @@ export default function WincovaDiagnosis() {
 
   const categories = ["all", ...new Set(changes.map(c => c.category))];
 
+  const estimatedROI = changes?.reduce((sum, c) => sum + (c.estimated_revenue_impact || 0), 0) || 0;
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -442,21 +514,32 @@ export default function WincovaDiagnosis() {
               <div className="grid md:grid-cols-3 gap-4 mt-6">
                 <Card className="bg-background/50 backdrop-blur">
                   <CardContent className="pt-6">
-                    <div className="flex items-center gap-3 mb-2">
-                      <DollarSign className="w-5 h-5 text-green-500" />
-                      <span className="text-sm text-muted-foreground">ROI Estimado</span>
-                    </div>
-                    <p className="text-2xl font-bold">
-                      ${changes?.reduce((sum, c) => sum + (c.estimated_revenue_impact || 0), 0).toFixed(0)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">Ingresos adicionales anuales</p>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => setShowRoiExplanation(true)}>
+                            <DollarSign className="h-5 w-5 text-green-500" />
+                            <div>
+                              <div className="flex items-center gap-1">
+                                <p className="text-sm text-muted-foreground">ROI Estimado (Anual)</p>
+                                <Info className="h-4 w-4 text-muted-foreground" />
+                              </div>
+                              <p className="text-2xl font-bold text-green-600">${estimatedROI.toLocaleString()}</p>
+                            </div>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Haz clic para ver cómo calculamos este ROI</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </CardContent>
                 </Card>
 
                 <Card className="bg-background/50 backdrop-blur">
                   <CardContent className="pt-6">
                     <div className="flex items-center gap-3 mb-2">
-                      <Zap className="w-5 h-5 text-yellow-500" />
+                      <Zap className="w-5 w-5 text-yellow-500" />
                       <span className="text-sm text-muted-foreground">Mejoras Detectadas</span>
                     </div>
                     <p className="text-2xl font-bold">{changes?.length || 0}</p>
@@ -841,169 +924,195 @@ export default function WincovaDiagnosis() {
                         </Tooltip>
                       </div>
 
-                      {/* Sistema de Imágenes Reales */}
+                      {/* Visual Comparison Section */}
                       {shouldGenerateVisuals(change.category, change.title) && (
-                        <div className="mt-6 space-y-4">
-                          {/* Sin imagen "antes" - ofrecer subir o capturar */}
-                          {!change.before_image_url && (
-                            <Card className="bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200">
-                              <CardContent className="pt-6">
-                                <div className="flex items-start gap-4">
-                                  <AlertTriangle className="w-5 h-5 text-yellow-600 mt-1 flex-shrink-0" />
-                                  <div className="flex-1">
-                                    <h4 className="font-semibold mb-2 text-yellow-900 dark:text-yellow-100">
-                                      Imagen Real Requerida
-                                    </h4>
-                                    <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-4">
-                                      Para crear una comparación auténtica, necesitamos una imagen real de tu sitio.
-                                      Solo trabajamos con imágenes reales para mostrarte exactamente cómo se verá el cambio.
-                                    </p>
-                                    
-                                    <div className="flex gap-3">
-                                      <Label htmlFor={`upload-${change.id}`} className="cursor-pointer">
-                                        <div className="flex items-center gap-2 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors">
-                                          <Upload className="w-4 h-4" />
-                                          Subir Imagen de Mi Sitio
-                                        </div>
-                                        <Input
-                                          id={`upload-${change.id}`}
-                                          type="file"
-                                          accept="image/*"
-                                          className="hidden"
-                                          onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) handleImageUpload(change.id, file);
-                                          }}
-                                          disabled={uploadingImage === change.id}
-                                        />
-                                      </Label>
-                                      
-                                      <Button
-                                        onClick={() => handleGenerateVisuals(change.id)}
-                                        disabled={generatingVisuals === change.id}
-                                        variant="outline"
-                                        size="sm"
-                                      >
-                                        {generatingVisuals === change.id ? (
-                                          <>
-                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                            Capturando...
-                                          </>
-                                        ) : (
-                                          <>
-                                            <ImageIcon className="w-4 h-4 mr-2" />
-                                            O Capturar Screenshot
-                                          </>
-                                        )}
-                                      </Button>
-                                    </div>
-
-                                    {uploadingImage === change.id && (
-                                      <div className="flex items-center gap-2 mt-3 text-sm text-yellow-700">
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                        Subiendo imagen...
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          )}
-
-                          {/* Con imagen "antes", sin "después" */}
-                          {change.before_image_url && !change.after_image_url && (
-                            <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200">
-                              <CardContent className="pt-6">
-                                <div className="grid md:grid-cols-2 gap-4">
-                                  <div>
-                                    <div className="flex items-center justify-between mb-2">
-                                      <p className="text-sm font-medium">Tu Sitio Actual (Real)</p>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={async () => {
-                                          await supabase
-                                            .from('wincova_changes')
-                                            .update({ before_image_url: null })
-                                            .eq('id', change.id);
-                                          fetchChanges();
-                                        }}
-                                      >
-                                        <X className="w-4 h-4" />
-                                      </Button>
-                                    </div>
-                                    <img 
-                                      src={change.before_image_url} 
-                                      alt="Estado actual"
-                                      className="w-full rounded border shadow-lg"
-                                    />
-                                  </div>
-                                  <div className="flex items-center justify-center">
-                                    <Button
-                                      onClick={() => handleGenerateVisuals(change.id)}
-                                      disabled={generatingVisuals === change.id}
-                                      size="lg"
-                                      className="gap-2"
-                                    >
-                                      {generatingVisuals === change.id ? (
-                                        <>
-                                          <Loader2 className="w-5 h-5 animate-spin" />
-                                          Aplicando con IA...
-                                        </>
-                                      ) : (
-                                        <>
-                                          <Zap className="w-5 h-5" />
-                                          Generar Versión Mejorada
-                                        </>
-                                      )}
-                                    </Button>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          )}
-
-                          {/* Comparación completa */}
-                          {change.before_image_url && change.after_image_url && (
-                            <Card className="bg-green-50 dark:bg-green-950/20 border-green-200">
-                              <CardContent className="pt-6">
-                                <div className="flex items-center gap-2 mb-4">
-                                  <CheckCircle2 className="w-5 h-5 text-green-600" />
-                                  <h4 className="font-semibold text-green-900 dark:text-green-100">
-                                    Comparación Real: Antes vs Después
-                                  </h4>
-                                </div>
-                                <div className="grid md:grid-cols-2 gap-4">
-                                  <div>
-                                    <p className="text-sm font-medium mb-2 text-center">
-                                      Tu Sitio Ahora (Imagen Real)
-                                    </p>
-                                    <img 
-                                      src={change.before_image_url} 
-                                      alt="Estado actual"
-                                      className="w-full rounded border shadow-lg"
-                                    />
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium mb-2 text-center">
-                                      Con Esta Mejora Aplicada
-                                    </p>
-                                    <img 
-                                      src={change.after_image_url} 
-                                      alt="Mejora aplicada"
-                                      className="w-full rounded border shadow-lg ring-2 ring-green-500/50"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="mt-4 p-3 bg-background rounded text-center">
-                                  <p className="text-sm text-muted-foreground">
-                                    ✓ Esta visualización se generó aplicando los cambios sobre la imagen REAL de tu sitio
+                        <CardContent className="mt-6 p-6 bg-muted/30 rounded-lg border">
+                          {!change.before_image_url ? (
+                            <div className="text-center space-y-4">
+                              <div className="flex flex-col items-center gap-4">
+                                <Target className="h-12 w-12 text-primary/60" />
+                                <div>
+                                  <h4 className="font-semibold mb-2">Visualiza el Impacto Real</h4>
+                                  <p className="text-sm text-muted-foreground mb-4">
+                                    Primero intentaremos capturar tu sitio automáticamente. Si falla, podrás subir o pegar una imagen.
                                   </p>
                                 </div>
-                              </CardContent>
-                            </Card>
+                                
+                                <div className="w-full max-w-md space-y-3">
+                                  <Button
+                                    onClick={() => handleGenerateVisuals(change.id)}
+                                    disabled={generatingVisuals === change.id}
+                                    className="w-full"
+                                    size="lg"
+                                  >
+                                    {generatingVisuals === change.id ? (
+                                      <>
+                                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                                        Capturando Screenshot Automáticamente...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Zap className="h-5 w-5 mr-2" />
+                                        Generar Imágenes Automáticamente
+                                      </>
+                                    )}
+                                  </Button>
+
+                                  <div className="flex items-center gap-2">
+                                    <div className="flex-1 h-px bg-border" />
+                                    <span className="text-xs text-muted-foreground">Si no funciona, usa estas opciones</span>
+                                    <div className="flex-1 h-px bg-border" />
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                      <Label htmlFor={`image-upload-${change.id}`} className="cursor-pointer">
+                                        <div className="flex flex-col items-center justify-center gap-2 px-4 py-4 border-2 border-dashed rounded-lg hover:border-primary hover:bg-primary/5 transition-all">
+                                          <Upload className="h-5 w-5" />
+                                          <span className="text-sm text-center">Subir Archivo</span>
+                                        </div>
+                                      </Label>
+                                      <Input
+                                        id={`image-upload-${change.id}`}
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={(e) => e.target.files?.[0] && handleImageUpload(change.id, e.target.files[0])}
+                                        disabled={uploadingImage === change.id}
+                                      />
+                                    </div>
+
+                                    <Button
+                                      onClick={() => setPasteImageMode(change.id)}
+                                      variant="outline"
+                                      className="h-full flex flex-col items-center justify-center gap-2"
+                                    >
+                                      <Upload className="h-5 w-5" />
+                                      <span className="text-sm">Pegar Imagen</span>
+                                    </Button>
+                                  </div>
+
+                                  {pasteImageMode === change.id && (
+                                    <div className="space-y-2 p-4 border rounded-lg bg-background">
+                                      <Label htmlFor={`paste-image-${change.id}`}>
+                                        Pega aquí los datos de tu imagen en base64 (hasta 3500 caracteres)
+                                      </Label>
+                                      <Textarea
+                                        id={`paste-image-${change.id}`}
+                                        value={pastedImageData}
+                                        onChange={(e) => setPastedImageData(e.target.value)}
+                                        placeholder="data:image/png;base64,iVBORw0KGgoAAAANS..."
+                                        className="font-mono text-xs min-h-[100px]"
+                                        maxLength={3500}
+                                      />
+                                      <div className="flex gap-2">
+                                        <Button
+                                          onClick={() => handlePasteImage(change.id)}
+                                          className="flex-1"
+                                          disabled={!pastedImageData.trim()}
+                                        >
+                                          Usar Esta Imagen
+                                        </Button>
+                                        <Button
+                                          onClick={() => {
+                                            setPasteImageMode(null);
+                                            setPastedImageData("");
+                                          }}
+                                          variant="outline"
+                                        >
+                                          Cancelar
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ) : !change.after_image_url ? (
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <h4 className="font-semibold">Imagen Actual de Tu Sitio (REAL)</h4>
+                                <Badge variant="secondary">Antes</Badge>
+                              </div>
+                              <img 
+                                src={change.before_image_url} 
+                                alt="Estado actual" 
+                                className="w-full rounded-lg border shadow-sm"
+                              />
+                              <Button
+                                onClick={() => handleGenerateVisuals(change.id)}
+                                disabled={generatingVisuals === change.id}
+                                className="w-full"
+                              >
+                                {generatingVisuals === change.id ? (
+                                  <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Generando Versión Mejorada con IA...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Zap className="h-4 w-4 mr-2" />
+                                    Generar Versión Mejorada con IA
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-semibold">Comparación Visual: Antes vs Después</h4>
+                                <Button
+                                  onClick={() => toggleImageCollapse(change.id)}
+                                  variant="ghost"
+                                  size="sm"
+                                >
+                                  {collapsedImages.has(change.id) ? (
+                                    <>
+                                      <ChevronDown className="h-4 w-4 mr-1" />
+                                      Expandir
+                                    </>
+                                  ) : (
+                                    <>
+                                      <ChevronUp className="h-4 w-4 mr-1" />
+                                      Cerrar
+                                    </>
+                                  )}
+                                </Button>
+                              </div>
+
+                              {!collapsedImages.has(change.id) && (
+                                <div className="grid md:grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                      <Badge variant="secondary">Antes (Real)</Badge>
+                                    </div>
+                                    <img 
+                                      src={change.before_image_url} 
+                                      alt="Estado actual" 
+                                      className="w-full rounded-lg border shadow-sm"
+                                    />
+                                    <p className="text-xs text-muted-foreground text-center">
+                                      Imagen real de tu sitio actual
+                                    </p>
+                                  </div>
+                                  <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                      <Badge className="bg-green-500">Después (Con mejora)</Badge>
+                                    </div>
+                                    <img 
+                                      src={change.after_image_url} 
+                                      alt="Con mejora aplicada" 
+                                      className="w-full rounded-lg border shadow-sm"
+                                    />
+                                    <p className="text-xs text-muted-foreground text-center">
+                                      Simulación IA del cambio aplicado
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           )}
-                        </div>
+                        </CardContent>
                       )}
                     </CardContent>
                   </Card>
@@ -1012,6 +1121,117 @@ export default function WincovaDiagnosis() {
             </CardContent>
           </Card>
         </main>
+
+        {/* ROI Explanation Dialog */}
+        <Dialog open={showRoiExplanation} onOpenChange={setShowRoiExplanation}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <DollarSign className="h-6 w-6 text-green-500" />
+                ¿Cómo Calculamos tu ROI Estimado?
+              </DialogTitle>
+              <DialogDescription>
+                Transparencia total en nuestra metodología de cálculo
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-6 mt-4">
+              <div className="p-4 bg-muted rounded-lg">
+                <h4 className="font-semibold mb-2">Tu ROI Anual Estimado: ${estimatedROI.toLocaleString()}</h4>
+                <p className="text-sm text-muted-foreground">
+                  Este cálculo se basa en métricas reales de tu sitio y benchmarks de la industria
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold mb-2">Factores Considerados:</h4>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <div className="mt-1 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">Métricas de Rendimiento:</span> Velocidad de carga, Core Web Vitals, y su impacto directo en conversión (1s de mejora = +7% conversión promedio)
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="mt-1 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">SEO y Visibilidad:</span> Posicionamiento orgánico, tráfico potencial, y valor estimado de clics orgánicos vs pagados
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="mt-1 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">Experiencia de Usuario:</span> Tasa de rebote, tiempo en sitio, y su correlación con ventas
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="mt-1 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">Seguridad y Confianza:</span> Impacto de certificados SSL, políticas de privacidad, y sellos de confianza en conversión
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="mt-1 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">Benchmarks de Industria:</span> Comparación con competidores y estándares del sector
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <h4 className="font-semibold mb-2">Metodología de Cálculo:</h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="p-3 bg-muted/50 rounded">
+                      <p className="font-medium mb-1">1. Análisis de Tráfico</p>
+                      <p className="text-muted-foreground">Estimamos tu tráfico mensual basado en métricas públicas y análisis competitivo</p>
+                    </div>
+                    <div className="p-3 bg-muted/50 rounded">
+                      <p className="font-medium mb-1">2. Tasa de Conversión Actual</p>
+                      <p className="text-muted-foreground">Inferimos tu tasa de conversión según tu industria y métricas de rendimiento actuales</p>
+                    </div>
+                    <div className="p-3 bg-muted/50 rounded">
+                      <p className="font-medium mb-1">3. Mejora Proyectada</p>
+                      <p className="text-muted-foreground">Cada cambio identificado tiene un impacto medible documentado en estudios de caso reales</p>
+                    </div>
+                    <div className="p-3 bg-muted/50 rounded">
+                      <p className="font-medium mb-1">4. Valor Monetario</p>
+                      <p className="text-muted-foreground">Multiplicamos las conversiones adicionales por tu ticket promedio estimado del sector</p>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border border-yellow-200 dark:border-yellow-900">
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5 text-yellow-600" />
+                    Importante: Este es un Estimado
+                  </h4>
+                  <ul className="space-y-1 text-sm text-muted-foreground">
+                    <li>• Los resultados reales pueden variar según tu industria, audiencia y ejecución</li>
+                    <li>• Basado en promedios de la industria y estudios de caso documentados</li>
+                    <li>• El ROI real se mide mejor después de implementar los cambios</li>
+                    <li>• Recomendamos A/B testing para validar mejoras específicas</li>
+                  </ul>
+                </div>
+
+                <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-900">
+                  <h4 className="font-semibold mb-2 text-green-700 dark:text-green-400">¿Por Qué Confiar en Nuestro Análisis?</h4>
+                  <ul className="space-y-1 text-sm text-muted-foreground">
+                    <li>• Usamos datos de Google Lighthouse, Core Web Vitals, y PageSpeed Insights</li>
+                    <li>• Nuestros algoritmos se basan en +1000 estudios de caso del sector</li>
+                    <li>• Actualizamos constantemente con las últimas tendencias de Google y la industria</li>
+                    <li>• Cada recomendación está respaldada por investigación verificable</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <Footer />
       </div>
