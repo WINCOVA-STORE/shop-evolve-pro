@@ -32,6 +32,7 @@ export default function Changelog() {
   const [features, setFeatures] = useState<ImplementedFeature[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'recent' | 'high-impact'>('all');
+  const [carouselLoading, setCarouselLoading] = useState(true);
 
   // Get date-fns locale based on current language
   const getDateLocale = () => {
@@ -46,6 +47,7 @@ export default function Changelog() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    setLoading(true); // Set loading to true when language changes
     fetchImplementedFeatures();
   }, [i18n.language]); // Re-fetch when language changes
 
@@ -222,6 +224,9 @@ export default function Changelog() {
 
   useEffect(() => {
     const generateCarouselImages = async () => {
+      if (features.length === 0) return;
+      
+      setCarouselLoading(true);
       const topFeatures = features
         .filter(f => f.impact === 'high')
         .slice(0, 3);
@@ -254,12 +259,13 @@ export default function Changelog() {
       );
 
       setCarouselItems(itemsWithImages);
+      setCarouselLoading(false);
     };
 
     if (features.length > 0) {
       generateCarouselImages();
     }
-  }, [features]);
+  }, [features, i18n.language]); // Re-generate when language changes
 
   return (
     <div className="min-h-screen bg-background">
@@ -280,7 +286,18 @@ export default function Changelog() {
         </div>
 
         {/* Carousel Banner */}
-        <ChangelogCarousel latestFeatures={carouselItems} />
+        {!carouselLoading && <ChangelogCarousel latestFeatures={carouselItems} />}
+        {carouselLoading && (
+          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-xl p-8 mb-12">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <Sparkles className="h-6 w-6 text-primary animate-pulse" />
+              <h2 className="text-2xl font-bold text-center">{t('changelog.banner_title')}</h2>
+            </div>
+            <div className="min-h-[280px] flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
