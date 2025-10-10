@@ -153,69 +153,80 @@ export const RoadmapItemCard = ({ item, onStatusChange, onExecute, onModeChange 
 
           {/* Status Icon and Execute Button */}
           <div className="flex items-center gap-2">
-            {getStatusIcon(item.status)}
-            
-            {/* Execution Mode Dropdown */}
-            {onExecute && onModeChange && item.status === 'todo' && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 w-8 p-0"
-                  >
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => onModeChange(item.id, 'automatic')}
-                    className="cursor-pointer"
-                  >
-                    <Zap className="mr-2 h-4 w-4 text-green-600" />
-                    <div className="flex flex-col">
-                      <span className="font-semibold">Modo Automático</span>
-                      <span className="text-xs text-muted-foreground">
-                        Wincova aplica los cambios directamente
-                      </span>
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => onModeChange(item.id, 'manual')}
-                    className="cursor-pointer"
-                  >
-                    <FileCode className="mr-2 h-4 w-4 text-blue-600" />
-                    <div className="flex flex-col">
-                      <span className="font-semibold">Modo Manual</span>
-                      <span className="text-xs text-muted-foreground">
-                        Generar instrucciones para tu equipo
-                      </span>
-                    </div>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-            
-            {onExecute && item.status === 'todo' && (
+            {/* Mostrar badge de completada si está done */}
+            {item.status === 'done' ? (
+              <Badge className="bg-green-600 text-white">
+                <CheckCircle2 className="h-3 w-3 mr-1" />
+                ✓ Completada
+              </Badge>
+            ) : (
               <>
-                {item.execution_mode === 'automatic' ? (
-                  <Button
-                    size="sm"
-                    onClick={() => setShowExecuteDialog(true)}
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-                  >
-                    <Zap className="h-3 w-3 mr-1" />
-                    Auto
-                  </Button>
-                ) : (
-                  <Button
-                    size="sm"
-                    onClick={() => setShowExecuteDialog(true)}
-                    className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
-                  >
-                    <Play className="h-3 w-3 mr-1" />
-                    Ejecutar
-                  </Button>
+                {getStatusIcon(item.status)}
+                
+                {/* Execution Mode Dropdown - solo para tareas pendientes */}
+                {onExecute && onModeChange && item.status === 'todo' && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                      >
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() => onModeChange(item.id, 'automatic')}
+                        className="cursor-pointer"
+                      >
+                        <Zap className="mr-2 h-4 w-4 text-green-600" />
+                        <div className="flex flex-col">
+                          <span className="font-semibold">Modo Automático</span>
+                          <span className="text-xs text-muted-foreground">
+                            Wincova aplica los cambios directamente
+                          </span>
+                        </div>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => onModeChange(item.id, 'manual')}
+                        className="cursor-pointer"
+                      >
+                        <FileCode className="mr-2 h-4 w-4 text-blue-600" />
+                        <div className="flex flex-col">
+                          <span className="font-semibold">Modo Manual</span>
+                          <span className="text-xs text-muted-foreground">
+                            Generar instrucciones para tu equipo
+                          </span>
+                        </div>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+                
+                {/* Botón de ejecutar - solo para tareas pendientes */}
+                {onExecute && item.status === 'todo' && (
+                  <>
+                    {item.execution_mode === 'automatic' ? (
+                      <Button
+                        size="sm"
+                        onClick={() => setShowExecuteDialog(true)}
+                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                      >
+                        <Zap className="h-3 w-3 mr-1" />
+                        Ejecutar Automáticamente
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        onClick={() => setShowExecuteDialog(true)}
+                        className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                      >
+                        <Play className="h-3 w-3 mr-1" />
+                        Generar Código
+                      </Button>
+                    )}
+                  </>
                 )}
               </>
             )}
@@ -231,7 +242,16 @@ export const RoadmapItemCard = ({ item, onStatusChange, onExecute, onModeChange 
               <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">⏱️ Estimación</span>
             </div>
             <p className="text-sm font-bold text-blue-600">
-              {item.metadata?.estimated_hours ? `${item.metadata.estimated_hours}h` : 'Por definir'}
+              {item.metadata?.estimated_hours 
+                ? `${item.metadata.estimated_hours}h` 
+                : item.effort === 'low' 
+                  ? '~2-4h'
+                  : item.effort === 'medium'
+                    ? '~4-8h'
+                    : item.effort === 'high'
+                      ? '~8-16h'
+                      : 'Pendiente de estimar'
+              }
             </p>
           </div>
 

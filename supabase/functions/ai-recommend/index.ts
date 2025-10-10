@@ -123,7 +123,7 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in AI recommendation function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }), {
       headers: { 'Content-Type': 'application/json' },
       status: 500,
     });
