@@ -167,15 +167,54 @@ export default function Changelog() {
     return acc;
   }, {} as Record<string, ImplementedFeature[]>);
 
-  // Prepare carousel items from latest 3 high-impact features
-  const carouselItems = features
-    .filter(f => f.impact === 'high')
-    .slice(0, 3)
-    .map(f => ({
-      title: f.feature_name,
-      description: f.customer_benefit || f.description || '',
-      icon: getCategoryIcon(f.phase_name)
-    }));
+  // Prepare carousel items from latest 3 high-impact features with AI-generated images
+  const [carouselItems, setCarouselItems] = useState<Array<{
+    title: string;
+    description: string;
+    icon: string;
+    imageUrl?: string;
+  }>>([]);
+
+  useEffect(() => {
+    const generateCarouselImages = async () => {
+      const topFeatures = features
+        .filter(f => f.impact === 'high')
+        .slice(0, 3);
+
+      const itemsWithImages = await Promise.all(
+        topFeatures.map(async (f) => {
+          try {
+            const { data: imageData } = await supabase.functions.invoke('generate-changelog-image', {
+              body: {
+                featureName: f.feature_name,
+                description: f.customer_benefit || f.description || ''
+              }
+            });
+
+            return {
+              title: f.feature_name,
+              description: f.customer_benefit || f.description || '',
+              icon: getCategoryIcon(f.phase_name),
+              imageUrl: imageData?.imageUrl || undefined
+            };
+          } catch (error) {
+            console.error('Error generating image for feature:', error);
+            return {
+              title: f.feature_name,
+              description: f.customer_benefit || f.description || '',
+              icon: getCategoryIcon(f.phase_name)
+            };
+          }
+        })
+      );
+
+      setCarouselItems(itemsWithImages);
+    };
+
+    if (features.length > 0) {
+      generateCarouselImages();
+    }
+  }, [features]);
 
   return (
     <div className="min-h-screen bg-background">

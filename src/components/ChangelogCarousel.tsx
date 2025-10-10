@@ -6,6 +6,7 @@ interface CarouselItem {
   title: string;
   description: string;
   icon: string;
+  imageUrl?: string;
 }
 
 const highlights: CarouselItem[] = [
@@ -70,19 +71,31 @@ export const ChangelogCarousel = ({ latestFeatures }: { latestFeatures?: Carouse
 
         {/* Carousel Content */}
         <div 
-          className="min-h-[120px] flex items-center justify-center overflow-hidden"
+          className="min-h-[280px] flex items-center justify-center overflow-hidden"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
           <div 
             key={currentIndex}
-            className="text-center max-w-2xl mx-auto px-12 animate-fade-in"
+            className="text-center max-w-4xl mx-auto px-12 animate-fade-in"
           >
-            <div className="text-5xl mb-4">{items[currentIndex].icon}</div>
-            <h3 className="text-xl font-semibold mb-3 text-foreground">
+            {/* AI Generated Image or Emoji */}
+            {items[currentIndex].imageUrl ? (
+              <div className="mb-6 rounded-2xl overflow-hidden shadow-2xl border-4 border-primary/20">
+                <img 
+                  src={items[currentIndex].imageUrl} 
+                  alt={items[currentIndex].title}
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+            ) : (
+              <div className="text-6xl mb-4">{items[currentIndex].icon}</div>
+            )}
+            
+            <h3 className="text-2xl font-bold mb-3 text-foreground">
               {items[currentIndex].title}
             </h3>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-lg leading-relaxed">
               {items[currentIndex].description}
             </p>
           </div>

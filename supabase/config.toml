@@ -56,3 +56,6 @@ verify_jwt = false
 
 [functions.generate-roadmap-insights]
 verify_jwt = false
+
+[functions.generate-changelog-image]
+verify_jwt = false
