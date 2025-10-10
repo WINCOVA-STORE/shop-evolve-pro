@@ -309,5 +309,28 @@
     "fast_delivery_desc": "Entrega no mesmo dia em áreas selecionadas",
     "tech_support": "Suporte 24/7",
     "tech_support_desc": "Ajuda especializada quando você precisar"
+  },
+  "changelog": {
+    "title": "Novidades da Loja",
+    "subtitle": "Descubra como cada melhoria torna sua experiência mais fácil, rápida e segura",
+    "banner_title": "Novas melhorias na loja!",
+    "stats": {
+      "active_improvements": "Melhorias Ativas",
+      "ai_powered": "Impulsionado por IA",
+      "high_impact": "Alto Impacto"
+    },
+    "filters": {
+      "all": "Todas",
+      "recent": "Recentes",
+      "featured": "Destaques"
+    },
+    "loading": "Carregando melhorias...",
+    "no_improvements": "Nenhuma melhoria nesta categoria",
+    "improvements_count": "melhorias que transformam sua experiência",
+    "try_it": "Clique para experimentar",
+    "shopping_experience": "Experiência de Compra",
+    "comfort_ease": "Conforto e Facilidade",
+    "connected_services": "Serviços Conectados",
+    "performance": "Melhorias de Desempenho"
   }
 }

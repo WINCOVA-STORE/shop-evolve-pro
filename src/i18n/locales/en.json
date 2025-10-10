@@ -460,5 +460,28 @@
     "fast_delivery_desc": "Same day delivery in select areas",
     "tech_support": "24/7 Support",
     "tech_support_desc": "Expert help whenever you need it"
+  },
+  "changelog": {
+    "title": "Store Updates",
+    "subtitle": "Discover how each improvement makes your experience easier, faster and more secure",
+    "banner_title": "New store improvements!",
+    "stats": {
+      "active_improvements": "Active Improvements",
+      "ai_powered": "AI Powered",
+      "high_impact": "High Impact"
+    },
+    "filters": {
+      "all": "All",
+      "recent": "Recent",
+      "featured": "Featured"
+    },
+    "loading": "Loading improvements...",
+    "no_improvements": "No improvements in this category",
+    "improvements_count": "improvements that transform your experience",
+    "try_it": "Click to try it",
+    "shopping_experience": "Shopping Experience",
+    "comfort_ease": "Comfort and Ease",
+    "connected_services": "Connected Services",
+    "performance": "Performance Improvements"
   }
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -28,6 +29,7 @@ const highlights: CarouselItem[] = [
 ];
 
 export const ChangelogCarousel = ({ latestFeatures }: { latestFeatures?: CarouselItem[] }) => {
+  const { t } = useTranslation();
   const items = latestFeatures && latestFeatures.length > 0 ? latestFeatures : highlights;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -66,7 +68,7 @@ export const ChangelogCarousel = ({ latestFeatures }: { latestFeatures?: Carouse
         {/* Header */}
         <div className="flex items-center justify-center gap-2 mb-6">
           <Sparkles className="h-6 w-6 text-primary animate-pulse" />
-          <h2 className="text-2xl font-bold text-center">¡Nuevas mejoras en la tienda!</h2>
+          <h2 className="text-2xl font-bold text-center">{t('changelog.banner_title')}</h2>
         </div>
 
         {/* Carousel Content */}

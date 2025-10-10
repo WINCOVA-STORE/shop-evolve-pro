@@ -309,5 +309,28 @@
     "fast_delivery_desc": "部分地区当日送达",
     "tech_support": "24/7支持",
     "tech_support_desc": "随时获得专家帮助"
+  },
+  "changelog": {
+    "title": "商店更新",
+    "subtitle": "了解每项改进如何让您的体验更轻松、更快捷、更安全",
+    "banner_title": "商店新改进！",
+    "stats": {
+      "active_improvements": "活跃改进",
+      "ai_powered": "AI驱动",
+      "high_impact": "高影响力"
+    },
+    "filters": {
+      "all": "全部",
+      "recent": "最近",
+      "featured": "精选"
+    },
+    "loading": "加载改进中...",
+    "no_improvements": "此类别中没有改进",
+    "improvements_count": "项改进，改变您的体验",
+    "try_it": "点击试用",
+    "shopping_experience": "购物体验",
+    "comfort_ease": "舒适便捷",
+    "connected_services": "连接服务",
+    "performance": "性能改进"
   }
 }

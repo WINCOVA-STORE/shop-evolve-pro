@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ChangelogCarousel } from "@/components/ChangelogCarousel";
@@ -9,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle2, Sparkles, Clock, TrendingUp, Heart, Shield, Rocket, ExternalLink, Calendar, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { es, enUS, fr, pt, zhCN } from "date-fns/locale";
 
 interface ImplementedFeature {
   id: string;
@@ -27,9 +28,21 @@ interface ImplementedFeature {
 
 export default function Changelog() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [features, setFeatures] = useState<ImplementedFeature[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'recent' | 'high-impact'>('all');
+
+  // Get date-fns locale based on current language
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'es': return es;
+      case 'fr': return fr;
+      case 'pt': return pt;
+      case 'zh': return zhCN;
+      default: return enUS;
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -125,10 +138,10 @@ export default function Changelog() {
 
   const getCustomerFriendlyCategory = (phaseName: string) => {
     const lower = phaseName.toLowerCase();
-    if (lower.includes('funcionalidad crítica') || lower.includes('base')) return 'Experiencia de Compra';
-    if (lower.includes('experiencia')) return 'Comodidad y Facilidad';
-    if (lower.includes('integración')) return 'Servicios Conectados';
-    if (lower.includes('optimización')) return 'Mejoras de Rendimiento';
+    if (lower.includes('funcionalidad crítica') || lower.includes('base')) return t('changelog.shopping_experience');
+    if (lower.includes('experiencia')) return t('changelog.comfort_ease');
+    if (lower.includes('integración')) return t('changelog.connected_services');
+    if (lower.includes('optimización')) return t('changelog.performance');
     return phaseName;
   };
 
@@ -226,11 +239,11 @@ export default function Changelog() {
           <div className="flex items-center justify-center gap-3 mb-4">
             <Sparkles className="h-10 w-10 text-primary animate-pulse" />
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Novedades de la Tienda
+              {t('changelog.title')}
             </h1>
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Descubre cómo cada mejora hace tu experiencia más fácil, rápida y segura
+            {t('changelog.subtitle')}
           </p>
         </div>
 
@@ -243,7 +256,7 @@ export default function Changelog() {
             <CardContent className="pt-6 text-center">
               <CheckCircle2 className="h-8 w-8 text-primary mx-auto mb-2" />
               <div className="text-3xl font-bold text-primary">{features.length}</div>
-              <p className="text-sm text-muted-foreground">Mejoras Activas</p>
+              <p className="text-sm text-muted-foreground">{t('changelog.stats.active_improvements')}</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20">
@@ -252,7 +265,7 @@ export default function Changelog() {
               <div className="text-3xl font-bold text-primary">
                 {features.filter(f => f.execution_mode === 'automatic').length}
               </div>
-              <p className="text-sm text-muted-foreground">Potenciadas con IA</p>
+              <p className="text-sm text-muted-foreground">{t('changelog.stats.ai_powered')}</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20">
@@ -261,7 +274,7 @@ export default function Changelog() {
               <div className="text-3xl font-bold text-primary">
                 {features.filter(f => f.impact === 'high').length}
               </div>
-              <p className="text-sm text-muted-foreground">De Alto Impacto</p>
+              <p className="text-sm text-muted-foreground">{t('changelog.stats.high_impact')}</p>
             </CardContent>
           </Card>
         </div>
@@ -270,15 +283,15 @@ export default function Changelog() {
         <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)} className="mb-8">
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-3">
             <TabsTrigger value="all">
-              Todas ({features.length})
+              {t('changelog.filters.all')} ({features.length})
             </TabsTrigger>
             <TabsTrigger value="recent">
               <Clock className="h-4 w-4 mr-2" />
-              Recientes
+              {t('changelog.filters.recent')}
             </TabsTrigger>
             <TabsTrigger value="high-impact">
               <TrendingUp className="h-4 w-4 mr-2" />
-              Destacadas
+              {t('changelog.filters.featured')}
             </TabsTrigger>
           </TabsList>
 
@@ -286,13 +299,13 @@ export default function Changelog() {
             {loading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                <p className="mt-4 text-muted-foreground">Cargando mejoras...</p>
+                <p className="mt-4 text-muted-foreground">{t('changelog.loading')}</p>
               </div>
             ) : getFilteredFeatures().length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
                   <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No hay mejoras en esta categoría</p>
+                  <p className="text-muted-foreground">{t('changelog.no_improvements')}</p>
                 </CardContent>
               </Card>
             ) : (
@@ -305,7 +318,7 @@ export default function Changelog() {
                         <span>{categoryName}</span>
                       </CardTitle>
                       <CardDescription className="text-base">
-                        {categoryFeatures.length} mejoras que transforman tu experiencia
+                        {categoryFeatures.length} {t('changelog.improvements_count')}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6 pt-6">
@@ -343,11 +356,11 @@ export default function Changelog() {
                                 <div className="flex items-center gap-2 justify-between">
                                   <Badge variant="outline" className="text-xs">
                                     <Calendar className="h-3 w-3 mr-1" />
-                                    {format(new Date(feature.completed_at), "d MMM yyyy", { locale: es })}
+                                    {format(new Date(feature.completed_at), "d MMM yyyy", { locale: getDateLocale() })}
                                   </Badge>
                                   {isClickable && (
                                     <span className="text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                                      Haz clic para probarlo →
+                                      {t('changelog.try_it')} →
                                     </span>
                                   )}
                                 </div>
