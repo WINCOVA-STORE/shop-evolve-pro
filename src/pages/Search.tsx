@@ -96,8 +96,8 @@ const SearchPage: React.FC = () => {
             max={200} // Asegúrate de que esto coincida con el maxPrice en useAdvancedSearch
             step={1}
             value={priceRange}
-            onValueChange={setPriceRange}
-            onValueCommit={handlePriceChangeCommit}
+            onValueChange={(value) => setPriceRange(value as [number, number])}
+            onValueCommit={(value) => handlePriceChangeCommit(value as [number, number])}
             className="w-full"
           />
           <div className="flex justify-between mt-2 text-sm text-gray-600">
