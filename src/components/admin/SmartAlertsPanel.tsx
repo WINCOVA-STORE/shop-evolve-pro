@@ -56,8 +56,8 @@ export const SmartAlertsPanel = ({ items, onFilterChange }: SmartAlertsPanelProp
       // Filter by high/critical priority and todo status
       onFilterChange('todo', 'high');
       toast({
-        title: "Filtro aplicado",
-        description: "Mostrando tareas prioritarias sin asignar",
+        title: "✅ Filtro aplicado",
+        description: "Scroll abajo para ver el filtro de prioridad HIGH activado. Las tareas se muestran más abajo.",
       });
     } else if (alert.id === 'unresolved-deps') {
       toast({

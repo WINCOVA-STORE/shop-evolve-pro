@@ -31,6 +31,7 @@ const EcommerceRoadmap = () => {
   const { items, progress, loading, updateItemStatus, refetch } = useRoadmapItems();
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterPhase, setFilterPhase] = useState<string>('all');
+  const [filterPriority, setFilterPriority] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<string>('all');
 
   // Group items by phase
@@ -58,9 +59,10 @@ const EcommerceRoadmap = () => {
     return items.filter((item) => {
       const statusMatch = filterStatus === 'all' || item.status === filterStatus;
       const phaseMatch = filterPhase === 'all' || item.phase_number.toString() === filterPhase;
-      return statusMatch && phaseMatch;
+      const priorityMatch = filterPriority === 'all' || item.priority === filterPriority;
+      return statusMatch && phaseMatch && priorityMatch;
     });
-  }, [items, filterStatus, filterPhase]);
+  }, [items, filterStatus, filterPhase, filterPriority]);
 
   // Group by sprint for display
   const sprintGroups = useMemo(() => {
@@ -128,14 +130,19 @@ const EcommerceRoadmap = () => {
           <SmartAlertsPanel 
             items={items}
             onFilterChange={(status, priority) => {
-              if (status) setFilterStatus(status);
-              if (priority) {
-                // Filter by priority using the existing filter
-                if (priority === 'high') {
-                  setFilterStatus('todo');
-                  // You might need to add priority filtering logic here
-                }
+              // Scroll to filters section
+              const filtersSection = document.getElementById('filters-section');
+              if (filtersSection) {
+                filtersSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                filtersSection.classList.add('ring-4', 'ring-orange-500', 'ring-offset-4');
+                setTimeout(() => {
+                  filtersSection.classList.remove('ring-4', 'ring-orange-500', 'ring-offset-4');
+                }, 3000);
               }
+              
+              // Apply filters
+              if (status) setFilterStatus(status);
+              if (priority) setFilterPriority(priority);
             }}
           />
         </div>
@@ -172,19 +179,41 @@ const EcommerceRoadmap = () => {
         </div>
 
         {/* Filters */}
-        <Card className="mt-6">
+        <Card className="mt-6" id="filters-section">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Filter className="h-5 w-5" />
                   Filtros
+                  {(filterStatus !== 'all' || filterPhase !== 'all' || filterPriority !== 'all') && (
+                    <Badge variant="outline" className="ml-2">
+                      {[
+                        filterStatus !== 'all' && `Estado: ${filterStatus}`,
+                        filterPhase !== 'all' && `Fase: ${filterPhase}`,
+                        filterPriority !== 'all' && `Prioridad: ${filterPriority}`
+                      ].filter(Boolean).join(' | ')}
+                    </Badge>
+                  )}
                 </CardTitle>
                 <CardDescription>
-                  Filtra las tareas por estado, fase o sprint
+                  Filtra las tareas por estado, fase, prioridad o sprint
                 </CardDescription>
               </div>
               <div className="flex gap-2">
+                {(filterStatus !== 'all' || filterPhase !== 'all' || filterPriority !== 'all') && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => {
+                      setFilterStatus('all');
+                      setFilterPhase('all');
+                      setFilterPriority('all');
+                    }}
+                  >
+                    Limpiar filtros
+                  </Button>
+                )}
                 <Select value={filterStatus} onValueChange={setFilterStatus}>
                   <SelectTrigger className="w-40">
                     <SelectValue placeholder="Estado" />
@@ -195,6 +224,18 @@ const EcommerceRoadmap = () => {
                     <SelectItem value="in_progress">En Progreso</SelectItem>
                     <SelectItem value="done">Completada</SelectItem>
                     <SelectItem value="blocked">Bloqueada</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={filterPriority} onValueChange={setFilterPriority}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Prioridad" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas las prioridades</SelectItem>
+                    <SelectItem value="critical">🔴 Critical</SelectItem>
+                    <SelectItem value="high">🟠 High</SelectItem>
+                    <SelectItem value="medium">🟡 Medium</SelectItem>
+                    <SelectItem value="low">⚪ Low</SelectItem>
                   </SelectContent>
                 </Select>
                 <Select value={filterPhase} onValueChange={setFilterPhase}>
