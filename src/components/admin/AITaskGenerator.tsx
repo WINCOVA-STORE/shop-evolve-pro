@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sparkles, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Sparkles, Loader2, CheckCircle2, AlertCircle, Upload, FileText, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -20,10 +21,39 @@ export const AITaskGenerator = ({ onTasksGenerated, existingPhases = [] }: AITas
   const [phaseOption, setPhaseOption] = useState<"existing" | "new">("existing");
   const [selectedPhase, setSelectedPhase] = useState<string>("");
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    // Validate file types and size
+    const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'text/markdown'];
+    const maxSize = 10 * 1024 * 1024; // 10MB
+
+    for (const file of files) {
+      if (!validTypes.includes(file.type)) {
+        toast.error(`Archivo ${file.name} no soportado. Usa PDF, DOCX, TXT o MD`);
+        return;
+      }
+      if (file.size > maxSize) {
+        toast.error(`Archivo ${file.name} es muy grande. Máximo 10MB`);
+        return;
+      }
+    }
+
+    setUploadedFiles(prev => [...prev, ...files]);
+    toast.success(`${files.length} archivo(s) agregado(s)`);
+  };
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleGenerate = async () => {
-    if (!description.trim()) {
-      toast.error("Por favor escribe una descripción de la funcionalidad");
+    if (!description.trim() && uploadedFiles.length === 0) {
+      toast.error("Por favor escribe una descripción o sube un archivo");
       return;
     }
 
@@ -36,11 +66,41 @@ export const AITaskGenerator = ({ onTasksGenerated, existingPhases = [] }: AITas
     setResult(null);
 
     try {
+      let fileContents: string[] = [];
+
+      // Upload and process files if any
+      if (uploadedFiles.length > 0) {
+        setIsUploading(true);
+        for (const file of uploadedFiles) {
+          const filePath = `${Date.now()}-${file.name}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('task-documents')
+            .upload(filePath, file);
+
+          if (uploadError) throw uploadError;
+
+          // Read file content
+          const text = await file.text();
+          fileContents.push(`--- Archivo: ${file.name} ---\n${text}`);
+
+          // Clean up uploaded file
+          await supabase.storage.from('task-documents').remove([filePath]);
+        }
+        setIsUploading(false);
+      }
+
+      const combinedDescription = [
+        description,
+        ...fileContents
+      ].filter(Boolean).join('\n\n');
+
       const { data, error } = await supabase.functions.invoke('ai-generate-roadmap-tasks', {
         body: {
-          description,
+          description: combinedDescription,
           targetPhase: phaseOption === "existing" ? selectedPhase : undefined,
-          createNewPhase: phaseOption === "new"
+          createNewPhase: phaseOption === "new",
+          hasFileContent: fileContents.length > 0
         }
       });
 
@@ -52,11 +112,12 @@ export const AITaskGenerator = ({ onTasksGenerated, existingPhases = [] }: AITas
 
       setResult({
         success: true,
-        message: `✅ ${data.tasksCreated} tareas creadas en ${data.phase.name}`
+        message: `✅ ${data.tasksCreated} tareas creadas en ${data.phase.name}${data.analysis ? '\n📊 ' + data.analysis : ''}`
       });
 
       toast.success(`${data.tasksCreated} tareas generadas exitosamente`);
       setDescription("");
+      setUploadedFiles([]);
       
       if (onTasksGenerated) {
         onTasksGenerated();
@@ -74,6 +135,7 @@ export const AITaskGenerator = ({ onTasksGenerated, existingPhases = [] }: AITas
       toast.error(errorMessage);
     } finally {
       setIsGenerating(false);
+      setIsUploading(false);
     }
   };
 
@@ -89,7 +151,7 @@ export const AITaskGenerator = ({ onTasksGenerated, existingPhases = [] }: AITas
 
         <div className="space-y-2">
           <Label htmlFor="description">
-            Describe la funcionalidad que deseas agregar
+            Describe la funcionalidad o sube documentos
           </Label>
           <Textarea
             id="description"
@@ -100,6 +162,49 @@ export const AITaskGenerator = ({ onTasksGenerated, existingPhases = [] }: AITas
             className="resize-none"
             disabled={isGenerating}
           />
+        </div>
+
+        {/* File Upload Section */}
+        <div className="space-y-2">
+          <Label htmlFor="file-upload">
+            O sube archivos (PDF, DOCX, TXT, MD)
+          </Label>
+          <div className="flex items-center gap-2">
+            <Input
+              id="file-upload"
+              type="file"
+              accept=".pdf,.docx,.txt,.md"
+              multiple
+              onChange={handleFileUpload}
+              disabled={isGenerating || isUploading}
+              className="cursor-pointer"
+            />
+            <Upload className="h-5 w-5 text-muted-foreground" />
+          </div>
+          
+          {uploadedFiles.length > 0 && (
+            <div className="space-y-2 mt-2">
+              {uploadedFiles.map((file, index) => (
+                <div key={index} className="flex items-center justify-between p-2 bg-muted rounded-md">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    <span className="text-sm">{file.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      ({(file.size / 1024).toFixed(1)} KB)
+                    </span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeFile(index)}
+                    disabled={isGenerating}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="space-y-3">
@@ -137,19 +242,19 @@ export const AITaskGenerator = ({ onTasksGenerated, existingPhases = [] }: AITas
 
         <Button
           onClick={handleGenerate}
-          disabled={isGenerating || !description.trim()}
+          disabled={isGenerating || (!description.trim() && uploadedFiles.length === 0)}
           className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
           size="lg"
         >
           {isGenerating ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generando tareas con IA...
+              {isUploading ? 'Procesando archivos...' : 'Generando tareas con IA...'}
             </>
           ) : (
             <>
               <Sparkles className="mr-2 h-4 w-4" />
-              Generar Tareas
+              Generar Tareas con IA
             </>
           )}
         </Button>
@@ -174,8 +279,9 @@ export const AITaskGenerator = ({ onTasksGenerated, existingPhases = [] }: AITas
         )}
 
         <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t">
-          <p>💡 <strong>Tip:</strong> Sé específico en tu descripción para mejores resultados</p>
-          <p>⚡ La IA analizará tu solicitud y creará tareas técnicas detalladas automáticamente</p>
+          <p>💡 <strong>Tip:</strong> Sé específico en tu descripción o sube documentos detallados</p>
+          <p>⚡ La IA analizará automáticamente: dependencias, riesgos, estimaciones y prioridades</p>
+          <p>📊 Detecta tareas relacionadas y sugiere orden óptimo de implementación</p>
         </div>
       </div>
     </Card>

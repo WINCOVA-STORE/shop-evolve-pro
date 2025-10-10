@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { description, targetPhase, createNewPhase } = await req.json();
+    const { description, targetPhase, createNewPhase, hasFileContent } = await req.json();
 
     if (!description || description.trim().length === 0) {
       return new Response(
@@ -29,12 +29,20 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY no configurada');
     }
 
-    // Llamar a Lovable AI para generar tareas
-    const aiPrompt = `Eres un experto en desarrollo de e-commerce. Analiza la siguiente solicitud de funcionalidad y genera tareas específicas para implementarla.
+    // Llamar a Lovable AI para generar tareas con análisis completo
+    const aiPrompt = `Eres un experto en desarrollo de e-commerce y gestión de proyectos. Analiza la siguiente solicitud y genera tareas OPTIMIZADAS.
 
 Solicitud: ${description}
+${hasFileContent ? '\n⚠️ NOTA: La solicitud incluye contenido de archivos subidos. Analízalo cuidadosamente.' : ''}
 
-Genera entre 3-5 tareas detalladas en formato JSON con esta estructura EXACTA:
+ANÁLISIS REQUERIDO:
+1. 🔗 Detecta DEPENDENCIAS entre tareas (qué debe hacerse primero)
+2. ⚠️ Identifica RIESGOS técnicos y de negocio
+3. ⏱️ Estima tiempos realistas basándote en complejidad
+4. 🎯 Sugiere PRIORIZACIÓN óptima
+5. 📦 Agrupa tareas relacionadas para eficiencia
+
+Genera entre 3-7 tareas detalladas en formato JSON con esta estructura EXACTA:
 {
   "phase": {
     "isNew": ${createNewPhase},
@@ -49,21 +57,32 @@ Genera entre 3-5 tareas detalladas en formato JSON con esta estructura EXACTA:
       "effort": "high|medium|low",
       "impact": "high|medium|low",
       "files_affected": ["ruta/archivo1.tsx", "ruta/archivo2.ts"],
-      "acceptance_criteria": [
-        "Criterio de aceptación 1",
-        "Criterio de aceptación 2"
-      ]
+      "acceptance_criteria": ["Criterio 1", "Criterio 2"],
+      "dependencies": ["id_tarea_anterior o vacío"],
+      "risks": ["Riesgo técnico 1", "Riesgo 2"],
+      "estimated_hours": 8,
+      "implementation_order": 1
     }
   ],
-  "estimated_sprint": "1.1"
+  "estimated_sprint": "1.1",
+  "analysis": {
+    "totalEstimatedHours": 24,
+    "criticalPath": ["orden de tareas críticas"],
+    "riskLevel": "low|medium|high",
+    "recommendations": "Sugerencias de implementación"
+  }
 }
 
-IMPORTANTE:
-- Usa nombres técnicos precisos para archivos
-- Priority: high para features críticas, medium para importantes, low para nice-to-have
-- Effort: high para >1 día, medium para 4-8h, low para <4h
-- Impact: high para features con ROI alto, medium para mejoras, low para detalles
-- files_affected debe incluir componentes, hooks, tipos, y páginas necesarios`;
+REGLAS IMPORTANTES:
+- dependencies: IDs de tareas que DEBEN completarse antes (usa nombres descriptivos si no hay IDs)
+- risks: Lista concreta de riesgos técnicos y de negocio
+- estimated_hours: Tiempo realista considerando complejidad y testing
+- implementation_order: Orden óptimo de ejecución (1, 2, 3...)
+- Priority: high=crítico para negocio, medium=importante, low=nice-to-have
+- Effort: high=>8h, medium=4-8h, low=<4h
+- Impact: high=ROI alto/muchos usuarios, medium=mejora notable, low=detalle
+- files_affected: Rutas reales y específicas de archivos a modificar
+- ANALIZA dependencias y riesgos ANTES de asignar prioridades`;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -154,8 +173,10 @@ IMPORTANTE:
       nextItemNumber = lastItemNumber + 1;
     }
 
-    // Insertar tareas en la base de datos
-    const tasksToInsert = generatedData.tasks.map((task: any, index: number) => ({
+    // Insertar tareas en la base de datos con metadata enriquecida
+    const tasksToInsert = generatedData.tasks
+      .sort((a: any, b: any) => (a.implementation_order || 999) - (b.implementation_order || 999))
+      .map((task: any, index: number) => ({
       phase_number: phaseNumber,
       phase_name: phaseName,
       sprint_number: sprintNumber,
@@ -172,7 +193,12 @@ IMPORTANTE:
       metadata: {
         generated_by_ai: true,
         original_request: description,
-        generated_at: new Date().toISOString()
+        generated_at: new Date().toISOString(),
+        dependencies: task.dependencies || [],
+        risks: task.risks || [],
+        estimated_hours: task.estimated_hours || null,
+        implementation_order: task.implementation_order || index + 1,
+        ai_analysis: generatedData.analysis || {}
       }
     }));
 
@@ -193,7 +219,10 @@ IMPORTANTE:
         success: true,
         phase: { number: phaseNumber, name: phaseName },
         tasksCreated: insertedTasks.length,
-        tasks: insertedTasks
+        tasks: insertedTasks,
+        analysis: generatedData.analysis ? 
+          `${generatedData.analysis.totalEstimatedHours || 0}h estimadas, Riesgo: ${generatedData.analysis.riskLevel || 'medium'}` : 
+          null
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

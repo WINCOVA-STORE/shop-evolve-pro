@@ -16,6 +16,7 @@ import { useRoadmapItems } from "@/hooks/useRoadmapItems";
 import { RoadmapProgressCard } from "@/components/admin/RoadmapProgressCard";
 import { RoadmapItemCard } from "@/components/admin/RoadmapItemCard";
 import { AITaskGenerator } from "@/components/admin/AITaskGenerator";
+import { RoadmapMetricsCard } from "@/components/admin/RoadmapMetricsCard";
 import { AddTaskDialog } from "@/components/admin/AddTaskDialog";
 import { AutoProgressDetector } from "@/components/admin/AutoProgressDetector";
 import { Header } from "@/components/Header";
@@ -113,6 +114,11 @@ const EcommerceRoadmap = () => {
           </div>
         </div>
 
+        {/* Metrics Overview */}
+        <div className="mt-6">
+          <RoadmapMetricsCard progress={progress} />
+        </div>
+
         {/* Progress Card */}
         <RoadmapProgressCard progress={progress} loading={loading} />
 
@@ -178,8 +184,16 @@ const EcommerceRoadmap = () => {
           <TabsList className="w-full justify-start overflow-x-auto">
             <TabsTrigger value="all">Todas las Fases</TabsTrigger>
             {phases.map((phase) => (
-              <TabsTrigger key={phase.number} value={phase.number.toString()}>
+              <TabsTrigger 
+                key={phase.number} 
+                value={phase.number.toString()}
+                title={`${phase.name} - ${phaseGroups[phase.number]?.length || 0} tareas`}
+                className="group relative"
+              >
                 Fase {phase.number}
+                <span className="hidden group-hover:block absolute -bottom-8 left-0 bg-popover text-popover-foreground text-xs p-2 rounded shadow-lg z-10 whitespace-nowrap">
+                  {phase.name}
+                </span>
               </TabsTrigger>
             ))}
           </TabsList>

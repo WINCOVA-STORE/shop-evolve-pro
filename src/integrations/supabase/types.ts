@@ -1096,6 +1096,48 @@ export type Database = {
         }
         Relationships: []
       }
+      roadmap_metrics: {
+        Row: {
+          avg_completion_time_hours: number | null
+          blocked_tasks: number
+          completed_tasks: number
+          created_at: string
+          date: string
+          id: string
+          in_progress_tasks: number
+          metadata: Json | null
+          risk_score: number | null
+          total_tasks: number
+          velocity_tasks_per_week: number | null
+        }
+        Insert: {
+          avg_completion_time_hours?: number | null
+          blocked_tasks?: number
+          completed_tasks?: number
+          created_at?: string
+          date?: string
+          id?: string
+          in_progress_tasks?: number
+          metadata?: Json | null
+          risk_score?: number | null
+          total_tasks?: number
+          velocity_tasks_per_week?: number | null
+        }
+        Update: {
+          avg_completion_time_hours?: number | null
+          blocked_tasks?: number
+          completed_tasks?: number
+          created_at?: string
+          date?: string
+          id?: string
+          in_progress_tasks?: number
+          metadata?: Json | null
+          risk_score?: number | null
+          total_tasks?: number
+          velocity_tasks_per_week?: number | null
+        }
+        Relationships: []
+      }
       shipping_config: {
         Row: {
           api_credentials: Json | null
