@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, TrendingDown, Info, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { MARKET_SOURCES, IMPACT_FORMULAS, getDataDisclaimer } from "@/lib/marketData";
 import {
   Dialog,
   DialogContent,
@@ -30,36 +31,17 @@ interface DailyLossCalculatorProps {
 export const DailyLossCalculator = ({ diagnosisScores, siteUrl }: DailyLossCalculatorProps) => {
   const [showMethodology, setShowMethodology] = useState(false);
 
-  // METODOLOGÍA BASADA EN ESTUDIOS REALES
-  // Fuente 1: Google - "The Need for Mobile Speed" (2018)
-  // Cada segundo adicional de carga reduce conversiones 20%
-  
-  // Fuente 2: Backlinko - "We Analyzed 11.8M Google Search Results" (2020)
-  // Primeros 3 resultados obtienen 75% del tráfico orgánico
-  
-  // Fuente 3: Baymard Institute - "Average Cart Abandonment Rate" (2023)
-  // Tasa promedio de abandono: 70.19%
+  // Obtener datos actualizados dinámicamente
+  const perfSource = MARKET_SOURCES.performance;
+  const seoSource = MARKET_SOURCES.seo;
+  const convSource = MARKET_SOURCES.conversion;
+  const disclaimer = getDataDisclaimer();
 
-  // CÁLCULO 1: Impacto de Performance
-  // Por cada 10 puntos por debajo de 90 = 7% de conversiones perdidas (Google, 2018)
-  const performanceImpactPct = diagnosisScores.performance_score < 90
-    ? Math.round(((90 - diagnosisScores.performance_score) / 10) * 7)
-    : 0;
-
-  // CÁLCULO 2: Impacto de SEO
-  // Por cada 10 puntos por debajo de 80 = pérdida de 15% de tráfico orgánico (Backlinko, 2020)
-  const seoImpactPct = diagnosisScores.seo_score < 80
-    ? Math.round(((80 - diagnosisScores.seo_score) / 10) * 15)
-    : 0;
-
-  // IMPORTANTE: No inventamos tráfico
-  // Mostramos PORCENTAJES de pérdida, no valores absolutos inventados
+  // CÁLCULOS BASADOS EN FÓRMULAS ACTUALIZADAS
+  const performanceImpactPct = IMPACT_FORMULAS.performanceImpact(diagnosisScores.performance_score);
+  const seoImpactPct = IMPACT_FORMULAS.seoImpact(diagnosisScores.seo_score);
   const totalImpactPct = performanceImpactPct + seoImpactPct;
-
-  // Rankings aproximados (basado en score SEO)
-  const estimatedRankingDrop = diagnosisScores.seo_score < 80
-    ? Math.ceil((80 - diagnosisScores.seo_score) / 5)
-    : 0;
+  const estimatedRankingDrop = IMPACT_FORMULAS.rankingDrop(diagnosisScores.seo_score);
 
   return (
     <TooltipProvider>
@@ -88,70 +70,98 @@ export const DailyLossCalculator = ({ diagnosisScores, siteUrl }: DailyLossCalcu
                 </DialogHeader>
                 
                 <div className="space-y-6 mt-4">
-                  <div className="p-4 bg-primary/5 rounded-lg border">
-                    <h4 className="font-bold mb-2 flex items-center gap-2">
-                      📊 Fuente 1: Google - "The Need for Mobile Speed" (2018)
+                  {/* Disclaimer de Actualización */}
+                  <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <h4 className="font-bold mb-2 text-blue-900 dark:text-blue-100 flex items-center gap-2">
+                      📅 Datos Actualizados Dinámicamente
                     </h4>
                     <p className="text-sm text-muted-foreground mb-2">
-                      Estudio en 900,000 landing pages móviles en 126 países
+                      {disclaimer.message}
                     </p>
-                    <ul className="text-sm space-y-1 ml-4">
-                      <li>• Cada segundo adicional reduce conversiones en 20%</li>
-                      <li>• 53% de usuarios abandonan si la carga toma más de 3 segundos</li>
-                      <li>• Por cada 10 puntos de Lighthouse perdidos aprox. 7% conversiones menos</li>
-                    </ul>
-                    <a 
-                      href="https://www.thinkwithgoogle.com/marketing-strategies/app-and-mobile/mobile-page-speed-new-industry-benchmarks/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-primary hover:underline flex items-center gap-1 mt-2"
-                    >
-                      Ver estudio completo <ExternalLink className="h-3 w-3" />
-                    </a>
+                    <p className="text-xs text-muted-foreground">
+                      {disclaimer.transparency}
+                    </p>
                   </div>
 
                   <div className="p-4 bg-primary/5 rounded-lg border">
                     <h4 className="font-bold mb-2 flex items-center gap-2">
-                      🔍 Fuente 2: Backlinko - "11.8M Google Search Results Analysis" (2020)
+                      📊 Fuente 1: {perfSource.name} ({perfSource.years})
                     </h4>
                     <p className="text-sm text-muted-foreground mb-2">
-                      Análisis de 11.8 millones de resultados de búsqueda en Google
+                      {perfSource.description}
                     </p>
                     <ul className="text-sm space-y-1 ml-4">
-                      <li>• Top 3 resultados obtienen 75.1% del tráfico total</li>
-                      <li>• Cada posición perdida = -15% de tráfico orgánico promedio</li>
-                      <li>• SEO score menor a 80 indica problemas críticos de indexación</li>
+                      {perfSource.keyFindings.map((finding, idx) => (
+                        <li key={idx}>• {finding}</li>
+                      ))}
                     </ul>
-                    <a 
-                      href="https://backlinko.com/search-engine-ranking"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-primary hover:underline flex items-center gap-1 mt-2"
-                    >
-                      Ver análisis completo <ExternalLink className="h-3 w-3" />
-                    </a>
+                    <div className="flex items-center justify-between mt-3">
+                      <Badge variant="outline" className="text-xs">
+                        Última actualización: {perfSource.lastUpdated}
+                      </Badge>
+                      <a 
+                        href={perfSource.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-primary hover:underline flex items-center gap-1"
+                      >
+                        Ver estudio <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
                   </div>
 
                   <div className="p-4 bg-primary/5 rounded-lg border">
                     <h4 className="font-bold mb-2 flex items-center gap-2">
-                      🛒 Fuente 3: Baymard Institute - "Cart Abandonment" (2023)
+                      🔍 Fuente 2: {seoSource.name} ({seoSource.years})
                     </h4>
                     <p className="text-sm text-muted-foreground mb-2">
-                      47 estudios sobre comportamiento de compra online
+                      {seoSource.description}
                     </p>
                     <ul className="text-sm space-y-1 ml-4">
-                      <li>• Tasa promedio de abandono: 70.19%</li>
-                      <li>• Velocidad lenta causa 25% de abandonos</li>
-                      <li>• Problemas UX causan 31% de abandonos adicionales</li>
+                      {seoSource.keyFindings.map((finding, idx) => (
+                        <li key={idx}>• {finding}</li>
+                      ))}
                     </ul>
-                    <a 
-                      href="https://baymard.com/lists/cart-abandonment-rate"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-primary hover:underline flex items-center gap-1 mt-2"
-                    >
-                      Ver investigación <ExternalLink className="h-3 w-3" />
-                    </a>
+                    <div className="flex items-center justify-between mt-3">
+                      <Badge variant="outline" className="text-xs">
+                        Última actualización: {seoSource.lastUpdated}
+                      </Badge>
+                      <a 
+                        href={seoSource.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-primary hover:underline flex items-center gap-1"
+                      >
+                        Ver análisis <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-primary/5 rounded-lg border">
+                    <h4 className="font-bold mb-2 flex items-center gap-2">
+                      🛒 Fuente 3: {convSource.name} ({convSource.years})
+                    </h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {convSource.description}
+                    </p>
+                    <ul className="text-sm space-y-1 ml-4">
+                      {convSource.keyFindings.map((finding, idx) => (
+                        <li key={idx}>• {finding}</li>
+                      ))}
+                    </ul>
+                    <div className="flex items-center justify-between mt-3">
+                      <Badge variant="outline" className="text-xs">
+                        Última actualización: {convSource.lastUpdated}
+                      </Badge>
+                      <a 
+                        href={convSource.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-primary hover:underline flex items-center gap-1"
+                      >
+                        Ver investigación <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
                   </div>
 
                   <div className="p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-800">
@@ -231,7 +241,7 @@ export const DailyLossCalculator = ({ diagnosisScores, siteUrl }: DailyLossCalcu
                   <TooltipContent className="max-w-xs">
                     <p className="font-semibold mb-1">Cálculo:</p>
                     <p className="text-xs">((90 - {diagnosisScores.performance_score}) / 10) × 7%</p>
-                    <p className="text-xs mt-2">Fuente: Google "Mobile Speed Study" 2018</p>
+                    <p className="text-xs mt-2">Fuente: {perfSource.name} {perfSource.lastUpdated}</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -254,7 +264,7 @@ export const DailyLossCalculator = ({ diagnosisScores, siteUrl }: DailyLossCalcu
                   <TooltipContent className="max-w-xs">
                     <p className="font-semibold mb-1">Cálculo:</p>
                     <p className="text-xs">((80 - {diagnosisScores.seo_score}) / 10) × 15%</p>
-                    <p className="text-xs mt-2">Fuente: Backlinko "11.8M Search Results" 2020</p>
+                    <p className="text-xs mt-2">Fuente: {seoSource.name} {seoSource.lastUpdated}</p>
                   </TooltipContent>
                 </Tooltip>
               </div>

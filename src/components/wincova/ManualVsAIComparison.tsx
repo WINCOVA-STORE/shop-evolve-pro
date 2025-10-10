@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { MARKET_SOURCES, getDataDisclaimer } from "@/lib/marketData";
 import {
   Dialog,
   DialogContent,
@@ -42,40 +43,20 @@ export const ManualVsAIComparison = ({
 }: ManualVsAIComparisonProps) => {
   const [showSources, setShowSources] = useState(false);
 
-  // PRECIOS BASADOS EN DATOS REALES DE MERCADO
-  // Fuente: Clutch.co "Average Web Development Costs 2024"
-  // Fuente: Upwork "Freelancer Rates Report 2024"
-  // Fuente: GoodFirms "Web Development Cost Guide"
+  // Obtener datos actualizados dinámicamente
+  const devData = MARKET_SOURCES.development;
+  const disclaimer = getDataDisclaimer();
   
-  const manualPricing = {
-    'SEO': { 
-      low: 2500, 
-      high: 5000,
-      source: 'Ahrefs "SEO Pricing Survey 2024" - Optimización técnica SEO profesional'
-    },
-    'Diseño': { 
-      low: 3500, 
-      high: 7000,
-      source: 'Dribbble "Designer Rates 2024" - Rediseño UX/UI profesional'
-    },
-    'Performance': { 
-      low: 2000, 
-      high: 4000,
-      source: 'Stack Overflow "Developer Survey 2024" - Optimización de performance'
-    },
-    'Conversión': {
-      low: 3000,
-      high: 6000,
-      source: 'CXL "CRO Expert Rates 2024" - Optimización de conversiones'
-    },
-    'default': {
-      low: 2500,
-      high: 5000,
-      source: 'Promedio industria desarrollo web profesional'
-    }
+  // Precios actualizados por categoría
+  const categoryKey = category.toLowerCase();
+  const pricingData = devData.keyFindings[categoryKey as keyof typeof devData.keyFindings] || devData.keyFindings.seo;
+  
+  const pricing = {
+    low: pricingData.low,
+    high: pricingData.high,
+    avg: pricingData.avg,
+    source: pricingData.source
   };
-
-  const pricing = manualPricing[category as keyof typeof manualPricing] || manualPricing.default;
   
   // TIEMPOS BASADOS EN EXPERIENCIA REAL
   // Nuestros tiempos con Lovable + IA vs. tiempos tradicionales verificables
@@ -89,7 +70,7 @@ export const ManualVsAIComparison = ({
                  category === 'Performance' ? '12-24 horas' : '24-48 horas';
 
   const aiCost = 499; // Precio real de Wincova
-  const avgManualCost = Math.round((pricing.low + pricing.high) / 2);
+  const avgManualCost = pricing.avg;
   const savings = Math.round(((avgManualCost - aiCost) / avgManualCost) * 100);
 
   return (
@@ -112,19 +93,35 @@ export const ManualVsAIComparison = ({
                 <DialogHeader>
                   <DialogTitle>📚 Fuentes de Precios y Tiempos</DialogTitle>
                   <DialogDescription>
-                    Todos los precios están basados en promedios reales de mercado 2024
+                    Todos los precios están basados en promedios reales de mercado {devData.years}
                   </DialogDescription>
                 </DialogHeader>
                 
                 <div className="space-y-4 mt-4">
+                  {/* Disclaimer de Actualización */}
+                  <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <h4 className="font-bold mb-2 text-blue-900 dark:text-blue-100 flex items-center gap-2">
+                      📅 Datos Actualizados Dinámicamente
+                    </h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {disclaimer.message}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Próxima actualización: {disclaimer.nextUpdate}
+                    </p>
+                  </div>
+
                   <div className="p-4 bg-primary/5 rounded-lg border">
-                    <h4 className="font-bold mb-2">💰 Precios de Mercado - Desarrollo Manual</h4>
+                    <h4 className="font-bold mb-2">💰 Precios de Mercado - Desarrollo Manual ({devData.years})</h4>
                     <p className="text-sm mb-2">Fuente: {pricing.source}</p>
                     <ul className="text-sm space-y-1">
                       <li>• Rango típico: ${pricing.low.toLocaleString()} - ${pricing.high.toLocaleString()}</li>
                       <li>• Promedio: ${avgManualCost.toLocaleString()}</li>
                       <li>• Incluye: Desarrollador senior + PM + Testing</li>
                     </ul>
+                    <Badge variant="outline" className="text-xs mt-2">
+                      Última actualización: {devData.lastUpdated}
+                    </Badge>
                   </div>
 
                   <div className="p-4 bg-primary/5 rounded-lg border">
