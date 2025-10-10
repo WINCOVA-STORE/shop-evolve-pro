@@ -13,6 +13,9 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { DailyLossCalculator } from "@/components/wincova/DailyLossCalculator";
+import { ManualVsAIComparison } from "@/components/wincova/ManualVsAIComparison";
+import { ProjectManagementPreview } from "@/components/wincova/ProjectManagementPreview";
 import {
   Tooltip,
   TooltipContent,
@@ -103,6 +106,7 @@ export default function WincovaDiagnosis() {
   const [showRoiExplanation, setShowRoiExplanation] = useState(false);
   const [isDragging, setIsDragging] = useState<string | null>(null);
   const [expandedImage, setExpandedImage] = useState<{ url: string; type: 'before' | 'after' } | null>(null);
+  const [showPMPreview, setShowPMPreview] = useState(false);
   const changeRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const dropZoneRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -557,14 +561,20 @@ export default function WincovaDiagnosis() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-background/50 backdrop-blur">
+                <Card 
+                  className="bg-background/50 backdrop-blur cursor-pointer hover:border-primary transition-colors"
+                  onClick={() => setShowPMPreview(true)}
+                >
                   <CardContent className="pt-6">
                     <div className="flex items-center gap-3 mb-2">
                       <Clock className="w-5 h-5 text-blue-500" />
                       <span className="text-sm text-muted-foreground">Tiempo Estimado</span>
                     </div>
-                    <p className="text-2xl font-bold">2-4 sem</p>
-                    <p className="text-xs text-muted-foreground mt-1">Implementación completa</p>
+                    <p className="text-2xl font-bold">2-4 días</p>
+                    <p className="text-xs text-muted-foreground mt-1">Implementación con IA</p>
+                    <p className="text-xs text-primary mt-2 font-medium">
+                      👆 Click para ver sistema de gestión
+                    </p>
                   </CardContent>
                 </Card>
               </div>
@@ -764,6 +774,18 @@ export default function WincovaDiagnosis() {
             </Tooltip>
           </div>
 
+          {/* Daily Loss Calculator - MOSTRAR EL DOLOR */}
+          <div className="mb-8">
+            <DailyLossCalculator 
+              diagnosisScores={{
+                performance_score: diagnosis.performance_score,
+                seo_score: diagnosis.seo_score,
+                conversion_score: diagnosis.overall_score
+              }}
+              siteUrl={diagnosis.site_url}
+            />
+          </div>
+
           {/* Changes Section */}
           <Card className="border-none shadow-none bg-transparent">
             <CardHeader className="px-0">
@@ -930,6 +952,15 @@ export default function WincovaDiagnosis() {
                             <p className="text-sm">Certeza en la recomendación. Mayor puntaje = más segura.</p>
                           </TooltipContent>
                         </Tooltip>
+                      </div>
+
+                      {/* Manual vs IA Comparison - MOSTRAR EL AHORRO */}
+                      <div className="mt-6">
+                        <ManualVsAIComparison 
+                          changeTitle={change.title}
+                          category={change.category}
+                          estimatedImpact={Math.round(change.impact_score)}
+                        />
                       </div>
 
                       {/* Visual Comparison Section */}
@@ -1276,6 +1307,15 @@ export default function WincovaDiagnosis() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Project Management Preview Modal */}
+        <ProjectManagementPreview 
+          open={showPMPreview}
+          onOpenChange={setShowPMPreview}
+          estimatedDays={3}
+          totalChanges={changes.length}
+          approvedChanges={changes.filter(c => c.status === 'approved').length}
+        />
 
         <Footer />
       </div>
