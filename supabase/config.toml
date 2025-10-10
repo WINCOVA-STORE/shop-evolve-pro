@@ -18,6 +18,9 @@ verify_jwt = true
 [functions.ai-detect-risks]
 verify_jwt = true
 
+[functions.ai-generate-roadmap-tasks]
+verify_jwt = true
+
 [functions.send-webhook]
 verify_jwt = false
 

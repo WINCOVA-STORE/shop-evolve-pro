@@ -15,6 +15,9 @@ import { ArrowLeft, Filter, RefreshCw, Download } from "lucide-react";
 import { useRoadmapItems } from "@/hooks/useRoadmapItems";
 import { RoadmapProgressCard } from "@/components/admin/RoadmapProgressCard";
 import { RoadmapItemCard } from "@/components/admin/RoadmapItemCard";
+import { AITaskGenerator } from "@/components/admin/AITaskGenerator";
+import { AddTaskDialog } from "@/components/admin/AddTaskDialog";
+import { AutoProgressDetector } from "@/components/admin/AutoProgressDetector";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
@@ -36,6 +39,14 @@ const EcommerceRoadmap = () => {
     });
     return groups;
   }, [items]);
+
+  // Extract existing phases for AI Generator
+  const existingPhases = useMemo(() => {
+    return Object.keys(phaseGroups).map(phaseNum => ({
+      number: parseInt(phaseNum),
+      name: phaseGroups[parseInt(phaseNum)][0]?.phase_name || `Fase ${phaseNum}`
+    }));
+  }, [phaseGroups]);
 
   // Filter items
   const filteredItems = useMemo(() => {
@@ -104,6 +115,19 @@ const EcommerceRoadmap = () => {
         {/* Progress Card */}
         <RoadmapProgressCard progress={progress} loading={loading} />
 
+        {/* Auto Progress Detection */}
+        <div className="mt-6">
+          <AutoProgressDetector />
+        </div>
+
+        {/* AI Task Generator */}
+        <div className="mt-6">
+          <AITaskGenerator 
+            onTasksGenerated={refetch}
+            existingPhases={existingPhases}
+          />
+        </div>
+
         {/* Filters */}
         <Card className="mt-6">
           <CardHeader>
@@ -167,7 +191,8 @@ const EcommerceRoadmap = () => {
 
               return (
                 <Card key={phase.number}>
-                  <CardHeader>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`w-2 h-8 rounded ${phase.color}`} />
                       <div>
@@ -177,7 +202,13 @@ const EcommerceRoadmap = () => {
                         </CardDescription>
                       </div>
                     </div>
-                  </CardHeader>
+                    <AddTaskDialog
+                      phaseNumber={phase.number}
+                      phaseName={phase.name}
+                      onTaskAdded={refetch}
+                    />
+                  </div>
+                </CardHeader>
                   <CardContent>
                     <div className="grid gap-3">
                       {phaseItems
@@ -201,14 +232,21 @@ const EcommerceRoadmap = () => {
             <TabsContent key={phase.number} value={phase.number.toString()} className="space-y-6 mt-6">
               <Card>
                 <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className={`w-2 h-8 rounded ${phase.color}`} />
-                    <div>
-                      <CardTitle>Fase {phase.number}: {phase.name}</CardTitle>
-                      <CardDescription>
-                        Tareas detalladas de la fase {phase.number}
-                      </CardDescription>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-8 rounded ${phase.color}`} />
+                      <div>
+                        <CardTitle>Fase {phase.number}: {phase.name}</CardTitle>
+                        <CardDescription>
+                          Tareas detalladas de la fase {phase.number}
+                        </CardDescription>
+                      </div>
                     </div>
+                    <AddTaskDialog
+                      phaseNumber={phase.number}
+                      phaseName={phase.name}
+                      onTaskAdded={refetch}
+                    />
                   </div>
                 </CardHeader>
                 <CardContent>
