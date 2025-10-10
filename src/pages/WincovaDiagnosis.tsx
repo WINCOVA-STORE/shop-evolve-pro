@@ -100,9 +100,9 @@ export default function WincovaDiagnosis() {
   const [uploadingImage, setUploadingImage] = useState<string | null>(null);
   const [collapsedImages, setCollapsedImages] = useState<Set<string>>(new Set());
   const [showRoiExplanation, setShowRoiExplanation] = useState(false);
-  const [pasteImageMode, setPasteImageMode] = useState<string | null>(null);
-  const [pastedImageData, setPastedImageData] = useState("");
+  const [isDragging, setIsDragging] = useState<string | null>(null);
   const changeRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const dropZoneRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
     fetchDiagnosis();
@@ -201,43 +201,44 @@ export default function WincovaDiagnosis() {
     }
   };
 
-  const handlePasteImage = async (changeId: string) => {
-    if (!pastedImageData.trim()) {
+  const handleDrop = async (changeId: string, e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(null);
+    
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      handleImageUpload(changeId, file);
+    } else {
       toast({
         title: "Error",
-        description: "Por favor pega los datos de la imagen en base64",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const imageData = pastedImageData.startsWith('data:image') 
-      ? pastedImageData 
-      : `data:image/png;base64,${pastedImageData}`;
-
-    try {
-      const { error: updateError } = await supabase
-        .from('wincova_changes')
-        .update({ before_image_url: imageData })
-        .eq('id', changeId);
-
-      if (updateError) throw updateError;
-
-      await fetchChanges();
-      setPastedImageData("");
-      setPasteImageMode(null);
-      
-      toast({
-        title: "Imagen pegada exitosamente",
-        description: "Ahora puedes generar la versión mejorada",
-      });
-    } catch (error: any) {
-      console.error('Error:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo guardar la imagen pegada",
+        description: "Por favor suelta un archivo de imagen válido",
         variant: "destructive"
       });
+    }
+  };
+
+  const handleDragOver = (changeId: string, e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(changeId);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(null);
+  };
+
+  const handlePasteFromClipboard = async (changeId: string, e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith('image/')) {
+        const file = items[i].getAsFile();
+        if (file) {
+          handleImageUpload(changeId, file);
+          e.preventDefault();
+          break;
+        }
+      }
     }
   };
 
@@ -928,103 +929,74 @@ export default function WincovaDiagnosis() {
                       {shouldGenerateVisuals(change.category, change.title) && (
                         <CardContent className="mt-6 p-6 bg-muted/30 rounded-lg border">
                           {!change.before_image_url ? (
-                            <div className="text-center space-y-4">
-                              <div className="flex flex-col items-center gap-4">
-                                <Target className="h-12 w-12 text-primary/60" />
-                                <div>
-                                  <h4 className="font-semibold mb-2">Visualiza el Impacto Real</h4>
-                                  <p className="text-sm text-muted-foreground mb-4">
-                                    Primero intentaremos capturar tu sitio automáticamente. Si falla, podrás subir o pegar una imagen.
-                                  </p>
+                            <div className="space-y-4">
+                              <Button
+                                onClick={() => handleGenerateVisuals(change.id)}
+                                disabled={generatingVisuals === change.id}
+                                className="w-full"
+                                size="lg"
+                              >
+                                {generatingVisuals === change.id ? (
+                                  <>
+                                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                                    Capturando...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Zap className="h-5 w-5 mr-2" />
+                                    Capturar Automáticamente
+                                  </>
+                                )}
+                              </Button>
+
+                              <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                  <span className="w-full border-t" />
                                 </div>
-                                
-                                <div className="w-full max-w-md space-y-3">
+                                <div className="relative flex justify-center text-xs uppercase">
+                                  <span className="bg-muted/30 px-2 text-muted-foreground">o sube tu imagen</span>
+                                </div>
+                              </div>
+
+                              <div 
+                                ref={el => dropZoneRef.current[change.id] = el}
+                                className={`relative border-2 border-dashed rounded-lg p-8 transition-all ${
+                                  isDragging === change.id 
+                                    ? 'border-primary bg-primary/5 scale-[1.02]' 
+                                    : 'border-muted-foreground/25 hover:border-primary/50'
+                                } ${uploadingImage === change.id ? 'opacity-50' : ''}`}
+                                onDrop={(e) => handleDrop(change.id, e)}
+                                onDragOver={(e) => handleDragOver(change.id, e)}
+                                onDragLeave={handleDragLeave}
+                                onPaste={(e) => handlePasteFromClipboard(change.id, e)}
+                                tabIndex={0}
+                              >
+                                <div className="text-center space-y-3">
+                                  <Upload className="mx-auto h-10 w-10 text-muted-foreground" />
+                                  <div>
+                                    <p className="text-sm font-medium">
+                                      Arrastra, pega (Ctrl+V) o haz clic para seleccionar
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      PNG, JPG o WEBP
+                                    </p>
+                                  </div>
+                                  <Input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    id={`file-${change.id}`}
+                                    onChange={(e) => e.target.files?.[0] && handleImageUpload(change.id, e.target.files[0])}
+                                    disabled={uploadingImage === change.id}
+                                  />
                                   <Button
-                                    onClick={() => handleGenerateVisuals(change.id)}
-                                    disabled={generatingVisuals === change.id}
-                                    className="w-full"
-                                    size="lg"
+                                    onClick={() => document.getElementById(`file-${change.id}`)?.click()}
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={uploadingImage === change.id}
                                   >
-                                    {generatingVisuals === change.id ? (
-                                      <>
-                                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                                        Capturando Screenshot Automáticamente...
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Zap className="h-5 w-5 mr-2" />
-                                        Generar Imágenes Automáticamente
-                                      </>
-                                    )}
+                                    Seleccionar Archivo
                                   </Button>
-
-                                  <div className="flex items-center gap-2">
-                                    <div className="flex-1 h-px bg-border" />
-                                    <span className="text-xs text-muted-foreground">Si no funciona, usa estas opciones</span>
-                                    <div className="flex-1 h-px bg-border" />
-                                  </div>
-                                  
-                                  <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                      <Label htmlFor={`image-upload-${change.id}`} className="cursor-pointer">
-                                        <div className="flex flex-col items-center justify-center gap-2 px-4 py-4 border-2 border-dashed rounded-lg hover:border-primary hover:bg-primary/5 transition-all">
-                                          <Upload className="h-5 w-5" />
-                                          <span className="text-sm text-center">Subir Archivo</span>
-                                        </div>
-                                      </Label>
-                                      <Input
-                                        id={`image-upload-${change.id}`}
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={(e) => e.target.files?.[0] && handleImageUpload(change.id, e.target.files[0])}
-                                        disabled={uploadingImage === change.id}
-                                      />
-                                    </div>
-
-                                    <Button
-                                      onClick={() => setPasteImageMode(change.id)}
-                                      variant="outline"
-                                      className="h-full flex flex-col items-center justify-center gap-2"
-                                    >
-                                      <Upload className="h-5 w-5" />
-                                      <span className="text-sm">Pegar Imagen</span>
-                                    </Button>
-                                  </div>
-
-                                  {pasteImageMode === change.id && (
-                                    <div className="space-y-2 p-4 border rounded-lg bg-background">
-                                      <Label htmlFor={`paste-image-${change.id}`}>
-                                        Pega aquí los datos de tu imagen en base64 (hasta 3500 caracteres)
-                                      </Label>
-                                      <Textarea
-                                        id={`paste-image-${change.id}`}
-                                        value={pastedImageData}
-                                        onChange={(e) => setPastedImageData(e.target.value)}
-                                        placeholder="data:image/png;base64,iVBORw0KGgoAAAANS..."
-                                        className="font-mono text-xs min-h-[100px]"
-                                        maxLength={3500}
-                                      />
-                                      <div className="flex gap-2">
-                                        <Button
-                                          onClick={() => handlePasteImage(change.id)}
-                                          className="flex-1"
-                                          disabled={!pastedImageData.trim()}
-                                        >
-                                          Usar Esta Imagen
-                                        </Button>
-                                        <Button
-                                          onClick={() => {
-                                            setPasteImageMode(null);
-                                            setPastedImageData("");
-                                          }}
-                                          variant="outline"
-                                        >
-                                          Cancelar
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  )}
                                 </div>
                               </div>
                             </div>
