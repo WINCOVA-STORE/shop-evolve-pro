@@ -1842,6 +1842,57 @@ export type Database = {
         }
         Relationships: []
       }
+      wincova_market_sources_health: {
+        Row: {
+          consecutive_failures: number | null
+          created_at: string
+          http_status_code: number | null
+          id: string
+          last_check_at: string | null
+          last_error: string | null
+          last_success_at: string | null
+          metadata: Json | null
+          response_time_ms: number | null
+          source_key: string
+          source_name: string
+          source_url: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          consecutive_failures?: number | null
+          created_at?: string
+          http_status_code?: number | null
+          id?: string
+          last_check_at?: string | null
+          last_error?: string | null
+          last_success_at?: string | null
+          metadata?: Json | null
+          response_time_ms?: number | null
+          source_key: string
+          source_name: string
+          source_url: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          consecutive_failures?: number | null
+          created_at?: string
+          http_status_code?: number | null
+          id?: string
+          last_check_at?: string | null
+          last_error?: string | null
+          last_success_at?: string | null
+          metadata?: Json | null
+          response_time_ms?: number | null
+          source_key?: string
+          source_name?: string
+          source_url?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       woocommerce_category_mapping: {
         Row: {
           created_at: string
