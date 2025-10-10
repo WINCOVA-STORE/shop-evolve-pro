@@ -19,6 +19,7 @@ import { AITaskGenerator } from "@/components/admin/AITaskGenerator";
 import { RoadmapMetricsCard } from "@/components/admin/RoadmapMetricsCard";
 import { RoadmapLegend } from "@/components/admin/RoadmapLegend";
 import { ProjectOverviewPanel } from "@/components/admin/ProjectOverviewPanel";
+import { SmartAlertsPanel } from "@/components/admin/SmartAlertsPanel";
 import { Link } from "react-router-dom";
 import { AddTaskDialog } from "@/components/admin/AddTaskDialog";
 import { AutoProgressDetector } from "@/components/admin/AutoProgressDetector";
@@ -120,6 +121,11 @@ const EcommerceRoadmap = () => {
               Volver
             </Button>
           </div>
+        </div>
+
+        {/* Smart Alerts - PRIORITY */}
+        <div className="mt-6">
+          <SmartAlertsPanel items={items} />
         </div>
 
         {/* Legend */}
