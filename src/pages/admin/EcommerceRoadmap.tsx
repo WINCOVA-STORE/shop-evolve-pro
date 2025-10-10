@@ -125,7 +125,19 @@ const EcommerceRoadmap = () => {
 
         {/* Smart Alerts - PRIORITY */}
         <div className="mt-6">
-          <SmartAlertsPanel items={items} />
+          <SmartAlertsPanel 
+            items={items}
+            onFilterChange={(status, priority) => {
+              if (status) setFilterStatus(status);
+              if (priority) {
+                // Filter by priority using the existing filter
+                if (priority === 'high') {
+                  setFilterStatus('todo');
+                  // You might need to add priority filtering logic here
+                }
+              }
+            }}
+          />
         </div>
 
         {/* Legend */}

@@ -9,12 +9,15 @@ import {
   UserX,
   Link2,
   TrendingDown,
-  Bell
+  Bell,
+  ExternalLink
 } from "lucide-react";
 import { differenceInDays } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 interface SmartAlertsPanelProps {
   items: RoadmapItem[];
+  onFilterChange?: (status?: string, priority?: string) => void;
 }
 
 interface Alert {
@@ -29,7 +32,46 @@ interface Alert {
   actionable: boolean;
 }
 
-export const SmartAlertsPanel = ({ items }: SmartAlertsPanelProps) => {
+export const SmartAlertsPanel = ({ items, onFilterChange }: SmartAlertsPanelProps) => {
+  const { toast } = useToast();
+
+  const handleViewAlert = (alert: Alert) => {
+    if (alert.taskId) {
+      // Scroll to the specific task
+      const taskElement = document.getElementById(`task-${alert.taskId}`);
+      if (taskElement) {
+        taskElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        taskElement.classList.add('ring-2', 'ring-orange-500', 'ring-offset-2');
+        setTimeout(() => {
+          taskElement.classList.remove('ring-2', 'ring-orange-500', 'ring-offset-2');
+        }, 3000);
+      } else {
+        toast({
+          title: "Tarea no visible",
+          description: "Ajusta los filtros para ver esta tarea",
+          variant: "destructive",
+        });
+      }
+    } else if (alert.id === 'unassigned-high' && onFilterChange) {
+      // Filter by high/critical priority and todo status
+      onFilterChange('todo', 'high');
+      toast({
+        title: "Filtro aplicado",
+        description: "Mostrando tareas prioritarias sin asignar",
+      });
+    } else if (alert.id === 'unresolved-deps') {
+      toast({
+        title: "Revisar dependencias",
+        description: "Busca las tareas con el badge 🔗 azul de dependencias",
+      });
+    } else if (alert.id === 'unmitigated-risks') {
+      toast({
+        title: "Revisar riesgos",
+        description: "Busca las tareas con el badge ⚠️ naranja de riesgos",
+      });
+    }
+  };
+
   const generateAlerts = (): Alert[] => {
     const alerts: Alert[] = [];
 
@@ -265,7 +307,13 @@ export const SmartAlertsPanel = ({ items }: SmartAlertsPanelProps) => {
                 </div>
               </div>
               {alert.actionable && (
-                <Button variant="outline" size="sm" className="ml-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="ml-2"
+                  onClick={() => handleViewAlert(alert)}
+                >
+                  <ExternalLink className="h-3 w-3 mr-1" />
                   Ver
                 </Button>
               )}

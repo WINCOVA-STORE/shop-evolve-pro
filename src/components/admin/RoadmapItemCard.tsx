@@ -99,7 +99,10 @@ export const RoadmapItemCard = ({ item, onStatusChange }: RoadmapItemCardProps) 
   const isChecked = item.status === 'done';
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card 
+      id={`task-${item.id}`}
+      className="hover:shadow-md transition-all duration-300"
+    >
       <CardContent className="p-4 space-y-3">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
