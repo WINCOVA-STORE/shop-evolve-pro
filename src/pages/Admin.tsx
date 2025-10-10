@@ -163,7 +163,11 @@ const Admin = () => {
             <p className="text-muted-foreground">{t("admin.subtitle")}</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="default" onClick={() => navigate("/admin/project")}>
+            <Button variant="default" onClick={() => navigate("/admin/ecommerce-roadmap")}>
+              <FolderKanban className="mr-2 h-4 w-4" />
+              🚀 Roadmap E-Commerce
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/admin/project")}>
               <FolderKanban className="mr-2 h-4 w-4" />
               Panel de Proyecto
             </Button>

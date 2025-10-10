@@ -1,4 +1,4 @@
-import { LayoutDashboard, FolderKanban, CheckSquare, BarChart3, Settings } from "lucide-react";
+import { LayoutDashboard, FolderKanban, CheckSquare, BarChart3, Rocket } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -17,7 +17,7 @@ const menuItems = [
   { title: "Fases", url: "/admin/project/phases", icon: FolderKanban },
   { title: "Tareas", url: "/admin/project/tasks", icon: CheckSquare },
   { title: "Métricas", url: "/admin/project/metrics", icon: BarChart3 },
-  { title: "Configuración", url: "/admin/project/settings", icon: Settings },
+  { title: "E-Commerce Roadmap", url: "/admin/ecommerce-roadmap", icon: Rocket },
 ];
 
 export function AdminSidebar() {

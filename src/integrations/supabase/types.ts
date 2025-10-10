@@ -274,6 +274,84 @@ export type Database = {
           },
         ]
       }
+      ecommerce_roadmap_items: {
+        Row: {
+          acceptance_criteria: Json | null
+          assigned_to: string | null
+          blocked_reason: string | null
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          description: string | null
+          effort: string
+          feature_name: string
+          files_affected: string[] | null
+          id: string
+          impact: string
+          item_number: string
+          metadata: Json | null
+          notes: string | null
+          phase_name: string
+          phase_number: number
+          priority: string
+          sprint_name: string
+          sprint_number: string
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          acceptance_criteria?: Json | null
+          assigned_to?: string | null
+          blocked_reason?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          description?: string | null
+          effort?: string
+          feature_name: string
+          files_affected?: string[] | null
+          id?: string
+          impact?: string
+          item_number: string
+          metadata?: Json | null
+          notes?: string | null
+          phase_name: string
+          phase_number: number
+          priority?: string
+          sprint_name: string
+          sprint_number: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          acceptance_criteria?: Json | null
+          assigned_to?: string | null
+          blocked_reason?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          description?: string | null
+          effort?: string
+          feature_name?: string
+          files_affected?: string[] | null
+          id?: string
+          impact?: string
+          item_number?: string
+          metadata?: Json | null
+          notes?: string | null
+          phase_name?: string
+          phase_number?: number
+          priority?: string
+          sprint_name?: string
+          sprint_number?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -2053,6 +2131,16 @@ export type Database = {
           manual_rules: Json
           mode: Database["public"]["Enums"]["shipping_mode"]
           show_free_badge: boolean
+        }[]
+      }
+      get_roadmap_progress: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          blocked_items: number
+          completed_items: number
+          in_progress_items: number
+          progress_percentage: number
+          total_items: number
         }[]
       }
       get_user_org_role: {
