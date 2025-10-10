@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ChangelogCarousel } from "@/components/ChangelogCarousel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle2, Sparkles, Clock, TrendingUp, Zap, Calendar, Heart, Shield, Rocket } from "lucide-react";
+import { CheckCircle2, Sparkles, Clock, TrendingUp, Heart, Shield, Rocket, ExternalLink, Calendar, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -25,6 +26,7 @@ interface ImplementedFeature {
 }
 
 export default function Changelog() {
+  const navigate = useNavigate();
   const [features, setFeatures] = useState<ImplementedFeature[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'recent' | 'high-impact'>('all');
@@ -110,16 +112,52 @@ export default function Changelog() {
   };
 
   const getCategoryIcon = (phaseName: string) => {
-    if (phaseName.toLowerCase().includes('funcionalidad')) return '🎯';
-    if (phaseName.toLowerCase().includes('experiencia')) return '✨';
-    if (phaseName.toLowerCase().includes('integración')) return '🔗';
-    if (phaseName.toLowerCase().includes('optimización')) return '⚡';
+    const lower = phaseName.toLowerCase();
+    if (lower.includes('compra') || lower.includes('carrito')) return '🛒';
+    if (lower.includes('experiencia') || lower.includes('usuario')) return '✨';
+    if (lower.includes('producto') || lower.includes('búsqueda')) return '🔍';
+    if (lower.includes('seguridad') || lower.includes('cuenta')) return '🔒';
+    if (lower.includes('pago') || lower.includes('checkout')) return '💳';
+    if (lower.includes('recompensa') || lower.includes('puntos')) return '🎁';
     return '🚀';
   };
 
+  const getCustomerFriendlyCategory = (phaseName: string) => {
+    const lower = phaseName.toLowerCase();
+    if (lower.includes('funcionalidad crítica') || lower.includes('base')) return 'Experiencia de Compra';
+    if (lower.includes('experiencia')) return 'Comodidad y Facilidad';
+    if (lower.includes('integración')) return 'Servicios Conectados';
+    if (lower.includes('optimización')) return 'Mejoras de Rendimiento';
+    return phaseName;
+  };
+
+  const getFeatureLink = (feature: ImplementedFeature): string | null => {
+    const name = feature.feature_name.toLowerCase();
+    const desc = (feature.description || '').toLowerCase();
+    
+    // Mapeo de funcionalidades a rutas
+    if (name.includes('carrito') || name.includes('cart')) return '/';
+    if (name.includes('wishlist') || name.includes('deseos')) return '/wishlist';
+    if (name.includes('compare') || name.includes('comparar')) return '/compare';
+    if (name.includes('search') || name.includes('búsqueda') || name.includes('filtro')) return '/search';
+    if (name.includes('checkout') || name.includes('pago')) return '/';
+    if (name.includes('perfil') || name.includes('profile') || name.includes('cuenta')) return '/profile';
+    if (name.includes('recompensa') || name.includes('reward') || name.includes('puntos')) return '/profile';
+    if (name.includes('referral') || name.includes('referir')) return '/refer-earn';
+    if (name.includes('track') || name.includes('rastreo')) return '/track';
+    if (name.includes('faq')) return '/faq';
+    
+    // Por descripción
+    if (desc.includes('carrito')) return '/';
+    if (desc.includes('deseos')) return '/wishlist';
+    if (desc.includes('comparar')) return '/compare';
+    if (desc.includes('buscar') || desc.includes('filtro')) return '/search';
+    
+    return null;
+  };
+
   const groupedByPhase = getFilteredFeatures().reduce((acc, feature) => {
-    const categoryName = feature.phase_name.replace(/FUNCIONALIDAD CRÍTICA|MEJORAS DE EXPERIENCIA|INTEGRACIONES|OPTIMIZACIONES/gi, '')
-      .trim() || feature.phase_name;
+    const categoryName = getCustomerFriendlyCategory(feature.phase_name);
     
     if (!acc[categoryName]) {
       acc[categoryName] = [];
@@ -231,37 +269,53 @@ export default function Changelog() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6 pt-6">
-                      {categoryFeatures.map((feature) => (
-                        <div
-                          key={feature.id}
-                          className="group p-6 border rounded-xl hover:shadow-lg hover:border-primary/20 transition-all duration-300 bg-gradient-to-br from-background to-primary/[0.02]"
-                        >
-                          <div className="flex items-start justify-between gap-4 mb-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-3">
-                                {getImpactIcon(feature.impact)}
-                                <h3 className="font-bold text-xl group-hover:text-primary transition-colors">
-                                  {feature.feature_name}
-                                </h3>
-                              </div>
-                              
-                              {/* Customer Benefit - Main focus */}
-                              <div className="mb-4 p-4 bg-primary/5 rounded-lg border-l-4 border-primary">
-                                <p className="text-base leading-relaxed text-foreground font-medium">
-                                  {feature.customer_benefit || feature.description || 'Mejora en tu experiencia de compra'}
-                                </p>
-                              </div>
+                      {categoryFeatures.map((feature) => {
+                        const featureLink = getFeatureLink(feature);
+                        const isClickable = featureLink !== null;
+                        
+                        return (
+                          <div
+                            key={feature.id}
+                            onClick={() => isClickable && navigate(featureLink)}
+                            className={`group p-6 border rounded-xl hover:shadow-lg hover:border-primary/20 transition-all duration-300 bg-gradient-to-br from-background to-primary/[0.02] ${
+                              isClickable ? 'cursor-pointer hover:scale-[1.01]' : ''
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-4 mb-4">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-3">
+                                  {getImpactIcon(feature.impact)}
+                                  <h3 className="font-bold text-xl group-hover:text-primary transition-colors flex items-center gap-2">
+                                    {feature.feature_name}
+                                    {isClickable && (
+                                      <ExternalLink className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    )}
+                                  </h3>
+                                </div>
+                                
+                                {/* Customer Benefit - Main focus */}
+                                <div className="mb-4 p-4 bg-primary/5 rounded-lg border-l-4 border-primary">
+                                  <p className="text-base leading-relaxed text-foreground font-medium">
+                                    {feature.customer_benefit || feature.description || 'Mejora en tu experiencia de compra'}
+                                  </p>
+                                </div>
 
-                              <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="text-xs">
-                                  <Calendar className="h-3 w-3 mr-1" />
-                                  {format(new Date(feature.completed_at), "d MMM yyyy", { locale: es })}
-                                </Badge>
+                                <div className="flex items-center gap-2 justify-between">
+                                  <Badge variant="outline" className="text-xs">
+                                    <Calendar className="h-3 w-3 mr-1" />
+                                    {format(new Date(feature.completed_at), "d MMM yyyy", { locale: es })}
+                                  </Badge>
+                                  {isClickable && (
+                                    <span className="text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                                      Haz clic para probarlo →
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </CardContent>
                   </Card>
                 ))}

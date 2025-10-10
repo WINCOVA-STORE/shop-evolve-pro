@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -29,27 +29,31 @@ const highlights: CarouselItem[] = [
 export const ChangelogCarousel = ({ latestFeatures }: { latestFeatures?: CarouselItem[] }) => {
   const items = latestFeatures && latestFeatures.length > 0 ? latestFeatures : highlights;
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % items.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
+  const goToNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % items.length);
   }, [items.length]);
 
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % items.length);
-  };
-
-  const goToPrev = () => {
+  const goToPrev = useCallback(() => {
     setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
-  };
+  }, [items.length]);
 
-  const goToSlide = (index: number) => {
+  const goToSlide = useCallback((index: number) => {
     setCurrentIndex(index);
-  };
+    setIsPaused(true);
+    setTimeout(() => setIsPaused(false), 10000); // Resume after 10 seconds
+  }, []);
+
+  useEffect(() => {
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      goToNext();
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isPaused, goToNext]);
 
   return (
     <div className="relative bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-xl p-8 mb-12 overflow-hidden">
@@ -65,12 +69,16 @@ export const ChangelogCarousel = ({ latestFeatures }: { latestFeatures?: Carouse
         </div>
 
         {/* Carousel Content */}
-        <div className="min-h-[120px] flex items-center justify-center overflow-hidden">
+        <div 
+          className="min-h-[120px] flex items-center justify-center overflow-hidden"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
           <div 
             key={currentIndex}
             className="text-center max-w-2xl mx-auto px-12 animate-fade-in"
           >
-            <div className="text-5xl mb-4 animate-scale-in">{items[currentIndex].icon}</div>
+            <div className="text-5xl mb-4">{items[currentIndex].icon}</div>
             <h3 className="text-xl font-semibold mb-3 text-foreground">
               {items[currentIndex].title}
             </h3>
