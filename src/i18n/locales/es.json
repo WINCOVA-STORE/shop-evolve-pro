@@ -206,6 +206,12 @@
   "recovery": {
     "title": "Manual de Recuperación",
     "subtitle": "Guía paso a paso para recuperar tu código y datos en cualquier emergencia",
+    "back_button": "Volver",
+    "maintenance_notice": "Este manual se actualiza mensualmente con imágenes y contenido actualizado",
+    "recovery_order_title": "Orden Lógico de Recuperación",
+    "recovery_order_step1": "PRIMERO: Recupera el código desde GitHub",
+    "recovery_order_step2": "SEGUNDO: Despliega el código en hosting",
+    "recovery_order_step3": "TERCERO: Restaura los datos desde backup",
     "github_status": "Estado de Conexión GitHub",
     "how_verify": "¿Cómo verificar tu conexión?",
     "verify_step_1": "Ve al editor de Lovable",

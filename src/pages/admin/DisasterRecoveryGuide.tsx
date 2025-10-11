@@ -21,7 +21,9 @@ import {
   Clock,
   ImageIcon,
   HelpCircle,
-  AlertTriangle
+  AlertTriangle,
+  ArrowLeft,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -58,6 +60,16 @@ const DisasterRecoveryGuide = () => {
       <Header />
       
       <div className="container mx-auto px-4 py-8 max-w-5xl">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          onClick={() => window.history.back()}
+          className="mb-6"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          {t('recovery.back_button')}
+        </Button>
+
         {/* Hero Section */}
         <div className="mb-8 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
@@ -69,7 +81,62 @@ const DisasterRecoveryGuide = () => {
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             {t('recovery.subtitle')}
           </p>
+          <Alert className="max-w-2xl mx-auto mt-4">
+            <Clock className="h-4 w-4" />
+            <AlertDescription>
+              {t('recovery.maintenance_notice')}
+            </AlertDescription>
+          </Alert>
         </div>
+
+        {/* Recovery Order Section */}
+        <Card className="mb-8 border-2 border-primary/30 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-2xl">
+              <AlertCircle className="w-6 h-6 text-primary" />
+              {t('recovery.recovery_order_title')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Alert className="bg-background">
+              <AlertDescription className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
+                    1
+                  </div>
+                  <div>
+                    <p className="font-semibold">{t('recovery.recovery_order_step1')}</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {t('recovery.scenario_1_desc')}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
+                    2
+                  </div>
+                  <div>
+                    <p className="font-semibold">{t('recovery.recovery_order_step2')}</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {t('recovery.step_4_title')}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
+                    3
+                  </div>
+                  <div>
+                    <p className="font-semibold">{t('recovery.recovery_order_step3')}</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {t('recovery.scenario_3_desc')}
+                    </p>
+                  </div>
+                </div>
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+        </Card>
 
         {/* GitHub Connection Status */}
         <Card className="mb-8 border-primary/20 bg-primary/5">

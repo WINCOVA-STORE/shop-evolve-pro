@@ -2,6 +2,8 @@
 
 > **Acceso rápido / Quick access:** Este manual está disponible tanto en la aplicación como en GitHub para que siempre tengas acceso, incluso si la aplicación no está disponible.
 
+> **🔄 Mantenimiento / Maintenance:** Este manual se actualiza mensualmente para mantener las imágenes y contenido vigente con las últimas versiones de las plataformas. Última actualización: Octubre 2025
+
 ## 🌐 ¿Cómo acceder a este manual externamente? | How to access this manual externally?
 
 ### Español 🇪🇸
@@ -14,18 +16,20 @@ Una vez que tu proyecto esté conectado a GitHub, este archivo (`RECOVERY_MANUAL
    - Ve a: `https://github.com/[tu-usuario-u-organizacion]/[nombre-repositorio]/blob/main/RECOVERY_MANUAL.md`
    - Ejemplo: `https://github.com/wincova/mi-tienda/blob/main/RECOVERY_MANUAL.md`
 
-2. **Copia la URL y guárdala:**
-   - Esta URL es pública y funcional 100%
-   - Puedes compartirla con tus clientes
-   - Funciona incluso si la aplicación está caída
-   - No requiere autenticación para verla (es pública)
+2. **Esta URL es TUYA y FUNCIONAL al 100%:**
+   - ✅ Es pública - no requiere autenticación
+   - ✅ Funciona 24/7, incluso si la aplicación está caída
+   - ✅ La puedes compartir libremente con clientes y equipo
+   - ✅ Permanece activa mientras tu repositorio exista en GitHub
+   - ✅ Se actualiza automáticamente cada vez que el código se sincroniza
 
 3. **Marca como favorito:**
    - Guarda la URL en tus favoritos del navegador
    - Compártela con tu equipo
    - Envíala por email a tus clientes
+   - Imprímela y tenla a mano
 
-**💡 Consejo:** Copia la URL del manual ahora y guárdala en un lugar seguro (Google Drive, Notion, email, etc.)
+**💡 Consejo:** Copia la URL del manual AHORA y guárdala en múltiples lugares seguros (Google Drive, Notion, email, documento físico, etc.)
 
 ### English 🇺🇸
 
@@ -84,6 +88,32 @@ Once your project is connected to GitHub, this file (`RECOVERY_MANUAL.md`) is au
 **Enlaces útiles:**
 - [Abrir GitHub](https://github.com)
 - [Abrir Lovable](https://lovable.dev)
+
+---
+
+## 🎯 Orden Lógico de Recuperación
+
+**⚠️ IMPORTANTE - Orden Correcto:**
+
+Si perdiste TODO (código + datos), el orden correcto de recuperación es:
+
+1. **PRIMERO: Recupera el CÓDIGO desde GitHub** (Escenario 1)
+   - El código es la aplicación/sitio web
+   - Sin código, no tienes dónde poner los datos
+   - GitHub guarda tu código automáticamente
+
+2. **SEGUNDO: Despliega el código en un hosting** (Vercel/Netlify/etc.)
+   - Tu sitio web estará funcionando pero vacío
+   - Las tablas de la base de datos estarán vacías
+
+3. **TERCERO: Restaura los DATOS desde backup** (Escenario 3)
+   - Los backups contienen: productos, órdenes, usuarios
+   - Se restauran a la base de datos del proyecto
+
+**Analogía simple:**
+- Código = El edificio vacío (estructura)
+- Datos = Los muebles y contenido (productos, órdenes)
+- Primero construyes el edificio, luego metes los muebles
 
 ---
 
