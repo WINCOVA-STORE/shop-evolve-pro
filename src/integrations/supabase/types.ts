@@ -243,25 +243,49 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          description_es: string | null
+          description_fr: string | null
+          description_pt: string | null
+          description_zh: string | null
           id: string
           image_url: string | null
           name: string
+          name_es: string | null
+          name_fr: string | null
+          name_pt: string | null
+          name_zh: string | null
           parent_id: string | null
         }
         Insert: {
           created_at?: string
           description?: string | null
+          description_es?: string | null
+          description_fr?: string | null
+          description_pt?: string | null
+          description_zh?: string | null
           id?: string
           image_url?: string | null
           name: string
+          name_es?: string | null
+          name_fr?: string | null
+          name_pt?: string | null
+          name_zh?: string | null
           parent_id?: string | null
         }
         Update: {
           created_at?: string
           description?: string | null
+          description_es?: string | null
+          description_fr?: string | null
+          description_pt?: string | null
+          description_zh?: string | null
           id?: string
           image_url?: string | null
           name?: string
+          name_es?: string | null
+          name_fr?: string | null
+          name_pt?: string | null
+          name_zh?: string | null
           parent_id?: string | null
         }
         Relationships: [
