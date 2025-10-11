@@ -10,27 +10,29 @@ interface CarouselItem {
   imageUrl?: string;
 }
 
-const highlights: CarouselItem[] = [
-  {
-    title: "🎯 Encuentra lo que necesitas en segundos",
-    description: "Filtros inteligentes que aprenden de ti y te muestran solo lo relevante",
-    icon: "🔍"
-  },
-  {
-    title: "💳 Compra rápido y seguro",
-    description: "Tu información protegida y tus pedidos siempre a un clic de distancia",
-    icon: "🛡️"
-  },
-  {
-    title: "🎁 Recompensas en cada compra",
-    description: "Gana puntos y beneficios exclusivos que puedes usar inmediatamente",
-    icon: "✨"
-  }
-];
-
 export const ChangelogCarousel = ({ latestFeatures }: { latestFeatures?: CarouselItem[] }) => {
   const { t } = useTranslation();
-  const items = latestFeatures && latestFeatures.length > 0 ? latestFeatures : highlights;
+  
+  // Default highlights using translation keys
+  const defaultHighlights: CarouselItem[] = [
+    {
+      title: t('changelog.highlights.search_title'),
+      description: t('changelog.highlights.search_desc'),
+      icon: "🔍"
+    },
+    {
+      title: t('changelog.highlights.secure_title'),
+      description: t('changelog.highlights.secure_desc'),
+      icon: "🛡️"
+    },
+    {
+      title: t('changelog.highlights.rewards_title'),
+      description: t('changelog.highlights.rewards_desc'),
+      icon: "✨"
+    }
+  ];
+  
+  const items = latestFeatures && latestFeatures.length > 0 ? latestFeatures : defaultHighlights;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);

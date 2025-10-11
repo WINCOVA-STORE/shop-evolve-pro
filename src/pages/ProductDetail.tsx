@@ -417,22 +417,22 @@ const ProductDetail = () => {
                 <div className="flex items-start gap-3">
                   <Truck className="h-5 w-5 text-primary mt-0.5" />
                   <div>
-                    <p className="font-medium">Envío Gratis</p>
-                    <p className="text-sm text-muted-foreground">En compras mayores a $50</p>
+                    <p className="font-medium">{t('product_detail.free_shipping')}</p>
+                    <p className="text-sm text-muted-foreground">{t('product_detail.free_shipping_desc')}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Shield className="h-5 w-5 text-primary mt-0.5" />
                   <div>
-                    <p className="font-medium">Compra Protegida</p>
-                    <p className="text-sm text-muted-foreground">Garantía de satisfacción</p>
+                    <p className="font-medium">{t('product_detail.protected_purchase')}</p>
+                    <p className="text-sm text-muted-foreground">{t('product_detail.protected_purchase_desc')}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Package className="h-5 w-5 text-primary mt-0.5" />
                   <div>
-                    <p className="font-medium">Devoluciones Fáciles</p>
-                    <p className="text-sm text-muted-foreground">30 días para devolver</p>
+                    <p className="font-medium">{t('product_detail.easy_returns')}</p>
+                    <p className="text-sm text-muted-foreground">{t('product_detail.easy_returns_desc')}</p>
                   </div>
                 </div>
               </div>

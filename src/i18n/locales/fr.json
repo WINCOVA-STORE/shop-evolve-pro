@@ -322,6 +322,19 @@
     "title": "Nouveautés du Magasin",
     "subtitle": "Découvrez comment chaque amélioration rend votre expérience plus facile, rapide et sécurisée",
     "banner_title": "Nouvelles améliorations du magasin !",
+    "badge_new": "Nouveau !",
+    "badge_improved": "Amélioré !",
+    "view_all": "Voir tout",
+    "novelty": "nouveauté",
+    "novelties": "nouveautés",
+    "highlights": {
+      "search_title": "🎯 Trouvez ce dont vous avez besoin en quelques secondes",
+      "search_desc": "Des filtres intelligents qui apprennent de vous et ne montrent que ce qui est pertinent",
+      "secure_title": "💳 Achetez rapidement et en toute sécurité",
+      "secure_desc": "Vos informations protégées et vos commandes toujours à un clic",
+      "rewards_title": "🎁 Récompenses à chaque achat",
+      "rewards_desc": "Gagnez des points et des avantages exclusifs utilisables immédiatement"
+    },
     "stats": {
       "active_improvements": "Améliorations Actives",
       "ai_powered": "Propulsé par IA",

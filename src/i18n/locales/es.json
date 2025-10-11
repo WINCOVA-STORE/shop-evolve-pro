@@ -490,6 +490,19 @@
     "title": "Novedades de la Tienda",
     "subtitle": "Descubre cómo cada mejora hace tu experiencia más fácil, rápida y segura",
     "banner_title": "¡Nuevas mejoras en la tienda!",
+    "badge_new": "¡Nuevo!",
+    "badge_improved": "¡Mejorado!",
+    "view_all": "Ver todas",
+    "novelty": "novedad",
+    "novelties": "novedades",
+    "highlights": {
+      "search_title": "🎯 Encuentra lo que necesitas en segundos",
+      "search_desc": "Filtros inteligentes que aprenden de ti y te muestran solo lo relevante",
+      "secure_title": "💳 Compra rápido y seguro",
+      "secure_desc": "Tu información protegida y tus pedidos siempre a un clic de distancia",
+      "rewards_title": "🎁 Recompensas en cada compra",
+      "rewards_desc": "Gana puntos y beneficios exclusivos que puedes usar inmediatamente"
+    },
     "stats": {
       "active_improvements": "Mejoras Activas",
       "ai_powered": "Potenciadas con IA",

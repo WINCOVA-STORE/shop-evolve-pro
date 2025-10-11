@@ -322,6 +322,19 @@
     "title": "Novidades da Loja",
     "subtitle": "Descubra como cada melhoria torna sua experiência mais fácil, rápida e segura",
     "banner_title": "Novas melhorias na loja!",
+    "badge_new": "Novo!",
+    "badge_improved": "Melhorado!",
+    "view_all": "Ver todas",
+    "novelty": "novidade",
+    "novelties": "novidades",
+    "highlights": {
+      "search_title": "🎯 Encontre o que você precisa em segundos",
+      "search_desc": "Filtros inteligentes que aprendem com você e mostram apenas o relevante",
+      "secure_title": "💳 Compre rápido e seguro",
+      "secure_desc": "Suas informações protegidas e seus pedidos sempre a um clique de distância",
+      "rewards_title": "🎁 Recompensas em cada compra",
+      "rewards_desc": "Ganhe pontos e benefícios exclusivos que você pode usar imediatamente"
+    },
     "stats": {
       "active_improvements": "Melhorias Ativas",
       "ai_powered": "Impulsionado por IA",

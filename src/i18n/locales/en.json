@@ -499,6 +499,19 @@
     "title": "Store Updates",
     "subtitle": "Discover how each improvement makes your experience easier, faster and more secure",
     "banner_title": "New store improvements!",
+    "badge_new": "New!",
+    "badge_improved": "Improved!",
+    "view_all": "View All",
+    "novelty": "novelty",
+    "novelties": "novelties",
+    "highlights": {
+      "search_title": "🎯 Find what you need in seconds",
+      "search_desc": "Smart filters that learn from you and show only what's relevant",
+      "secure_title": "💳 Shop fast and secure",
+      "secure_desc": "Your information protected and your orders always one click away",
+      "rewards_title": "🎁 Rewards on every purchase",
+      "rewards_desc": "Earn points and exclusive benefits you can use immediately"
+    },
     "stats": {
       "active_improvements": "Active Improvements",
       "ai_powered": "AI Powered",

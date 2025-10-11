@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles } from "lucide-react";
 
@@ -8,6 +9,8 @@ interface ChangelogBadgeProps {
 }
 
 export const ChangelogBadge = ({ isNew, isImproved, className }: ChangelogBadgeProps) => {
+  const { t } = useTranslation();
+  
   if (!isNew && !isImproved) return null;
 
   return (
@@ -16,7 +19,7 @@ export const ChangelogBadge = ({ isNew, isImproved, className }: ChangelogBadgeP
       variant="default"
     >
       <Sparkles className="h-3 w-3 mr-1" />
-      {isNew ? '¡Nuevo!' : '¡Mejorado!'}
+      {isNew ? t('changelog.badge_new') : t('changelog.badge_improved')}
     </Badge>
   );
 };

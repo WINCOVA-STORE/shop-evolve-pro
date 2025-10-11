@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Sparkles, ArrowRight, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const ChangelogBanner = () => {
+  const { t } = useTranslation();
   const [recentFeatures, setRecentFeatures] = useState<any[]>([]);
   const [showBanner, setShowBanner] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -67,10 +69,10 @@ export const ChangelogBanner = () => {
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="text-lg font-bold text-purple-900 dark:text-purple-100">
-                ¡Nuevas mejoras en la tienda!
+                {t('changelog.banner_title')}
               </h3>
               <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                {recentFeatures.length} {recentFeatures.length === 1 ? 'novedad' : 'novedades'}
+                {recentFeatures.length} {recentFeatures.length === 1 ? t('changelog.novelty') : t('changelog.novelties')}
               </Badge>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -88,7 +90,7 @@ export const ChangelogBanner = () => {
           
           <Link to="/changelog">
             <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
-              Ver todas
+              {t('changelog.view_all')}
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </Link>
