@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useCategoryTranslation } from "@/hooks/useTranslatedCategory";
+import { useEnsureProductTranslations } from "@/hooks/useEnsureProductTranslations";
 
 const Index = () => {
   const { data: products, isLoading } = useFeaturedProducts(8);
@@ -25,6 +26,9 @@ const Index = () => {
   const { translateCategoryName } = useCategoryTranslation();
   const [email, setEmail] = useState("");
   
+  // Genera traducciones faltantes en segundo plano para productos destacados
+  useEnsureProductTranslations(products);
+
   // Capture referral code from URL
   useReferral();
 

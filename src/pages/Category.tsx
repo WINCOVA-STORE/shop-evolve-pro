@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Product } from "@/hooks/useProducts";
 import { categories as staticCategories } from "@/data/categories";
 import { useCategoryTranslation } from "@/hooks/useTranslatedCategory";
+import { useEnsureProductTranslations } from "@/hooks/useEnsureProductTranslations";
  
 interface CategoryInfo {
   id: string;
@@ -32,6 +33,9 @@ const Category = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("featured");
+
+  // Ensure missing translations are generated for current language (non-bloqueante)
+  useEnsureProductTranslations(products);
 
   useEffect(() => {
     if (slug) {
