@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useTranslation } from "react-i18next";
+import { BatchTranslationPanel } from "@/components/admin/BatchTranslationPanel";
 
 interface Stats {
   totalOrders: number;
@@ -307,21 +308,27 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="products">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t("admin.product_management")}</CardTitle>
-                <CardDescription>
-                  {t("admin.product_management_desc")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  <ShoppingBag className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>{t("admin.coming_soon")}</p>
-                  <p className="text-sm mt-2">{t("admin.coming_soon_products")}</p>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="space-y-6">
+              {/* Batch Translation Panel */}
+              <BatchTranslationPanel />
+              
+              {/* Future: Product Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("admin.product_management")}</CardTitle>
+                  <CardDescription>
+                    {t("admin.product_management_desc")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8 text-muted-foreground">
+                    <ShoppingBag className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>{t("admin.coming_soon")}</p>
+                    <p className="text-sm mt-2">{t("admin.coming_soon_products")}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="users">
