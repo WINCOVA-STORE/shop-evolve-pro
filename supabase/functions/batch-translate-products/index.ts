@@ -56,9 +56,11 @@ serve(async (req) => {
     };
 
     let totalTranslated = 0;
+    const analyticsData: Record<string, { translated: number; aiCalls: number }> = {};
 
     // Process each language
     for (const lang of targetLanguages) {
+      analyticsData[lang] = { translated: 0, aiCalls: 0 };
       const nameKey = `name_${lang}` as keyof typeof products[0];
       const descKey = `description_${lang}` as keyof typeof products[0];
 
@@ -158,10 +160,34 @@ Return ONLY a JSON array with this EXACT structure:
         }
 
         totalTranslated += updated;
+        analyticsData[lang].translated = updated;
+        analyticsData[lang].aiCalls = 1;
         console.log(`✅ ${lang}: Translated ${updated} products in 1 AI call!`);
 
       } catch (error) {
         console.error(`❌ ${lang}: Translation error:`, error);
+      }
+    }
+
+    // 📊 Save analytics data
+    for (const [lang, stats] of Object.entries(analyticsData)) {
+      if (stats.translated > 0) {
+        // Calculate cost savings (without batch: products * 4 langs, with batch: 1 call per lang)
+        const costWithoutBatch = stats.translated * 0.01; // $0.01 per product without batch
+        const costWithBatch = stats.aiCalls * 0.01; // $0.01 per AI call
+        const costSaved = costWithoutBatch - costWithBatch;
+
+        await supabase.from('translation_analytics').insert({
+          language: lang,
+          products_translated: stats.translated,
+          ai_calls_used: stats.aiCalls,
+          cost_saved_usd: costSaved,
+          total_cost_usd: costWithBatch,
+          metadata: {
+            batch_size: stats.translated,
+            efficiency_ratio: stats.translated / stats.aiCalls
+          }
+        });
       }
     }
 
