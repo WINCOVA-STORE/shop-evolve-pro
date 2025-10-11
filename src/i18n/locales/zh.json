@@ -54,6 +54,28 @@
     "rewards": "奖励",
     "rewards_desc": "每次购买"
   },
+  "product_detail": {
+    "back": "返回",
+    "back_to_order": "返回订单",
+    "only_left": "仅剩{{count}}件",
+    "sku": "SKU",
+    "description": "描述",
+    "tags": "标签",
+    "quantity": "数量",
+    "available": "有货",
+    "out_of_stock": "缺货",
+    "free_shipping": "免费配送",
+    "free_shipping_desc": "订单满$50",
+    "protected_purchase": "购买保护",
+    "protected_purchase_desc": "满意保证",
+    "easy_returns": "轻松退货",
+    "easy_returns_desc": "30天内退货",
+    "earn_with_purchase": "此次购买您将获得",
+    "reward_points": "1%奖励积分",
+    "product_not_found": "产品未找到",
+    "product_not_found_desc": "此产品不存在或不可用",
+    "error_loading": "无法加载产品"
+  },
   "special_offer": {
     "badge": "特别优惠",
     "title": "最高50%折扣！",

@@ -54,6 +54,28 @@
     "rewards": "Récompenses",
     "rewards_desc": "À chaque achat"
   },
+  "product_detail": {
+    "back": "Retour",
+    "back_to_order": "Retour à la Commande",
+    "only_left": "Seulement {{count}} restant",
+    "sku": "SKU",
+    "description": "Description",
+    "tags": "Tags",
+    "quantity": "Quantité",
+    "available": "disponible",
+    "out_of_stock": "Rupture de Stock",
+    "free_shipping": "Livraison Gratuite",
+    "free_shipping_desc": "Sur commandes +50$",
+    "protected_purchase": "Achat Protégé",
+    "protected_purchase_desc": "Garantie de satisfaction",
+    "easy_returns": "Retours Faciles",
+    "easy_returns_desc": "30 jours pour retourner",
+    "earn_with_purchase": "Vous gagnerez avec cet achat",
+    "reward_points": "1% en points de récompense",
+    "product_not_found": "Produit non trouvé",
+    "product_not_found_desc": "Ce produit n'existe pas ou n'est pas disponible",
+    "error_loading": "Impossible de charger le produit"
+  },
   "special_offer": {
     "badge": "Offre Spéciale",
     "title": "Jusqu'à 50% de Réduction!",
