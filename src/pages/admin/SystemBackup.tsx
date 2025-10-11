@@ -28,10 +28,10 @@ import { format } from "date-fns";
 
 interface BackupRecord {
   id: string;
-  backup_type: 'manual' | 'automatic';
+  backup_type: string;
   file_path: string;
   file_size: number;
-  status: 'completed' | 'failed' | 'in_progress';
+  status: string;
   created_at: string;
   created_by: string | null;
   metadata: any;
@@ -44,7 +44,7 @@ const SystemBackup = () => {
   const [loading, setLoading] = useState(false);
   const [backups, setBackups] = useState<BackupRecord[]>([]);
   const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
-  const [backupFrequency, setBackupFrequency] = useState<'daily' | 'weekly'>('daily');
+  const [backupFrequency, setBackupFrequency] = useState<string>('daily');
   const [restoring, setRestoring] = useState(false);
 
   useEffect(() => {
@@ -102,8 +102,8 @@ const SystemBackup = () => {
       if (error && error.code !== 'PGRST116') throw error;
       
       if (data) {
-        setAutoBackupEnabled(data.auto_backup_enabled);
-        setBackupFrequency(data.frequency);
+        setAutoBackupEnabled(data.auto_backup_enabled || false);
+        setBackupFrequency(data.frequency || 'daily');
       }
     } catch (error) {
       console.error('Error fetching backup settings:', error);
@@ -359,7 +359,7 @@ const SystemBackup = () => {
               {autoBackupEnabled && (
                 <div className="space-y-2">
                   <Label>Frecuencia</Label>
-                  <Select value={backupFrequency} onValueChange={(v: any) => setBackupFrequency(v)}>
+                  <Select value={backupFrequency} onValueChange={setBackupFrequency}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>

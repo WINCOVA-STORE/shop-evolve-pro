@@ -33,6 +33,7 @@ import WincovaDiscover from "./pages/WincovaDiscover";
 import WincovaDiagnosis from "./pages/WincovaDiagnosis";
 import EcommerceRoadmap from "./pages/admin/EcommerceRoadmap";
 import { RoadmapMetrics } from "./pages/admin/RoadmapMetrics";
+import SystemBackup from "./pages/admin/SystemBackup";
 import Changelog from "./pages/Changelog";
 import NotFound from "./pages/NotFound";
 
@@ -72,6 +73,7 @@ const App = () => (
                   <Route path="/admin/rewards-settings" element={<RewardsSettings />} />
                   <Route path="/admin/ecommerce-roadmap" element={<EcommerceRoadmap />} />
                   <Route path="/admin/roadmap-metrics" element={<RoadmapMetrics />} />
+                  <Route path="/admin/system-backup" element={<SystemBackup />} />
                   <Route path="/admin/project/*" element={<AdminProject />} />
                   <Route path="/wincova" element={<WincovaDiscover />} />
                   <Route path="/wincova/diagnosis/:diagnosisId" element={<WincovaDiagnosis />} />

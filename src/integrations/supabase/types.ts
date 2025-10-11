@@ -168,6 +168,36 @@ export type Database = {
           },
         ]
       }
+      backup_settings: {
+        Row: {
+          auto_backup_enabled: boolean
+          created_at: string
+          frequency: string
+          id: string
+          last_backup_at: string | null
+          next_backup_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          auto_backup_enabled?: boolean
+          created_at?: string
+          frequency?: string
+          id?: string
+          last_backup_at?: string | null
+          next_backup_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          auto_backup_enabled?: boolean
+          created_at?: string
+          frequency?: string
+          id?: string
+          last_backup_at?: string | null
+          next_backup_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cart_items: {
         Row: {
           cart_id: string
@@ -1216,6 +1246,42 @@ export type Database = {
           show_free_badge?: boolean
           store_id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      system_backups: {
+        Row: {
+          backup_type: string
+          created_at: string
+          created_by: string | null
+          error_message: string | null
+          file_path: string
+          file_size: number
+          id: string
+          metadata: Json | null
+          status: string
+        }
+        Insert: {
+          backup_type: string
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          file_path: string
+          file_size?: number
+          id?: string
+          metadata?: Json | null
+          status?: string
+        }
+        Update: {
+          backup_type?: string
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          file_path?: string
+          file_size?: number
+          id?: string
+          metadata?: Json | null
+          status?: string
         }
         Relationships: []
       }

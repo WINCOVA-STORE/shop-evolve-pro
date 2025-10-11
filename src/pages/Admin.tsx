@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Package, ShoppingBag, Users, DollarSign, ArrowLeft, Shield, RefreshCw, Truck, Gift, FolderKanban } from "lucide-react";
+import { Loader2, Package, ShoppingBag, Users, DollarSign, ArrowLeft, Shield, RefreshCw, Truck, Gift, FolderKanban, Database } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -232,7 +232,7 @@ const Admin = () => {
             <TabsTrigger value="users">{t("admin.users")}</TabsTrigger>
           </TabsList>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <Button onClick={() => navigate("/admin/woocommerce-sync")} variant="outline">
               <RefreshCw className="mr-2 h-4 w-4" />
               WooCommerce Sync
@@ -244,6 +244,10 @@ const Admin = () => {
             <Button onClick={() => navigate("/admin/rewards-settings")} variant="outline">
               <Gift className="mr-2 h-4 w-4" />
               Sistema de Recompensas
+            </Button>
+            <Button onClick={() => navigate("/admin/system-backup")} variant="outline">
+              <Database className="mr-2 h-4 w-4" />
+              Backups del Sistema
             </Button>
           </div>
 
