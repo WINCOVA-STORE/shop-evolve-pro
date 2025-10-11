@@ -1486,6 +1486,185 @@ export type Database = {
           },
         ]
       }
+      translation_analytics: {
+        Row: {
+          ai_calls_used: number
+          cost_saved_usd: number
+          created_at: string
+          date: string
+          id: string
+          language: string
+          metadata: Json | null
+          products_translated: number
+          total_cost_usd: number
+        }
+        Insert: {
+          ai_calls_used?: number
+          cost_saved_usd?: number
+          created_at?: string
+          date?: string
+          id?: string
+          language: string
+          metadata?: Json | null
+          products_translated?: number
+          total_cost_usd?: number
+        }
+        Update: {
+          ai_calls_used?: number
+          cost_saved_usd?: number
+          created_at?: string
+          date?: string
+          id?: string
+          language?: string
+          metadata?: Json | null
+          products_translated?: number
+          total_cost_usd?: number
+        }
+        Relationships: []
+      }
+      translation_api_keys: {
+        Row: {
+          allowed_domains: string[] | null
+          api_key: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          last_used_at: string | null
+          metadata: Json | null
+          name: string
+          rate_limit_per_minute: number | null
+          store_id: string
+        }
+        Insert: {
+          allowed_domains?: string[] | null
+          api_key: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_used_at?: string | null
+          metadata?: Json | null
+          name: string
+          rate_limit_per_minute?: number | null
+          store_id?: string
+        }
+        Update: {
+          allowed_domains?: string[] | null
+          api_key?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_used_at?: string | null
+          metadata?: Json | null
+          name?: string
+          rate_limit_per_minute?: number | null
+          store_id?: string
+        }
+        Relationships: []
+      }
+      translation_api_logs: {
+        Row: {
+          ai_calls_used: number
+          api_key_id: string | null
+          created_at: string
+          endpoint: string
+          error_message: string | null
+          id: string
+          ip_address: string | null
+          languages_count: number
+          products_count: number
+          response_time_ms: number | null
+          success: boolean
+          user_agent: string | null
+        }
+        Insert: {
+          ai_calls_used?: number
+          api_key_id?: string | null
+          created_at?: string
+          endpoint: string
+          error_message?: string | null
+          id?: string
+          ip_address?: string | null
+          languages_count?: number
+          products_count?: number
+          response_time_ms?: number | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Update: {
+          ai_calls_used?: number
+          api_key_id?: string | null
+          created_at?: string
+          endpoint?: string
+          error_message?: string | null
+          id?: string
+          ip_address?: string | null
+          languages_count?: number
+          products_count?: number
+          response_time_ms?: number | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "translation_api_logs_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "translation_api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      translation_branding: {
+        Row: {
+          api_enabled: boolean
+          created_at: string
+          current_api_usage: number | null
+          custom_domain: string | null
+          id: string
+          monthly_api_quota: number | null
+          primary_color: string | null
+          product_logo_url: string | null
+          product_name: string
+          show_powered_by: boolean
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          api_enabled?: boolean
+          created_at?: string
+          current_api_usage?: number | null
+          custom_domain?: string | null
+          id?: string
+          monthly_api_quota?: number | null
+          primary_color?: string | null
+          product_logo_url?: string | null
+          product_name?: string
+          show_powered_by?: boolean
+          store_id?: string
+          updated_at?: string
+        }
+        Update: {
+          api_enabled?: boolean
+          created_at?: string
+          current_api_usage?: number | null
+          custom_domain?: string | null
+          id?: string
+          monthly_api_quota?: number | null
+          primary_color?: string | null
+          product_logo_url?: string | null
+          product_name?: string
+          show_powered_by?: boolean
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
