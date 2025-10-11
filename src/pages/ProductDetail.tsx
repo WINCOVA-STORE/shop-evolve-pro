@@ -51,7 +51,7 @@ const ProductDetail = () => {
     if (id) {
       fetchProduct();
     }
-  }, [id]);
+  }, [id, i18n.language]); // Re-fetch when language changes
 
   // Ensure translations exist for current language (backfill old products)
   useEffect(() => {
