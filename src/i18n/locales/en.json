@@ -24,7 +24,15 @@
   },
   "categories": {
     "title": "Shop by Category",
-    "no_categories": "No categories available yet"
+    "no_categories": "No categories available yet",
+    "names": {
+      "electronics-technology": "Electronics & Technology",
+      "smart-home-iot": "Smart Home & IoT",
+      "womens-fashion": "Women's Fashion",
+      "mens-fashion": "Men's Fashion",
+      "shoes-bags-accessories": "Shoes, Bags & Accessories",
+      "jewelry-watches": "Jewelry & Watches"
+    }
   },
   "products": {
     "featured": "Featured Products",

@@ -29,4 +29,11 @@ i18n
     },
   });
 
+// Sync <html lang> attribute and cache language changes
+i18n.on('languageChanged', (lng) => {
+  if (typeof document !== 'undefined') {
+    document.documentElement.setAttribute('lang', lng);
+  }
+});
+ 
 export default i18n;

@@ -10,33 +10,34 @@ export const useTranslatedProduct = (product: Product | null | undefined) => {
   
   if (!product) return { name: '', description: '' };
   
-  const currentLang = i18n.language;
+  // Normalize to base language (e.g., es-ES -> es)
+  const baseLang = (i18n.language || 'en').toLowerCase().split(/[-_]/)[0];
   
   // Map language codes to database column suffixes
-  const langMap: Record<string, keyof Product> = {
-    'es': 'name_es',
-    'fr': 'name_fr',
-    'pt': 'name_pt',
-    'zh': 'name_zh',
+  const nameMap: Record<string, keyof Product> = {
+    es: 'name_es',
+    fr: 'name_fr',
+    pt: 'name_pt',
+    zh: 'name_zh',
   };
   
-  const descLangMap: Record<string, keyof Product> = {
-    'es': 'description_es',
-    'fr': 'description_fr',
-    'pt': 'description_pt',
-    'zh': 'description_zh',
+  const descMap: Record<string, keyof Product> = {
+    es: 'description_es',
+    fr: 'description_fr',
+    pt: 'description_pt',
+    zh: 'description_zh',
   };
   
-  // Get translated name, fallback to English (default 'name' column)
-  const nameKey = langMap[currentLang];
-  const translatedName = (nameKey && product[nameKey as keyof Product]) || product.name;
+  const nameKey = nameMap[baseLang];
+  const rawName = (nameKey ? (product[nameKey] as string | null | undefined) : undefined) || product.name;
+  const safeName = (rawName ?? '').toString();
   
-  // Get translated description, fallback to English (default 'description' column)
-  const descKey = descLangMap[currentLang];
-  const translatedDescription = (descKey && product[descKey as keyof Product]) || product.description;
+  const descKey = descMap[baseLang];
+  const rawDesc = (descKey ? (product[descKey] as string | null | undefined) : undefined) || product.description;
+  const safeDesc = (rawDesc ?? null) as string | null;
   
   return {
-    name: translatedName as string,
-    description: translatedDescription as string | null,
+    name: safeName,
+    description: safeDesc,
   };
 };

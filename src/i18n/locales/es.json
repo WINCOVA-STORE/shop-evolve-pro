@@ -24,7 +24,15 @@
   },
   "categories": {
     "title": "Comprar por Categoría",
-    "no_categories": "No hay categorías disponibles aún"
+    "no_categories": "No hay categorías disponibles aún",
+    "names": {
+      "electronics-technology": "Electrónica y Tecnología",
+      "smart-home-iot": "Hogar Inteligente e IoT",
+      "womens-fashion": "Moda para Mujer",
+      "mens-fashion": "Moda para Hombre",
+      "shoes-bags-accessories": "Zapatos, Bolsos y Accesorios",
+      "jewelry-watches": "Joyería y Relojes"
+    }
   },
   "products": {
     "featured": "Productos Destacados",

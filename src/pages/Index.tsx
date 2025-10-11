@@ -16,11 +16,13 @@ import { Truck, Shield, Package, Gift, Star, Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useCategoryTranslation } from "@/hooks/useTranslatedCategory";
 
 const Index = () => {
   const { data: products, isLoading } = useFeaturedProducts(8);
   const { data: categoriesWithProducts, isLoading: categoriesLoading } = useMainCategoriesWithProducts(6);
   const { t } = useTranslation();
+  const { translateCategoryName } = useCategoryTranslation();
   const [email, setEmail] = useState("");
   
   // Capture referral code from URL
@@ -118,8 +120,8 @@ const Index = () => {
           ) : categoriesWithProducts && categoriesWithProducts.length > 0 ? (
             categoriesWithProducts.map((category) => (
               <CategoryCard
-                key={category.name}
-                name={category.name}
+                key={category.slug}
+                name={translateCategoryName(category.slug, category.name)}
                 icon={category.icon}
                 href={`/category/${category.slug}`}
               />

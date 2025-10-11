@@ -13,8 +13,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Product } from "@/hooks/useProducts";
-
-interface Category {
+import { categories as staticCategories } from "@/data/categories";
+import { useCategoryTranslation } from "@/hooks/useTranslatedCategory";
+ 
+interface CategoryInfo {
   id: string;
   name: string;
   description: string;
@@ -24,8 +26,9 @@ const Category = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { translateCategoryName } = useCategoryTranslation();
   const { toast } = useToast();
-  const [category, setCategory] = useState<Category | null>(null);
+  const [category, setCategory] = useState<CategoryInfo | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("featured");
@@ -38,15 +41,9 @@ const Category = () => {
 
   const fetchCategoryAndProducts = async () => {
     try {
-      // For demo purposes, we'll use a simple mapping
-      const categoryMap: Record<string, string> = {
-        men: "Hombres",
-        women: "Mujeres",
-        kids: "Niños",
-        electronics: "Electrónica",
-      };
-
-      const categoryName = categoryMap[slug || ""] || slug;
+      // Find the category from our static list using the slug
+      const cat = staticCategories.find(c => c.slug === slug);
+      const displayName = cat ? translateCategoryName(cat.slug, cat.name) : (slug || "");
 
       // Fetch products
       let query = supabase
@@ -76,8 +73,8 @@ const Category = () => {
 
       setCategory({
         id: slug || "",
-        name: categoryName || "",
-        description: t('products.discover_category', { category: categoryName?.toLowerCase() }),
+        name: displayName || "",
+        description: t('products.discover_category', { category: (displayName || '').toLowerCase() }),
       });
       setProducts(data || []);
     } catch (error) {

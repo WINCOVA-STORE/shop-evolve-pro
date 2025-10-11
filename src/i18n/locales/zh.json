@@ -24,7 +24,15 @@
   },
   "categories": {
     "title": "按类别购物",
-    "no_categories": "暂无可用类别"
+    "no_categories": "暂无可用类别",
+    "names": {
+      "electronics-technology": "电子与科技",
+      "smart-home-iot": "智能家居与物联网",
+      "womens-fashion": "女士时尚",
+      "mens-fashion": "男士时尚",
+      "shoes-bags-accessories": "鞋包与配饰",
+      "jewelry-watches": "珠宝与手表"
+    }
   },
   "products": {
     "featured": "精选产品",
