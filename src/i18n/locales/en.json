@@ -211,7 +211,8 @@
     "coming_soon": "Feature in development",
     "coming_soon_products": "Soon you'll be able to add and edit products here",
     "coming_soon_users": "Soon you'll be able to manage users here",
-    "error_loading": "Could not load data"
+    "error_loading": "Could not load data",
+    "system_backup": "System Backups"
   },
   "notfound": {
     "title": "404",

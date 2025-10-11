@@ -247,7 +247,7 @@ const Admin = () => {
             </Button>
             <Button onClick={() => navigate("/admin/system-backup")} variant="outline">
               <Database className="mr-2 h-4 w-4" />
-              Backups del Sistema
+              {t("admin.system_backup")}
             </Button>
           </div>
 

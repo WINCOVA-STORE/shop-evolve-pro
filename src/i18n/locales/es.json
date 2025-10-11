@@ -200,7 +200,8 @@
     "coming_soon": "Funcionalidad en desarrollo",
     "coming_soon_products": "Próximamente podrás agregar y editar productos aquí",
     "coming_soon_users": "Próximamente podrás gestionar usuarios aquí",
-    "error_loading": "No se pudieron cargar los datos"
+    "error_loading": "No se pudieron cargar los datos",
+    "system_backup": "Backups del Sistema"
   },
   "cookies": {
     "back": "Volver",
