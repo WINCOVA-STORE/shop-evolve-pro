@@ -21,15 +21,17 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 const DisasterRecoveryGuide = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     toast({
-      title: "Copiado",
-      description: `${label} copiado al portapapeles`,
+      title: t('recovery.copied'),
+      description: `${label} ${t('recovery.copied_to_clipboard')}`,
     });
   };
 
@@ -44,10 +46,10 @@ const DisasterRecoveryGuide = () => {
             <Shield className="h-8 w-8 text-primary" />
           </div>
           <h1 className="text-4xl font-bold mb-3">
-            Manual de Recuperación
+            {t('recovery.title')}
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Guía paso a paso para recuperar tu código y datos en cualquier emergencia
+            {t('recovery.subtitle')}
           </p>
         </div>
 
