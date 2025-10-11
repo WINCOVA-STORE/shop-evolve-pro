@@ -24,6 +24,64 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { FreeShippingBadge } from "@/components/FreeShippingBadge";
 import { useRewardsCalculation } from "@/hooks/useRewardsCalculation";
+import { useTranslatedProduct } from "@/hooks/useTranslatedProduct";
+
+const CartItemDisplay = ({ item }: { item: any }) => {
+  const { name } = useTranslatedProduct(item);
+  const { updateQuantity, removeFromCart } = useCart();
+  const { formatPrice } = useCurrency();
+  
+  return (
+    <div className="flex gap-4 p-4 border rounded-lg">
+      <img
+        src={item.images[0]}
+        alt={name}
+        className="w-20 h-20 object-cover rounded"
+      />
+      <div className="flex-1 space-y-2">
+        <div className="flex justify-between items-start">
+          <h4 className="font-medium text-sm line-clamp-2">{name}</h4>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 -mt-2"
+            onClick={() => removeFromCart(item.id)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2 border rounded">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+            >
+              <Minus className="h-3 w-3" />
+            </Button>
+            <span className="text-sm font-medium w-8 text-center">
+              {item.quantity}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+            >
+              <Plus className="h-3 w-3" />
+            </Button>
+          </div>
+          
+          <p className="font-bold">
+            {formatPrice(item.price * item.quantity)}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const CartSheet = () => {
   const { items, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
@@ -128,54 +186,7 @@ export const CartSheet = () => {
             <ScrollArea className="flex-1 my-4">
               <div className="space-y-4">
                 {items.map((item) => (
-                  <div key={item.id} className="flex gap-4 p-4 border rounded-lg">
-                    <img
-                      src={item.images[0]}
-                      alt={item.name}
-                      className="w-20 h-20 object-cover rounded"
-                    />
-                    <div className="flex-1 space-y-2">
-                      <div className="flex justify-between items-start">
-                        <h4 className="font-medium text-sm line-clamp-2">{item.name}</h4>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 -mt-2"
-                          onClick={() => removeFromCart(item.id)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2 border rounded">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          >
-                            <Minus className="h-3 w-3" />
-                          </Button>
-                          <span className="text-sm font-medium w-8 text-center">
-                            {item.quantity}
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        
-                        <p className="font-bold">
-                          {formatPrice(item.price * item.quantity)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <CartItemDisplay key={item.id} item={item} />
                 ))}
               </div>
             </ScrollArea>
