@@ -62,3 +62,6 @@ verify_jwt = false
 
 [functions.translate-feature]
 verify_jwt = false
+
+[functions.auto-translate-content]
+verify_jwt = false
