@@ -12,6 +12,9 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useTranslation } from "react-i18next";
 import { BatchTranslationPanel } from "@/components/admin/BatchTranslationPanel";
+import { TranslationAnalyticsDashboard } from '@/components/admin/TranslationAnalyticsDashboard';
+import { TranslationBrandingSettings } from '@/components/admin/TranslationBrandingSettings';
+import { TranslationAPIManager } from '@/components/admin/TranslationAPIManager';
 
 interface Stats {
   totalOrders: number;
@@ -227,9 +230,10 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="orders" className="space-y-6">
-          <TabsList>
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="orders">{t("admin.recent_orders")}</TabsTrigger>
             <TabsTrigger value="products">{t("admin.products")}</TabsTrigger>
+            <TabsTrigger value="translation-pro">Translation Pro</TabsTrigger>
             <TabsTrigger value="users">{t("admin.users")}</TabsTrigger>
           </TabsList>
 
@@ -329,6 +333,35 @@ const Admin = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="translation-pro" className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">🌍 Translation Pro System</h2>
+              <p className="text-muted-foreground">
+                Sistema profesional de traducción automática con analytics, API y white-label
+              </p>
+            </div>
+
+            <Tabs defaultValue="analytics" className="space-y-4">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="analytics">📊 Analytics</TabsTrigger>
+                <TabsTrigger value="branding">🎨 White-Label</TabsTrigger>
+                <TabsTrigger value="api">🔑 API</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="analytics">
+                <TranslationAnalyticsDashboard />
+              </TabsContent>
+
+              <TabsContent value="branding">
+                <TranslationBrandingSettings />
+              </TabsContent>
+
+              <TabsContent value="api">
+                <TranslationAPIManager />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           <TabsContent value="users">

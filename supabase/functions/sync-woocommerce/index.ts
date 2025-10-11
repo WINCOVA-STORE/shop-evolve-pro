@@ -251,6 +251,18 @@ serve(async (req) => {
 
       console.log('Sync completed successfully');
 
+      // 🌍 AUTO-TRANSLATE: Trigger batch translation after import
+      console.log('🔄 Triggering automatic batch translation...');
+      try {
+        const translateResponse = await supabaseClient.functions.invoke('batch-translate-products');
+        if (translateResponse.data?.success) {
+          console.log(`✅ Auto-translation completed: ${translateResponse.data.translated} products translated`);
+        }
+      } catch (translateError) {
+        console.error('⚠️ Auto-translation failed (non-critical):', translateError);
+        // Don't fail the import if translation fails
+      }
+
       return new Response(
         JSON.stringify({
           success: true,
@@ -260,7 +272,8 @@ serve(async (req) => {
             created: productsCreated,
             updated: productsUpdated,
             failed: productsFailed
-          }
+          },
+          message: `Successfully synced ${productsSynced} products and triggered auto-translation`
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },

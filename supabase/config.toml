@@ -65,3 +65,9 @@ verify_jwt = false
 
 [functions.auto-translate-content]
 verify_jwt = false
+
+[functions.batch-translate-products]
+verify_jwt = true
+
+[functions.translate-api]
+verify_jwt = false
