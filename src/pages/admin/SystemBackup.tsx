@@ -311,12 +311,11 @@ const SystemBackup = () => {
             Crea y gestiona backups de tu tienda para proteger tus datos
           </p>
           <Button
-            variant="outline"
-            size="sm"
-            className="mt-4"
+            size="lg"
+            className="mt-6 bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
             onClick={() => navigate('/admin/recovery-guide')}
           >
-            <Info className="h-4 w-4 mr-2" />
+            <Info className="h-5 w-5 mr-2" />
             Ver Manual de Recuperación
           </Button>
         </div>
