@@ -77,28 +77,27 @@ export default function Changelog() {
             const originalName = feature.feature_name;
             const customerBenefit = benefitData?.customerBenefit || feature.description || feature.feature_name;
             
-            // Then translate to current language if not Spanish (support regional codes like es-ES, es-419)
-            if (!i18n.language?.startsWith('es')) {
-              try {
-                const { data: translatedData, error: translationError } = await supabase.functions.invoke('translate-feature', {
-                  body: {
-                    featureName: originalName,
-                    description: customerBenefit,
-                    targetLanguage: i18n.language
-                  }
-                });
-                
-                // Only use translation if it's valid and not empty
-                if (translatedData && translatedData.translatedName && translatedData.translatedDescription) {
-                  return {
-                    ...feature,
-                    feature_name: translatedData.translatedName,
-                    customer_benefit: translatedData.translatedDescription
-                  };
+            // ALWAYS translate to target language (regardless of frontend language)
+            // This ensures backend data (in Spanish) is translated to user's selected language
+            try {
+              const { data: translatedData } = await supabase.functions.invoke('translate-feature', {
+                body: {
+                  featureName: originalName,
+                  description: customerBenefit,
+                  targetLanguage: i18n.language
                 }
-              } catch (translationError) {
-                console.error('Translation error, using original:', translationError);
+              });
+              
+              // Only use translation if it's valid and not empty
+              if (translatedData?.translatedName && translatedData?.translatedDescription) {
+                return {
+                  ...feature,
+                  feature_name: translatedData.translatedName,
+                  customer_benefit: translatedData.translatedDescription
+                };
               }
+            } catch (translationError) {
+              console.error('Translation error, using original:', translationError);
             }
             
             // Fallback: use original text if translation fails or if in Spanish

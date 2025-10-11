@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -22,6 +23,7 @@ interface Category {
 const Category = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [category, setCategory] = useState<Category | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
@@ -75,7 +77,7 @@ const Category = () => {
       setCategory({
         id: slug || "",
         name: categoryName || "",
-        description: `Descubre nuestra colección de ${categoryName?.toLowerCase()}`,
+        description: t('products.discover_category', { category: categoryName?.toLowerCase() }),
       });
       setProducts(data || []);
     } catch (error) {
@@ -129,7 +131,7 @@ const Category = () => {
           onClick={() => navigate("/")}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Volver
+          {t('products.back')}
         </Button>
 
         <div className="mb-8">
@@ -138,7 +140,7 @@ const Category = () => {
         </div>
 
         <p className="text-sm text-muted-foreground mb-4">
-          {products.length} {products.length === 1 ? 'producto' : 'productos'}
+          {products.length === 1 ? t('products.products_count', { count: products.length }) : t('products.products_count_plural', { count: products.length })}
         </p>
 
         <StickyFilters sortBy={sortBy} onSortChange={setSortBy} />
@@ -148,9 +150,9 @@ const Category = () => {
           <div className="lg:col-span-9 order-1">
             {products.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">No hay productos disponibles en esta categoría</p>
+                <p className="text-muted-foreground mb-4">{t('products.no_products_category')}</p>
                 <Button onClick={() => navigate("/")}>
-                  Volver a la tienda
+                  {t('products.back_to_store')}
                 </Button>
               </div>
             ) : (

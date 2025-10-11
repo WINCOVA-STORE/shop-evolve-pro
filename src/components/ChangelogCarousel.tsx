@@ -45,9 +45,14 @@ export const ChangelogCarousel = ({ latestFeatures }: { latestFeatures?: Carouse
 
   const goToSlide = useCallback((index: number) => {
     setCurrentIndex(index);
+    setImgLoaded(false); // Reset image loaded state
     setIsPaused(true);
-    setTimeout(() => setIsPaused(false), 10000); // Resume after 10 seconds
+    setTimeout(() => setIsPaused(false), 10000);
   }, []);
+
+  useEffect(() => {
+    setImgLoaded(false); // Reset on slide change
+  }, [currentIndex]);
 
   useEffect(() => {
     if (isPaused || items.length <= 1) return;
@@ -84,12 +89,19 @@ export const ChangelogCarousel = ({ latestFeatures }: { latestFeatures?: Carouse
           >
             {/* AI Generated Image or Emoji */}
             {items[currentIndex].imageUrl ? (
-              <div className="mb-6 rounded-2xl overflow-hidden shadow-2xl border-4 border-primary/20">
+              <div className={`mb-6 rounded-2xl overflow-hidden shadow-2xl border-4 border-primary/20 transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}>
                 <img 
                   src={items[currentIndex].imageUrl} 
                   alt={items[currentIndex].title}
                   className="w-full h-48 object-cover"
+                  onLoad={() => setImgLoaded(true)}
+                  style={{ display: imgLoaded ? 'block' : 'none' }}
                 />
+                {!imgLoaded && (
+                  <div className="w-full h-48 flex items-center justify-center bg-primary/5">
+                    <div className="text-6xl animate-pulse">{items[currentIndex].icon}</div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-6xl mb-4">{items[currentIndex].icon}</div>

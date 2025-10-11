@@ -64,8 +64,8 @@ const ProductDetail = () => {
 
       if (!data) {
         toast({
-          title: "Producto no encontrado",
-          description: "Este producto no existe o no está disponible",
+          title: t('products.product_not_found'),
+          description: t('products.product_not_found_desc'),
           variant: "destructive",
         });
         navigate("/");
@@ -77,7 +77,7 @@ const ProductDetail = () => {
       console.error("Error fetching product:", error);
       toast({
         title: "Error",
-        description: "No se pudo cargar el producto",
+        description: t('products.error_loading'),
         variant: "destructive",
       });
       navigate("/");
@@ -92,8 +92,12 @@ const ProductDetail = () => {
     addToCart(product, quantity);
 
     toast({
-      title: "¡Agregado al carrito!",
-      description: `${quantity} ${quantity === 1 ? 'unidad' : 'unidades'} de ${translatedName}`,
+      title: t('products.added_to_cart'),
+      description: t('products.units_of', { 
+        quantity, 
+        unit: quantity === 1 ? t('products.unit') : t('products.units'),
+        product: translatedName 
+      }),
     });
   };
 
@@ -117,26 +121,26 @@ const ProductDetail = () => {
     
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: translatedName,
-          text: translatedDescription || translatedName,
-          url: url,
-        });
-        sonnerToast.success("Compartido exitosamente");
-      } catch (err) {
-        if (err instanceof Error && err.name !== 'AbortError') {
-          handleCopyLink(url);
+          await navigator.share({
+            title: translatedName,
+            text: translatedDescription || translatedName,
+            url: url,
+          });
+          sonnerToast.success(t('products.shared_success'));
+        } catch (err) {
+          if (err instanceof Error && err.name !== 'AbortError') {
+            handleCopyLink(url);
+          }
         }
+      } else {
+        handleCopyLink(url);
       }
-    } else {
-      handleCopyLink(url);
-    }
-  };
+    };
 
-  const handleCopyLink = (url: string) => {
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    sonnerToast.success("Enlace copiado al portapapeles");
+    const handleCopyLink = (url: string) => {
+      navigator.clipboard.writeText(url);
+      setCopied(true);
+      sonnerToast.success(t('products.link_copied'));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -171,7 +175,7 @@ const ProductDetail = () => {
             onClick={() => navigate(`/order/${location.state.fromOrder}`)}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a la Orden
+            {t('products.back_to_order')}
           </Button>
         ) : (
           <Button
@@ -180,7 +184,7 @@ const ProductDetail = () => {
             onClick={() => navigate(-1)}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver
+            {t('products.back')}
           </Button>
         )}
 

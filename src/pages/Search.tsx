@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAdvancedSearch } from '@/hooks/useAdvancedSearch';
 
 // Shadcn/ui components
@@ -21,6 +22,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Menu } from 'lucide-react'; // Icono para el drawer en mobile
 
 const SearchPage: React.FC = () => {
+  const { t } = useTranslation();
   const {
     searchQuery,
     setSearchQuery,
@@ -89,11 +91,11 @@ const SearchPage: React.FC = () => {
   const renderFilters = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-3">Precio</h3>
+        <h3 className="text-lg font-semibold mb-3">{t('search.price')}</h3>
         <div className="px-1">
           <Slider
             min={0}
-            max={200} // Asegúrate de que esto coincida con el maxPrice en useAdvancedSearch
+            max={200}
             step={1}
             value={priceRange}
             onValueChange={(value) => setPriceRange(value as [number, number])}
@@ -110,7 +112,7 @@ const SearchPage: React.FC = () => {
       <Separator />
 
       <div>
-        <h3 className="text-lg font-semibold mb-3">Categorías</h3>
+        <h3 className="text-lg font-semibold mb-3">{t('search.categories')}</h3>
         <div className="space-y-2">
           {availableCategories.map(category => (
             <div key={category} className="flex items-center space-x-2">
@@ -130,15 +132,15 @@ const SearchPage: React.FC = () => {
       <Separator />
 
       <div>
-        <h3 className="text-lg font-semibold mb-3">Rating mínimo</h3>
+        <h3 className="text-lg font-semibold mb-3">{t('search.min_rating')}</h3>
         <Select value={filters.minRating.toString()} onValueChange={handleRatingChange}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Selecciona un rating" />
+            <SelectValue placeholder={t('search.select_rating')} />
           </SelectTrigger>
           <SelectContent>
             {[0, 1, 2, 3, 4, 5].map(rating => (
               <SelectItem key={rating} value={rating.toString()}>
-                {rating} Estrellas o más
+                {t('search.stars_or_more', { rating })}
               </SelectItem>
             ))}
           </SelectContent>
@@ -148,7 +150,7 @@ const SearchPage: React.FC = () => {
       <Separator />
 
       <div>
-        <h3 className="text-lg font-semibold mb-3">Disponibilidad</h3>
+        <h3 className="text-lg font-semibold mb-3">{t('search.availability')}</h3>
         <div className="flex items-center space-x-2">
           <Checkbox
             id="in-stock"
@@ -156,7 +158,7 @@ const SearchPage: React.FC = () => {
             onCheckedChange={(checked) => handleStockChange(checked as boolean)}
           />
           <label htmlFor="in-stock" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-            En Stock
+            {t('search.in_stock')}
           </label>
         </div>
       </div>
@@ -165,12 +167,12 @@ const SearchPage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Búsqueda de Productos</h1>
+      <h1 className="text-3xl font-bold mb-8">{t('search.title')}</h1>
 
       <div className="relative mb-6">
         <Input
           type="text"
-          placeholder="Busca productos por nombre..."
+          placeholder={t('search.placeholder')}
           className="w-full pr-12"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -196,19 +198,19 @@ const SearchPage: React.FC = () => {
           {renderFilters()}
         </aside>
 
-        {/* Filtros para mobile (Sheet/Drawer) */}
         <div className="lg:hidden mb-4">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" className="w-full">
-                <Menu className="mr-2 h-4 w-4" /> Abrir Filtros
+                <Menu className="mr-2 h-4 w-4" />
+                {t('search.open_filters')}
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-full sm:w-[300px] overflow-y-auto">
+            <SheetContent side="left" className="w-full sm:max-w-md overflow-y-auto">
               <SheetHeader>
-                <SheetTitle>Filtros de Búsqueda</SheetTitle>
+                <SheetTitle>{t('search.filter_title')}</SheetTitle>
                 <SheetDescription>
-                  Ajusta los filtros para encontrar el producto perfecto.
+                  {t('search.filter_description')}
                 </SheetDescription>
               </SheetHeader>
               <div className="mt-6">
@@ -238,13 +240,13 @@ const SearchPage: React.FC = () => {
           {error && <p className="text-red-500 text-center">{error}</p>}
 
           {!loading && !error && results.length === 0 && (
-            <p className="text-center text-gray-500">No se encontraron productos que coincidan con tu búsqueda.</p>
+            <p className="text-center text-gray-500">{t('search.no_results')}</p>
           )}
 
           {!loading && !error && results.length > 0 && (
             <>
               <p className="text-sm text-gray-600 mb-4">
-                Mostrando {results.length} de {totalResults} resultados.
+                {t('search.showing_results', { count: results.length, total: totalResults })}
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {results.map(renderProductCard)}
