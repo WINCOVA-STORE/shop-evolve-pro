@@ -693,20 +693,24 @@ const DisasterRecoveryGuide = () => {
               <p className="text-xs font-medium mb-2 text-blue-600">
                 {t('recovery.manual_url')}:
               </p>
-              <code className="text-xs break-all block text-blue-700">
-                github.com/[{t('recovery.your_org')}]/[{t('recovery.your_repo')}]/blob/main/RECOVERY_MANUAL.md
-              </code>
+              <a 
+                href="https://github.com/wincovagroup/shop-evolve-pro/blob/main/RECOVERY_MANUAL.md"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs break-all block text-blue-700 hover:text-blue-900 underline font-mono"
+              >
+                https://github.com/wincovagroup/shop-evolve-pro/blob/main/RECOVERY_MANUAL.md
+              </a>
               <Button
                 variant="outline"
                 size="sm"
                 className="mt-3 h-8 text-xs border-blue-500/30 hover:bg-blue-500/20 text-blue-700"
                 onClick={() => {
-                  const demoUrl = 'https://github.com/wincova/wincova-mvp/blob/main/RECOVERY_MANUAL.md';
-                  window.open(demoUrl, '_blank');
+                  window.open('https://github.com/wincovagroup/shop-evolve-pro/blob/main/RECOVERY_MANUAL.md', '_blank');
                 }}
               >
                 <ExternalLink className="w-3 h-3 mr-2" />
-                {t('recovery.view_example')}
+                {t('recovery.open_manual')}
               </Button>
             </div>
           </AlertDescription>
