@@ -109,10 +109,8 @@ const SystemBackup = () => {
       if (data) {
         setAutoBackupEnabled(data.auto_backup_enabled || false);
         setBackupFrequency(data.frequency || 'daily');
-        // Extract hour and day from metadata if available
-        const metadata = data.metadata as any;
-        if (metadata?.hour) setBackupHour(metadata.hour);
-        if (metadata?.dayOfWeek) setBackupDayOfWeek(metadata.dayOfWeek);
+        setBackupHour(data.backup_hour || '03');
+        setBackupDayOfWeek(data.backup_day_of_week || '1');
       }
     } catch (error) {
       console.error('Error fetching backup settings:', error);
@@ -257,10 +255,8 @@ const SystemBackup = () => {
         .upsert({
           auto_backup_enabled: autoBackupEnabled,
           frequency: backupFrequency,
-          metadata: {
-            hour: backupHour,
-            dayOfWeek: backupDayOfWeek
-          },
+          backup_hour: backupHour,
+          backup_day_of_week: backupDayOfWeek,
           updated_at: new Date().toISOString()
         });
 

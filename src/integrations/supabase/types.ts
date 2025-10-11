@@ -171,6 +171,8 @@ export type Database = {
       backup_settings: {
         Row: {
           auto_backup_enabled: boolean
+          backup_day_of_week: string | null
+          backup_hour: string | null
           created_at: string
           frequency: string
           id: string
@@ -180,6 +182,8 @@ export type Database = {
         }
         Insert: {
           auto_backup_enabled?: boolean
+          backup_day_of_week?: string | null
+          backup_hour?: string | null
           created_at?: string
           frequency?: string
           id?: string
@@ -189,6 +193,8 @@ export type Database = {
         }
         Update: {
           auto_backup_enabled?: boolean
+          backup_day_of_week?: string | null
+          backup_hour?: string | null
           created_at?: string
           frequency?: string
           id?: string
