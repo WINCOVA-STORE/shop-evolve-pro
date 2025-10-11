@@ -233,6 +233,14 @@ const Admin = () => {
           </TabsList>
 
           <div className="flex gap-3 flex-wrap">
+            <Button onClick={() => navigate("/admin/recovery-guide")} className="bg-green-600 hover:bg-green-700">
+              <Shield className="mr-2 h-4 w-4" />
+              Manual de Recuperación
+            </Button>
+            <Button onClick={() => navigate("/admin/system-backup")} variant="outline">
+              <Database className="mr-2 h-4 w-4" />
+              {t("admin.system_backup")}
+            </Button>
             <Button onClick={() => navigate("/admin/woocommerce-sync")} variant="outline">
               <RefreshCw className="mr-2 h-4 w-4" />
               WooCommerce Sync
@@ -244,10 +252,6 @@ const Admin = () => {
             <Button onClick={() => navigate("/admin/rewards-settings")} variant="outline">
               <Gift className="mr-2 h-4 w-4" />
               Sistema de Recompensas
-            </Button>
-            <Button onClick={() => navigate("/admin/system-backup")} variant="outline">
-              <Database className="mr-2 h-4 w-4" />
-              {t("admin.system_backup")}
             </Button>
           </div>
 

@@ -310,6 +310,15 @@ const SystemBackup = () => {
           <p className="text-muted-foreground text-lg">
             Crea y gestiona backups de tu tienda para proteger tus datos
           </p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-4"
+            onClick={() => navigate('/admin/recovery-guide')}
+          >
+            <Info className="h-4 w-4 mr-2" />
+            Ver Manual de Recuperación
+          </Button>
         </div>
 
         {/* Important Info Alert */}
