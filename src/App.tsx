@@ -7,6 +7,8 @@ import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { CompareProvider } from "@/contexts/CompareContext";
+import { TranslationGuard } from "@/components/TranslationGuard";
+import { useAutoTranslate } from "@/hooks/useAutoTranslate";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ReferEarn from "./pages/ReferEarn";
@@ -40,6 +42,48 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Component that initializes auto-translation
+const AppContent = () => {
+  useAutoTranslate();
+
+  return (
+    <TranslationGuard>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/refer-earn" element={<ReferEarn />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/order/:orderId" element={<OrderDetail />} />
+        <Route path="/category/:slug" element={<Category />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/compare" element={<Compare />} />
+        <Route path="/rewards-terms" element={<RewardsTerms />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/cookie-policy" element={<CookiePolicy />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/return-policy" element={<ReturnPolicy />} />
+        <Route path="/track-order" element={<TrackOrder />} />
+        <Route path="/admin/woocommerce-sync" element={<WooCommerceSync />} />
+        <Route path="/admin/shipping-settings" element={<ShippingSettings />} />
+        <Route path="/admin/rewards-settings" element={<RewardsSettings />} />
+        <Route path="/admin/ecommerce-roadmap" element={<EcommerceRoadmap />} />
+        <Route path="/admin/roadmap-metrics" element={<RoadmapMetrics />} />
+        <Route path="/admin/system-backup" element={<SystemBackup />} />
+        <Route path="/admin/recovery-guide" element={<DisasterRecoveryGuide />} />
+        <Route path="/admin/project/*" element={<AdminProject />} />
+        <Route path="/wincova" element={<WincovaDiscover />} />
+        <Route path="/wincova/diagnosis/:diagnosisId" element={<WincovaDiagnosis />} />
+        <Route path="/changelog" element={<Changelog />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </TranslationGuard>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <CurrencyProvider>
@@ -50,39 +94,7 @@ const App = () => (
               <Toaster />
               <Sonner />
               <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/refer-earn" element={<ReferEarn />} />
-                  <Route path="/payment-success" element={<PaymentSuccess />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/product/:id" element={<ProductDetail />} />
-                  <Route path="/order/:orderId" element={<OrderDetail />} />
-                  <Route path="/category/:slug" element={<Category />} />
-                  <Route path="/search" element={<Search />} />
-                  <Route path="/wishlist" element={<Wishlist />} />
-                  <Route path="/compare" element={<Compare />} />
-                  <Route path="/rewards-terms" element={<RewardsTerms />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="/cookie-policy" element={<CookiePolicy />} />
-                  <Route path="/faq" element={<FAQ />} />
-                  <Route path="/return-policy" element={<ReturnPolicy />} />
-                  <Route path="/track-order" element={<TrackOrder />} />
-                  <Route path="/admin/woocommerce-sync" element={<WooCommerceSync />} />
-                  <Route path="/admin/shipping-settings" element={<ShippingSettings />} />
-                  <Route path="/admin/rewards-settings" element={<RewardsSettings />} />
-                  <Route path="/admin/ecommerce-roadmap" element={<EcommerceRoadmap />} />
-                  <Route path="/admin/roadmap-metrics" element={<RoadmapMetrics />} />
-                  <Route path="/admin/system-backup" element={<SystemBackup />} />
-                  <Route path="/admin/recovery-guide" element={<DisasterRecoveryGuide />} />
-                  <Route path="/admin/project/*" element={<AdminProject />} />
-                  <Route path="/wincova" element={<WincovaDiscover />} />
-                  <Route path="/wincova/diagnosis/:diagnosisId" element={<WincovaDiagnosis />} />
-                  <Route path="/changelog" element={<Changelog />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                <AppContent />
               </BrowserRouter>
             </TooltipProvider>
           </CartProvider>

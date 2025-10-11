@@ -687,11 +687,28 @@ const DisasterRecoveryGuide = () => {
         <Alert className="mb-8 bg-blue-500/10 border-blue-500/20">
           <Info className="h-4 w-4 text-blue-600" />
           <AlertTitle className="text-blue-600">{t('recovery.external_access_title')}</AlertTitle>
-          <AlertDescription className="text-blue-600/80 mt-2">
-            <p className="mb-2">{t('recovery.external_access_desc')}</p>
-            <code className="bg-blue-500/10 px-2 py-1 rounded text-xs">
-              github.com/[{t('recovery.your_org')}]/[{t('recovery.your_repo')}]/blob/main/RECOVERY_MANUAL.md
-            </code>
+          <AlertDescription className="text-blue-600/80 mt-2 space-y-3">
+            <p>{t('recovery.external_access_desc')}</p>
+            <div className="bg-blue-500/10 px-3 py-2 rounded border border-blue-500/20">
+              <p className="text-xs font-medium mb-2 text-blue-600">
+                {t('recovery.manual_url')}:
+              </p>
+              <code className="text-xs break-all block text-blue-700">
+                github.com/[{t('recovery.your_org')}]/[{t('recovery.your_repo')}]/blob/main/RECOVERY_MANUAL.md
+              </code>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3 h-8 text-xs border-blue-500/30 hover:bg-blue-500/20 text-blue-700"
+                onClick={() => {
+                  const demoUrl = 'https://github.com/wincova/wincova-mvp/blob/main/RECOVERY_MANUAL.md';
+                  window.open(demoUrl, '_blank');
+                }}
+              >
+                <ExternalLink className="w-3 h-3 mr-2" />
+                {t('recovery.view_example')}
+              </Button>
+            </div>
           </AlertDescription>
         </Alert>
 
