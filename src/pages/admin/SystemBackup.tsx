@@ -22,8 +22,11 @@ import {
   AlertCircle,
   Loader2,
   Trash2,
-  RefreshCw
+  RefreshCw,
+  Info,
+  Settings2
 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { format } from "date-fns";
 
 interface BackupRecord {
@@ -45,6 +48,8 @@ const SystemBackup = () => {
   const [backups, setBackups] = useState<BackupRecord[]>([]);
   const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
   const [backupFrequency, setBackupFrequency] = useState<string>('daily');
+  const [backupHour, setBackupHour] = useState<string>('03');
+  const [backupDayOfWeek, setBackupDayOfWeek] = useState<string>('1');
   const [restoring, setRestoring] = useState(false);
 
   useEffect(() => {
@@ -104,6 +109,10 @@ const SystemBackup = () => {
       if (data) {
         setAutoBackupEnabled(data.auto_backup_enabled || false);
         setBackupFrequency(data.frequency || 'daily');
+        // Extract hour and day from metadata if available
+        const metadata = data.metadata as any;
+        if (metadata?.hour) setBackupHour(metadata.hour);
+        if (metadata?.dayOfWeek) setBackupDayOfWeek(metadata.dayOfWeek);
       }
     } catch (error) {
       console.error('Error fetching backup settings:', error);
@@ -248,6 +257,10 @@ const SystemBackup = () => {
         .upsert({
           auto_backup_enabled: autoBackupEnabled,
           frequency: backupFrequency,
+          metadata: {
+            hour: backupHour,
+            dayOfWeek: backupDayOfWeek
+          },
           updated_at: new Date().toISOString()
         });
 
@@ -255,7 +268,7 @@ const SystemBackup = () => {
 
       toast({
         title: "Configuración Guardada",
-        description: "La configuración de backups automáticos ha sido actualizada",
+        description: `Los backups se ejecutarán ${backupFrequency === 'daily' ? 'diariamente' : 'semanalmente'} a las ${backupHour}:00`,
       });
     } catch (error: any) {
       console.error('Error updating backup settings:', error);
@@ -279,50 +292,81 @@ const SystemBackup = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Sistema de Backups</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            Sistema de Backups
+          </h1>
+          <p className="text-muted-foreground text-lg">
             Crea y gestiona backups de tu tienda para proteger tus datos
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 mb-8">
+        {/* Important Info Alert */}
+        <Alert className="mb-6 border-primary/50 bg-primary/5">
+          <Info className="h-5 w-5 text-primary" />
+          <AlertTitle className="text-base font-semibold">Información Importante sobre los Backups</AlertTitle>
+          <AlertDescription className="text-sm mt-2 space-y-1">
+            <p>• <strong>Contenido del backup:</strong> Solo incluye datos de la base de datos (productos, órdenes, usuarios, configuraciones)</p>
+            <p>• <strong>NO incluye:</strong> Código fuente de la aplicación, archivos del servidor, o configuraciones de hosting</p>
+            <p>• <strong>Para recuperar código:</strong> Usa Git/GitHub o el sistema de versiones de Lovable</p>
+            <p>• <strong>Restauración:</strong> Solo recupera los datos, no la aplicación completa</p>
+          </AlertDescription>
+        </Alert>
+
+        <div className="grid gap-6 lg:grid-cols-2 mb-8">
           {/* Manual Backup Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Database className="h-5 w-5" />
+          <Card className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+            <CardHeader className="space-y-3">
+              <CardTitle className="flex items-center gap-3 text-2xl">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Database className="h-6 w-6 text-primary" />
+                </div>
                 Backup Manual
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-base">
                 Crea un backup completo de tu tienda en este momento
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-lg border p-4 space-y-2">
-                <p className="text-sm font-medium">Incluye:</p>
-                <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• Productos y categorías</li>
-                  <li>• Órdenes y clientes</li>
-                  <li>• Configuraciones del sistema</li>
-                  <li>• Reseñas y recompensas</li>
+            <CardContent className="space-y-6">
+              <div className="rounded-lg border-2 border-dashed bg-muted/30 p-5 space-y-3">
+                <p className="text-sm font-semibold flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                  Incluye en el backup:
+                </p>
+                <ul className="text-sm text-muted-foreground space-y-2 ml-6">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">▪</span>
+                    <span>Productos y categorías completas</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">▪</span>
+                    <span>Órdenes y datos de clientes</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">▪</span>
+                    <span>Configuraciones del sistema</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">▪</span>
+                    <span>Reseñas, recompensas y referidos</span>
+                  </li>
                 </ul>
               </div>
               <Button 
                 onClick={createManualBackup} 
                 disabled={loading}
-                className="w-full"
+                className="w-full h-12 text-base font-semibold"
                 size="lg"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     Creando Backup...
                   </>
                 ) : (
                   <>
-                    <Download className="mr-2 h-4 w-4" />
+                    <Download className="mr-2 h-5 w-5" />
                     Crear Backup Ahora
                   </>
                 )}
@@ -331,61 +375,118 @@ const SystemBackup = () => {
           </Card>
 
           {/* Automatic Backup Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
+          <Card className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+            <CardHeader className="space-y-3">
+              <CardTitle className="flex items-center gap-3 text-2xl">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Settings2 className="h-6 w-6 text-primary" />
+                </div>
                 Backups Automáticos
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-base">
                 Configura backups automáticos programados
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="auto-backup" className="flex flex-col gap-1">
-                  <span className="font-medium">Activar Backups Automáticos</span>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between p-4 rounded-lg border-2 bg-muted/30">
+                <Label htmlFor="auto-backup" className="flex flex-col gap-1 cursor-pointer">
+                  <span className="font-semibold text-base">Activar Backups Automáticos</span>
                   <span className="text-sm text-muted-foreground">
-                    Se crearán backups automáticamente
+                    Los backups se crearán según tu programación
                   </span>
                 </Label>
                 <Switch
                   id="auto-backup"
                   checked={autoBackupEnabled}
                   onCheckedChange={setAutoBackupEnabled}
+                  className="scale-110"
                 />
               </div>
 
               {autoBackupEnabled && (
-                <div className="space-y-2">
-                  <Label>Frecuencia</Label>
-                  <Select value={backupFrequency} onValueChange={setBackupFrequency}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="daily">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          Diario (cada 24 horas)
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="weekly">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          Semanal (cada 7 días)
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="space-y-5 p-4 rounded-lg border bg-background">
+                  <div className="space-y-3">
+                    <Label className="text-base font-semibold flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-primary" />
+                      Frecuencia
+                    </Label>
+                    <Select value={backupFrequency} onValueChange={setBackupFrequency}>
+                      <SelectTrigger className="h-11">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="daily" className="cursor-pointer">
+                          <div className="flex items-center gap-3 py-1">
+                            <Calendar className="h-4 w-4 text-primary" />
+                            <div>
+                              <p className="font-medium">Diario</p>
+                              <p className="text-xs text-muted-foreground">Cada 24 horas</p>
+                            </div>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="weekly" className="cursor-pointer">
+                          <div className="flex items-center gap-3 py-1">
+                            <Calendar className="h-4 w-4 text-primary" />
+                            <div>
+                              <p className="font-medium">Semanal</p>
+                              <p className="text-xs text-muted-foreground">Cada 7 días</p>
+                            </div>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {backupFrequency === 'weekly' && (
+                    <div className="space-y-3">
+                      <Label className="text-base font-semibold flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-primary" />
+                        Día de la semana
+                      </Label>
+                      <Select value={backupDayOfWeek} onValueChange={setBackupDayOfWeek}>
+                        <SelectTrigger className="h-11">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0">Domingo</SelectItem>
+                          <SelectItem value="1">Lunes</SelectItem>
+                          <SelectItem value="2">Martes</SelectItem>
+                          <SelectItem value="3">Miércoles</SelectItem>
+                          <SelectItem value="4">Jueves</SelectItem>
+                          <SelectItem value="5">Viernes</SelectItem>
+                          <SelectItem value="6">Sábado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    <Label className="text-base font-semibold flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-primary" />
+                      Hora de ejecución
+                    </Label>
+                    <Select value={backupHour} onValueChange={setBackupHour}>
+                      <SelectTrigger className="h-11">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60">
+                        {Array.from({ length: 24 }, (_, i) => (
+                          <SelectItem key={i} value={i.toString().padStart(2, '0')}>
+                            {i.toString().padStart(2, '0')}:00
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               )}
 
               <Button 
                 onClick={updateBackupSettings}
-                variant="outline"
-                className="w-full"
+                className="w-full h-11 text-base font-semibold"
+                disabled={!autoBackupEnabled}
               >
+                <Settings2 className="mr-2 h-4 w-4" />
                 Guardar Configuración
               </Button>
             </CardContent>
@@ -393,79 +494,106 @@ const SystemBackup = () => {
         </div>
 
         {/* Backup History */}
-        <Card>
+        <Card className="border-2">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <RefreshCw className="h-5 w-5" />
+              <span className="flex items-center gap-3 text-2xl">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <RefreshCw className="h-6 w-6 text-primary" />
+                </div>
                 Historial de Backups
               </span>
-              <Button variant="ghost" size="sm" onClick={fetchBackups}>
+              <Button variant="ghost" size="sm" onClick={fetchBackups} className="gap-2">
                 <RefreshCw className="h-4 w-4" />
+                Actualizar
               </Button>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-base">
               Gestiona y restaura backups anteriores
             </CardDescription>
           </CardHeader>
           <CardContent>
             {backups.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <Database className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No hay backups disponibles</p>
+              <div className="text-center py-16 text-muted-foreground">
+                <div className="inline-flex p-4 rounded-full bg-muted/50 mb-4">
+                  <Database className="h-12 w-12 opacity-50" />
+                </div>
+                <p className="text-lg font-medium mb-2">No hay backups disponibles</p>
                 <p className="text-sm">Crea tu primer backup manual o activa los automáticos</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {backups.map((backup) => (
-                  <div key={backup.id} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Badge variant={backup.backup_type === 'manual' ? 'default' : 'secondary'}>
+                  <div key={backup.id} className="border-2 rounded-xl p-5 hover:border-primary/50 transition-all hover:shadow-md bg-card">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="space-y-2 flex-1">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <Badge 
+                            variant={backup.backup_type === 'manual' ? 'default' : 'secondary'}
+                            className="px-3 py-1 text-xs font-semibold"
+                          >
                             {backup.backup_type === 'manual' ? 'Manual' : 'Automático'}
                           </Badge>
                           {backup.status === 'completed' && (
-                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                            <div className="flex items-center gap-1.5 text-green-600">
+                              <CheckCircle2 className="h-4 w-4" />
+                              <span className="text-xs font-medium">Completado</span>
+                            </div>
                           )}
                           {backup.status === 'failed' && (
-                            <AlertCircle className="h-4 w-4 text-destructive" />
+                            <div className="flex items-center gap-1.5 text-destructive">
+                              <AlertCircle className="h-4 w-4" />
+                              <span className="text-xs font-medium">Fallido</span>
+                            </div>
                           )}
                           {backup.status === 'in_progress' && (
-                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <div className="flex items-center gap-1.5 text-primary">
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              <span className="text-xs font-medium">En progreso</span>
+                            </div>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          {format(new Date(backup.created_at), 'PPpp')}
-                        </p>
-                        <p className="text-sm">
-                          Tamaño: {formatFileSize(backup.file_size)}
-                        </p>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1.5">
+                            <Clock className="h-3.5 w-3.5" />
+                            {format(new Date(backup.created_at), 'dd/MM/yyyy HH:mm')}
+                          </span>
+                          <span className="flex items-center gap-1.5">
+                            <Database className="h-3.5 w-3.5" />
+                            {formatFileSize(backup.file_size)}
+                          </span>
+                        </div>
                       </div>
                       
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-shrink-0">
                         <Button
                           variant="outline"
-                          size="sm"
+                          size="default"
                           onClick={() => downloadBackup(backup.id, backup.file_path)}
                           disabled={backup.status !== 'completed'}
+                          className="gap-2 h-10 px-4"
                         >
                           <Download className="h-4 w-4" />
+                          <span className="hidden sm:inline">Descargar</span>
                         </Button>
                         <Button
                           variant="outline"
-                          size="sm"
+                          size="default"
                           onClick={() => restoreBackup(backup.id)}
                           disabled={backup.status !== 'completed' || restoring}
+                          className="gap-2 h-10 px-4"
                         >
                           <Upload className="h-4 w-4" />
+                          <span className="hidden sm:inline">Restaurar</span>
                         </Button>
                         <Button
                           variant="outline"
-                          size="sm"
+                          size="default"
                           onClick={() => deleteBackup(backup.id, backup.file_path)}
+                          className="gap-2 h-10 px-4 hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
+                          <span className="hidden sm:inline">Eliminar</span>
                         </Button>
                       </div>
                     </div>
