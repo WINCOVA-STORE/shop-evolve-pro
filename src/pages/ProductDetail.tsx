@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,12 +20,13 @@ import { Product } from "@/hooks/useProducts";
 import { useTranslatedProduct } from "@/hooks/useTranslatedProduct";
 import { toast as sonnerToast } from "sonner";
 import { useRewardsCalculation } from "@/hooks/useRewardsCalculation";
+import DOMPurify from 'dompurify';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { addToCompare, isInCompare } = useCompare();
@@ -36,6 +37,7 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [copied, setCopied] = useState(false);
+  const attemptedTranslateRef = useRef(false);
   const { name: translatedName, description: translatedDescription } = useTranslatedProduct(product);
   const { 
     calculateEarningPoints, 
@@ -50,6 +52,37 @@ const ProductDetail = () => {
       fetchProduct();
     }
   }, [id]);
+
+  // Ensure translations exist for current language (backfill old products)
+  useEffect(() => {
+    if (!product) return;
+    const baseLang = (i18n.language || 'en').toLowerCase().split(/[-_]/)[0];
+    const supported = ['es','fr','pt','zh'];
+    if (!supported.includes(baseLang)) return;
+
+    const nameKey = `name_${baseLang}`;
+    const descKey = `description_${baseLang}`;
+    const hasTranslation = Boolean((product as any)[nameKey]) && Boolean((product as any)[descKey]);
+    if (hasTranslation || attemptedTranslateRef.current) return;
+
+    attemptedTranslateRef.current = true;
+    supabase.functions.invoke('auto-translate-content', {
+      body: {
+        table_name: 'products',
+        record_id: product.id,
+        source_text_name: product.name,
+        source_text_description: product.description || ''
+      }
+    }).then(({ data, error }) => {
+      if (error) {
+        console.error('Auto-translate invoke error:', error);
+        return;
+      }
+      if (data?.translations) {
+        setProduct(prev => prev ? { ...prev, ...data.translations } as Product : prev);
+      }
+    }).catch((e) => console.error('Invoke failed:', e));
+  }, [product?.id, i18n.language]);
 
   const fetchProduct = async () => {
     try {
@@ -285,8 +318,12 @@ const ProductDetail = () => {
             <Separator />
 
             <div>
-              <h3 className="font-semibold mb-2">Descripción</h3>
-              <p className="text-muted-foreground">{translatedDescription}</p>
+              <h3 className="font-semibold mb-2">{t('products.description', { defaultValue: 'Descripción' })}</h3>
+              {translatedDescription ? (
+                <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(translatedDescription) }} />
+              ) : (
+                <p className="text-muted-foreground">{t('products.no_description', { defaultValue: 'Sin descripción' })}</p>
+              )}
             </div>
 
             <div>
