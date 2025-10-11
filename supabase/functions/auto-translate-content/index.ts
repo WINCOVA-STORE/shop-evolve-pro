@@ -86,9 +86,12 @@ Keep it natural and appealing for ${targetLangName} speakers.`;
 
         if (response.ok) {
           const data = await response.json();
-          const content = data.choices?.[0]?.message?.content;
+          let content = data.choices?.[0]?.message?.content;
           
           if (content) {
+            // Remove markdown code blocks if present
+            content = content.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+            
             const parsed = JSON.parse(content);
             translations[`name_${lang}`] = parsed.name || source_text_name;
             translations[`description_${lang}`] = parsed.description || source_text_description;
