@@ -230,11 +230,32 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="orders" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="orders">{t("admin.recent_orders")}</TabsTrigger>
-            <TabsTrigger value="products">{t("admin.products")}</TabsTrigger>
-            <TabsTrigger value="translation-pro">Translation Pro</TabsTrigger>
-            <TabsTrigger value="users">{t("admin.users")}</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 backdrop-blur-sm border border-primary/20">
+            <TabsTrigger 
+              value="orders"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground hover:bg-primary/10 transition-all duration-200 font-medium py-3"
+            >
+              {t("admin.recent_orders")}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="products"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground hover:bg-primary/10 transition-all duration-200 font-medium py-3"
+            >
+              {t("admin.products")}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="translation-pro"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground hover:bg-primary/10 transition-all duration-200 font-medium py-3 relative group"
+            >
+              <span className="relative z-10">🌍 Translation Pro</span>
+              <span className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-md"></span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="users"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground hover:bg-primary/10 transition-all duration-200 font-medium py-3"
+            >
+              {t("admin.users")}
+            </TabsTrigger>
           </TabsList>
 
           <div className="flex gap-3 flex-wrap">
