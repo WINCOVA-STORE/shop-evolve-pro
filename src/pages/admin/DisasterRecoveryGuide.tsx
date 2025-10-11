@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   Github, 
   Download, 
@@ -17,15 +18,28 @@ import {
   Info,
   ExternalLink,
   Copy,
-  Clock
+  Clock,
+  ImageIcon,
+  HelpCircle,
+  AlertTriangle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import githubHomeImg from "@/assets/recovery-github-home.png";
+import githubCodeImg from "@/assets/recovery-github-code.png";
+import lovableGithubImg from "@/assets/recovery-lovable-github.png";
+import vercelDeployImg from "@/assets/recovery-vercel-deploy.png";
 
 const DisasterRecoveryGuide = () => {
   const { toast } = useToast();
   const { t } = useTranslation();
+  const [imageDialog, setImageDialog] = useState<{ open: boolean; src: string; title: string }>({
+    open: false,
+    src: "",
+    title: ""
+  });
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -33,6 +47,10 @@ const DisasterRecoveryGuide = () => {
       title: t('recovery.copied'),
       description: `${label} ${t('recovery.copied_to_clipboard')}`,
     });
+  };
+
+  const openImage = (src: string, title: string) => {
+    setImageDialog({ open: true, src, title });
   };
 
   return (
@@ -53,34 +71,44 @@ const DisasterRecoveryGuide = () => {
           </p>
         </div>
 
-        {/* Status Check */}
+        {/* GitHub Connection Status */}
         <Card className="mb-8 border-primary/20 bg-primary/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Github className="h-5 w-5" />
-              Estado de Conexión GitHub
+              {t('recovery.github_status')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Alert>
               <Info className="h-4 w-4" />
-              <AlertTitle>¿Cómo verificar tu conexión?</AlertTitle>
+              <AlertTitle>{t('recovery.how_verify')}</AlertTitle>
               <AlertDescription className="mt-2 space-y-2">
-                <p>1. Ve al editor de Lovable</p>
-                <p>2. Haz clic en el botón <strong>GitHub</strong> en la parte superior derecha</p>
-                <p>3. Si dice "Connected to [nombre-repo]" → ✅ Estás conectado correctamente</p>
-                <p>4. Si dice "Connect to GitHub" → ⚠️ Necesitas conectarte</p>
+                <p>1. {t('recovery.verify_step_1')}</p>
+                <p>2. {t('recovery.verify_step_2')}</p>
+                <p>3. {t('recovery.verify_step_3')}</p>
+                <p>4. {t('recovery.verify_step_4')}</p>
               </AlertDescription>
             </Alert>
 
-            <div className="flex items-center gap-2 text-sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => openImage(lovableGithubImg, "Lovable GitHub Connection")}
+              className="mr-2"
+            >
+              <ImageIcon className="h-4 w-4 mr-2" />
+              {t('recovery.view_image')}
+            </Button>
+
+            <div className="flex items-center gap-2 text-sm mt-2">
               <Button 
                 variant="outline" 
                 size="sm"
                 onClick={() => window.open('https://github.com', '_blank')}
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
-                Abrir GitHub
+                {t('recovery.open_github')}
               </Button>
               <Button 
                 variant="outline" 
@@ -88,32 +116,32 @@ const DisasterRecoveryGuide = () => {
                 onClick={() => window.open('https://lovable.dev', '_blank')}
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
-                Abrir Lovable
+                {t('recovery.open_lovable')}
               </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Escenario 1: Recuperación Normal */}
+        {/* Scenario 1: Normal Recovery */}
         <Card className="mb-8">
           <CardHeader>
             <div className="flex items-start justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2 text-2xl">
                   <FileCode className="h-6 w-6 text-primary" />
-                  Escenario 1: Recuperar Código desde GitHub
+                  {t('recovery.scenario_1_title')}
                 </CardTitle>
                 <CardDescription className="mt-2">
-                  Si perdiste acceso a Lovable o el proyecto desapareció
+                  {t('recovery.scenario_1_desc')}
                 </CardDescription>
               </div>
               <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-500/20">
-                Más Común
+                {t('recovery.most_common')}
               </Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Paso 1 */}
+            {/* Step 1 */}
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
@@ -121,24 +149,33 @@ const DisasterRecoveryGuide = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2">Ve a GitHub</h3>
+                <h3 className="font-semibold text-lg mb-2">{t('recovery.step_1_title')}</h3>
                 <p className="text-muted-foreground mb-3">
-                  Abre tu navegador y ve a <strong>github.com</strong>
+                  {t('recovery.step_1_desc')} <strong>github.com</strong>
                 </p>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => openImage(githubHomeImg, "GitHub Homepage")}
+                  className="mr-2"
+                >
+                  <ImageIcon className="h-4 w-4 mr-2" />
+                  {t('recovery.view_image')}
+                </Button>
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={() => window.open('https://github.com', '_blank')}
                 >
                   <ExternalLink className="h-4 w-4 mr-2" />
-                  Ir a GitHub
+                  {t('recovery.go_to_github')}
                 </Button>
               </div>
             </div>
 
             <Separator />
 
-            {/* Paso 2 */}
+            {/* Step 2 */}
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
@@ -146,25 +183,25 @@ const DisasterRecoveryGuide = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2">Busca tu repositorio</h3>
+                <h3 className="font-semibold text-lg mb-2">{t('recovery.step_2_title')}</h3>
                 <p className="text-muted-foreground mb-3">
-                  En la página principal de GitHub, busca el repositorio de tu proyecto.
+                  {t('recovery.step_2_desc')}
                 </p>
                 <Alert className="bg-amber-500/10 border-amber-500/20">
                   <AlertCircle className="h-4 w-4 text-amber-600" />
-                  <AlertTitle className="text-amber-600">Si el repositorio estaba en tu cuenta personal</AlertTitle>
+                  <AlertTitle className="text-amber-600">{t('recovery.personal_repo_title')}</AlertTitle>
                   <AlertDescription className="text-amber-600/80">
-                    Busca en "Your repositories" (tus repositorios)
+                    {t('recovery.personal_repo_desc')}
                   </AlertDescription>
                 </Alert>
                 <Alert className="bg-blue-500/10 border-blue-500/20 mt-3">
                   <Info className="h-4 w-4 text-blue-600" />
-                  <AlertTitle className="text-blue-600">Si el repositorio está en una organización</AlertTitle>
+                  <AlertTitle className="text-blue-600">{t('recovery.org_repo_title')}</AlertTitle>
                   <AlertDescription className="text-blue-600/80">
-                    1. Haz clic en tu foto de perfil (arriba derecha)<br/>
-                    2. Selecciona "Your organizations"<br/>
-                    3. Entra a la organización<br/>
-                    4. Busca el repositorio ahí
+                    1. {t('recovery.org_repo_desc_1')}<br/>
+                    2. {t('recovery.org_repo_desc_2')}<br/>
+                    3. {t('recovery.org_repo_desc_3')}<br/>
+                    4. {t('recovery.org_repo_desc_4')}
                   </AlertDescription>
                 </Alert>
               </div>
@@ -172,7 +209,7 @@ const DisasterRecoveryGuide = () => {
 
             <Separator />
 
-            {/* Paso 3 */}
+            {/* Step 3 */}
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
@@ -180,28 +217,37 @@ const DisasterRecoveryGuide = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2">Descarga el código</h3>
+                <h3 className="font-semibold text-lg mb-2">{t('recovery.step_3_title')}</h3>
                 <p className="text-muted-foreground mb-3">
-                  Dentro del repositorio, haz clic en el botón verde <strong>{"<> Code"}</strong>
+                  {t('recovery.step_3_desc')} <strong>{"<> Code"}</strong>
                 </p>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => openImage(githubCodeImg, "GitHub Code Button")}
+                  className="mb-3"
+                >
+                  <ImageIcon className="h-4 w-4 mr-2" />
+                  {t('recovery.view_image')}
+                </Button>
                 <div className="bg-muted/30 rounded-lg p-4 space-y-3">
-                  <p className="font-medium">Tienes 2 opciones:</p>
+                  <p className="font-medium">{t('recovery.options_title')}</p>
                   <div className="space-y-2">
                     <div className="flex items-start gap-3">
                       <Download className="h-5 w-5 text-primary mt-0.5" />
                       <div>
-                        <p className="font-medium">Opción A: Download ZIP (Más Fácil)</p>
+                        <p className="font-medium">{t('recovery.option_a_title')}</p>
                         <p className="text-sm text-muted-foreground">
-                          Descarga un archivo .zip con todo el código. Descomprímelo en tu computadora.
+                          {t('recovery.option_a_desc')}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <Copy className="h-5 w-5 text-primary mt-0.5" />
                       <div>
-                        <p className="font-medium">Opción B: Clonar con Git</p>
+                        <p className="font-medium">{t('recovery.option_b_title')}</p>
                         <p className="text-sm text-muted-foreground">
-                          Copia la URL y usa Git en tu computadora (requiere conocimientos técnicos)
+                          {t('recovery.option_b_desc')}
                         </p>
                       </div>
                     </div>
@@ -212,7 +258,7 @@ const DisasterRecoveryGuide = () => {
 
             <Separator />
 
-            {/* Paso 4 */}
+            {/* Step 4 */}
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
@@ -220,49 +266,58 @@ const DisasterRecoveryGuide = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2">Despliega el código</h3>
+                <h3 className="font-semibold text-lg mb-2">{t('recovery.step_4_title')}</h3>
                 <p className="text-muted-foreground mb-4">
-                  Ahora que tienes el código, puedes desplegarlo en cualquier hosting:
+                  {t('recovery.step_4_desc')}
                 </p>
                 <div className="grid gap-3">
                   <div className="border rounded-lg p-4">
                     <h4 className="font-semibold mb-2 flex items-center gap-2">
                       <Rocket className="h-4 w-4 text-primary" />
-                      Opción 1: Vercel (Recomendado - Gratis)
+                      {t('recovery.deploy_option_1_title')}
                     </h4>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => openImage(vercelDeployImg, "Vercel Deploy")}
+                      className="mb-2"
+                    >
+                      <ImageIcon className="h-4 w-4 mr-2" />
+                      {t('recovery.view_image')}
+                    </Button>
                     <ol className="text-sm text-muted-foreground space-y-1 ml-6 list-decimal">
-                      <li>Ve a <strong>vercel.com</strong></li>
-                      <li>Conecta tu cuenta de GitHub</li>
-                      <li>Selecciona el repositorio</li>
-                      <li>Haz clic en "Deploy"</li>
-                      <li>¡Listo! Tu sitio estará en línea en 2 minutos</li>
+                      <li>{t('recovery.deploy_option_1_step_1')}</li>
+                      <li>{t('recovery.deploy_option_1_step_2')}</li>
+                      <li>{t('recovery.deploy_option_1_step_3')}</li>
+                      <li>{t('recovery.deploy_option_1_step_4')}</li>
+                      <li>{t('recovery.deploy_option_1_step_5')}</li>
                     </ol>
                   </div>
 
                   <div className="border rounded-lg p-4">
                     <h4 className="font-semibold mb-2 flex items-center gap-2">
                       <Rocket className="h-4 w-4 text-primary" />
-                      Opción 2: Netlify (También Gratis)
+                      {t('recovery.deploy_option_2_title')}
                     </h4>
                     <ol className="text-sm text-muted-foreground space-y-1 ml-6 list-decimal">
-                      <li>Ve a <strong>netlify.com</strong></li>
-                      <li>Conecta tu cuenta de GitHub</li>
-                      <li>Selecciona el repositorio</li>
-                      <li>Haz clic en "Deploy site"</li>
-                      <li>¡Tu sitio estará en línea!</li>
+                      <li>{t('recovery.deploy_option_2_step_1')}</li>
+                      <li>{t('recovery.deploy_option_2_step_2')}</li>
+                      <li>{t('recovery.deploy_option_2_step_3')}</li>
+                      <li>{t('recovery.deploy_option_2_step_4')}</li>
+                      <li>{t('recovery.deploy_option_2_step_5')}</li>
                     </ol>
                   </div>
 
                   <div className="border rounded-lg p-4">
                     <h4 className="font-semibold mb-2 flex items-center gap-2">
                       <RefreshCw className="h-4 w-4 text-primary" />
-                      Opción 3: Volver a Lovable
+                      {t('recovery.deploy_option_3_title')}
                     </h4>
                     <ol className="text-sm text-muted-foreground space-y-1 ml-6 list-decimal">
-                      <li>Crea un nuevo proyecto en Lovable</li>
-                      <li>Conecta el mismo repositorio de GitHub</li>
-                      <li>Lovable sincronizará todo el código</li>
-                      <li>Podrás continuar editando desde donde quedaste</li>
+                      <li>{t('recovery.deploy_option_3_step_1')}</li>
+                      <li>{t('recovery.deploy_option_3_step_2')}</li>
+                      <li>{t('recovery.deploy_option_3_step_3')}</li>
+                      <li>{t('recovery.deploy_option_3_step_4')}</li>
                     </ol>
                   </div>
                 </div>
@@ -271,35 +326,33 @@ const DisasterRecoveryGuide = () => {
           </CardContent>
         </Card>
 
-        {/* Escenario 2: Problema de Organización */}
+        {/* Scenario 2: Organization Problem */}
         <Card className="mb-8 border-amber-500/20">
           <CardHeader>
             <div className="flex items-start justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2 text-2xl">
                   <AlertCircle className="h-6 w-6 text-amber-600" />
-                  Escenario 2: Moví el Repo a una Organización
+                  {t('recovery.scenario_2_title')}
                 </CardTitle>
                 <CardDescription className="mt-2">
-                  El proyecto desapareció de Lovable después de mover el repositorio
+                  {t('recovery.scenario_2_desc')}
                 </CardDescription>
               </div>
               <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/20">
-                Tu Caso
+                {t('recovery.your_case')}
               </Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
             <Alert className="bg-amber-500/10 border-amber-500/20">
               <AlertCircle className="h-4 w-4 text-amber-600" />
-              <AlertTitle className="text-amber-600">¿Qué pasó?</AlertTitle>
+              <AlertTitle className="text-amber-600">{t('recovery.what_happened')}</AlertTitle>
               <AlertDescription className="text-amber-600/80">
-                Cuando mueves un repositorio de tu cuenta personal a una organización en GitHub,
-                Lovable pierde la conexión porque la URL del repositorio cambió.
+                {t('recovery.what_happened_desc')}
               </AlertDescription>
             </Alert>
 
-            {/* Paso 1 */}
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center font-bold text-amber-700">
@@ -307,18 +360,17 @@ const DisasterRecoveryGuide = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2">No entres en pánico</h3>
+                <h3 className="font-semibold text-lg mb-2">{t('recovery.dont_panic_title')}</h3>
                 <p className="text-muted-foreground">
-                  ✅ Tu código está 100% seguro en GitHub<br/>
-                  ✅ No perdiste nada<br/>
-                  ✅ Solo necesitas reconectar Lovable
+                  {t('recovery.dont_panic_desc_1')}<br/>
+                  {t('recovery.dont_panic_desc_2')}<br/>
+                  {t('recovery.dont_panic_desc_3')}
                 </p>
               </div>
             </div>
 
             <Separator />
 
-            {/* Paso 2 */}
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center font-bold text-amber-700">
@@ -326,21 +378,20 @@ const DisasterRecoveryGuide = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2">Verifica que el repo está en la organización</h3>
+                <h3 className="font-semibold text-lg mb-2">{t('recovery.verify_org_title')}</h3>
                 <p className="text-muted-foreground mb-3">
-                  En GitHub:
+                  {t('recovery.verify_org_desc')}
                 </p>
                 <ol className="text-sm text-muted-foreground space-y-2 ml-6 list-decimal">
-                  <li>Haz clic en tu foto de perfil → "Your organizations"</li>
-                  <li>Selecciona tu organización</li>
-                  <li>Busca el repositorio → Debería estar ahí</li>
+                  <li>{t('recovery.verify_org_step_1')}</li>
+                  <li>{t('recovery.verify_org_step_2')}</li>
+                  <li>{t('recovery.verify_org_step_3')}</li>
                 </ol>
               </div>
             </div>
 
             <Separator />
 
-            {/* Paso 3 */}
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center font-bold text-amber-700">
@@ -348,31 +399,31 @@ const DisasterRecoveryGuide = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2">Reconecta en Lovable</h3>
+                <h3 className="font-semibold text-lg mb-2">{t('recovery.reconnect_title')}</h3>
                 <p className="text-muted-foreground mb-3">
-                  Tienes 2 opciones:
+                  {t('recovery.reconnect_desc')}
                 </p>
                 
                 <div className="space-y-4">
                   <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/20">
-                    <p className="font-semibold text-green-700 mb-2">Opción A: Actualizar la conexión (Más Rápido)</p>
+                    <p className="font-semibold text-green-700 mb-2">{t('recovery.reconnect_option_a_title')}</p>
                     <ol className="text-sm space-y-1 ml-4 list-decimal">
-                      <li>En Lovable, haz clic en GitHub → Disconnect</li>
-                      <li>Luego haz clic en GitHub → Connect to GitHub</li>
-                      <li>Selecciona la organización</li>
-                      <li>Selecciona el repositorio</li>
-                      <li>¡Reconectado! Todo volverá a aparecer</li>
+                      <li>{t('recovery.reconnect_option_a_step_1')}</li>
+                      <li>{t('recovery.reconnect_option_a_step_2')}</li>
+                      <li>{t('recovery.reconnect_option_a_step_3')}</li>
+                      <li>{t('recovery.reconnect_option_a_step_4')}</li>
+                      <li>{t('recovery.reconnect_option_a_step_5')}</li>
                     </ol>
                   </div>
 
                   <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/20">
-                    <p className="font-semibold text-blue-700 mb-2">Opción B: Crear nuevo proyecto y conectar</p>
+                    <p className="font-semibold text-blue-700 mb-2">{t('recovery.reconnect_option_b_title')}</p>
                     <ol className="text-sm space-y-1 ml-4 list-decimal">
-                      <li>Crea un nuevo proyecto en Lovable</li>
-                      <li>Conecta GitHub</li>
-                      <li>Selecciona la organización</li>
-                      <li>Selecciona el repositorio existente</li>
-                      <li>Lovable sincronizará todo el código automáticamente</li>
+                      <li>{t('recovery.reconnect_option_b_step_1')}</li>
+                      <li>{t('recovery.reconnect_option_b_step_2')}</li>
+                      <li>{t('recovery.reconnect_option_b_step_3')}</li>
+                      <li>{t('recovery.reconnect_option_b_step_4')}</li>
+                      <li>{t('recovery.reconnect_option_b_step_5')}</li>
                     </ol>
                   </div>
                 </div>
@@ -381,19 +432,18 @@ const DisasterRecoveryGuide = () => {
           </CardContent>
         </Card>
 
-        {/* Escenario 3: Recuperar Datos */}
+        {/* Scenario 3: Data Recovery */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-2xl">
               <Database className="h-6 w-6 text-primary" />
-              Escenario 3: Recuperar Datos (Productos, Órdenes)
+              {t('recovery.scenario_3_title')}
             </CardTitle>
             <CardDescription className="mt-2">
-              Si perdiste datos de la base de datos
+              {t('recovery.scenario_3_desc')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Paso 1 */}
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
@@ -401,9 +451,9 @@ const DisasterRecoveryGuide = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2">Ve a Sistema de Backups</h3>
+                <h3 className="font-semibold text-lg mb-2">{t('recovery.backup_step_1_title')}</h3>
                 <p className="text-muted-foreground mb-3">
-                  En el panel de administración, ve a <strong>Sistema de Backups</strong>
+                  {t('recovery.backup_step_1_desc')}
                 </p>
                 <Button 
                   variant="outline" 
@@ -411,14 +461,13 @@ const DisasterRecoveryGuide = () => {
                   onClick={() => window.location.href = '/admin/system-backup'}
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Ir a Backups
+                  {t('recovery.go_to_backups')}
                 </Button>
               </div>
             </div>
 
             <Separator />
 
-            {/* Paso 2 */}
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
@@ -426,22 +475,15 @@ const DisasterRecoveryGuide = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2">Busca el backup más reciente</h3>
-                <p className="text-muted-foreground mb-3">
-                  En la sección "Historial de Backups", verás todos tus backups con:
+                <h3 className="font-semibold text-lg mb-2">{t('recovery.backup_step_2_title')}</h3>
+                <p className="text-muted-foreground">
+                  {t('recovery.backup_step_2_desc')}
                 </p>
-                <ul className="text-sm text-muted-foreground space-y-1 ml-6 list-disc">
-                  <li>Fecha y hora de creación</li>
-                  <li>Tipo (manual o automático)</li>
-                  <li>Tamaño del archivo</li>
-                  <li>Estado (completado/fallido)</li>
-                </ul>
               </div>
             </div>
 
             <Separator />
 
-            {/* Paso 3 */}
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
@@ -449,54 +491,96 @@ const DisasterRecoveryGuide = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2">Restaura el backup</h3>
+                <h3 className="font-semibold text-lg mb-2">{t('recovery.backup_step_3_title')}</h3>
                 <p className="text-muted-foreground mb-3">
-                  Haz clic en el botón <strong>"Restaurar"</strong> del backup que quieres recuperar
+                  {t('recovery.backup_step_3_desc')}
                 </p>
                 <Alert className="bg-red-500/10 border-red-500/20">
                   <AlertCircle className="h-4 w-4 text-red-600" />
-                  <AlertTitle className="text-red-600">⚠️ Importante</AlertTitle>
+                  <AlertTitle className="text-red-600">{t('recovery.important_title')}</AlertTitle>
                   <AlertDescription className="text-red-600/80">
-                    La restauración reemplazará los datos actuales con los del backup.
-                    Asegúrate de seleccionar el backup correcto.
+                    {t('recovery.important_desc')}
                   </AlertDescription>
                 </Alert>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Paso 4 */}
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
-                  4
-                </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2">Confirma y espera</h3>
-                <p className="text-muted-foreground mb-3">
-                  El proceso de restauración toma entre 1-5 minutos dependiendo del tamaño.
-                  Verás una notificación cuando termine.
-                </p>
-                <div className="flex items-center gap-2 text-sm text-green-600 bg-green-500/10 p-3 rounded-lg">
-                  <CheckCircle2 className="h-4 w-4" />
-                  <span>Una vez completado, todos tus datos estarán de vuelta</span>
-                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Checklist de Prevención */}
+        {/* Common Problems */}
+        <Card className="mb-8 border-orange-500/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-orange-600" />
+              {t('recovery.common_problems_title')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h4 className="font-semibold mb-2">{t('recovery.problem_1_title')}</h4>
+              <p className="text-sm text-muted-foreground mb-2">{t('recovery.problem_1_desc')}</p>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-6 list-disc">
+                <li>{t('recovery.problem_1_solution_1')}</li>
+                <li>{t('recovery.problem_1_solution_2')}</li>
+              </ul>
+            </div>
+            <Separator />
+            <div>
+              <h4 className="font-semibold mb-2">{t('recovery.problem_2_title')}</h4>
+              <p className="text-sm text-muted-foreground mb-2">{t('recovery.problem_2_desc')}</p>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-6 list-disc">
+                <li>{t('recovery.problem_2_solution_1')}</li>
+                <li>{t('recovery.problem_2_solution_2')}</li>
+              </ul>
+            </div>
+            <Separator />
+            <div>
+              <h4 className="font-semibold mb-2">{t('recovery.problem_3_title')}</h4>
+              <p className="text-sm text-muted-foreground">{t('recovery.problem_3_solution')}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* FAQ */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <HelpCircle className="h-5 w-5 text-primary" />
+              {t('recovery.faq_title')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h4 className="font-semibold mb-1">{t('recovery.faq_q1')}</h4>
+              <p className="text-sm text-muted-foreground">{t('recovery.faq_a1')}</p>
+            </div>
+            <Separator />
+            <div>
+              <h4 className="font-semibold mb-1">{t('recovery.faq_q2')}</h4>
+              <p className="text-sm text-muted-foreground">{t('recovery.faq_a2')}</p>
+            </div>
+            <Separator />
+            <div>
+              <h4 className="font-semibold mb-1">{t('recovery.faq_q3')}</h4>
+              <p className="text-sm text-muted-foreground">{t('recovery.faq_a3')}</p>
+            </div>
+            <Separator />
+            <div>
+              <h4 className="font-semibold mb-1">{t('recovery.faq_q4')}</h4>
+              <p className="text-sm text-muted-foreground">{t('recovery.faq_a4')}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Prevention Checklist */}
         <Card className="mb-8 border-primary/20 bg-primary/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-primary" />
-              Checklist de Prevención
+              {t('recovery.prevention_title')}
             </CardTitle>
             <CardDescription>
-              Haz esto para nunca perder información
+              {t('recovery.prevention_desc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -504,60 +588,71 @@ const DisasterRecoveryGuide = () => {
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
                 <div>
-                  <p className="font-medium">GitHub conectado</p>
-                  <p className="text-sm text-muted-foreground">
-                    Verifica en Lovable que dice "Connected to..."
-                  </p>
+                  <p className="font-medium">{t('recovery.prevention_1')}</p>
                 </div>
               </div>
               
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
                 <div>
-                  <p className="font-medium">Backups automáticos activados</p>
-                  <p className="text-sm text-muted-foreground">
-                    En Sistema de Backups, activa backups diarios o semanales
-                  </p>
+                  <p className="font-medium">{t('recovery.prevention_2')}</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <Clock className="h-5 w-5 text-blue-600 mt-0.5" />
                 <div>
-                  <p className="font-medium">Backup manual antes de cambios grandes</p>
-                  <p className="text-sm text-muted-foreground">
-                    Antes de migraciones o cambios importantes, crea un backup manual
-                  </p>
+                  <p className="font-medium">{t('recovery.prevention_3')}</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <Github className="h-5 w-5 text-purple-600 mt-0.5" />
                 <div>
-                  <p className="font-medium">Anota la URL de tu repositorio</p>
-                  <p className="text-sm text-muted-foreground">
-                    Guarda en un lugar seguro: github.com/tu-organizacion/tu-repositorio
-                  </p>
+                  <p className="font-medium">{t('recovery.prevention_4')}</p>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Contacto de Emergencia */}
+        {/* External Access Info */}
+        <Alert className="mb-8 bg-blue-500/10 border-blue-500/20">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertTitle className="text-blue-600">{t('recovery.external_access_title')}</AlertTitle>
+          <AlertDescription className="text-blue-600/80 mt-2">
+            <p className="mb-2">{t('recovery.external_access_desc')}</p>
+            <code className="bg-blue-500/10 px-2 py-1 rounded text-xs">
+              github.com/[{t('recovery.your_org')}]/[{t('recovery.your_repo')}]/blob/main/RECOVERY_MANUAL.md
+            </code>
+          </AlertDescription>
+        </Alert>
+
+        {/* Emergency Contact */}
         <Alert>
           <Info className="h-4 w-4" />
-          <AlertTitle>¿Necesitas ayuda adicional?</AlertTitle>
+          <AlertTitle>{t('recovery.need_help_title')}</AlertTitle>
           <AlertDescription className="mt-2">
-            Si sigues estos pasos y aún tienes problemas:
-            <ul className="mt-2 space-y-1 ml-4 list-disc">
-              <li>Contacta al soporte de Lovable</li>
-              <li>Verifica los logs de errores en tu navegador (F12 → Console)</li>
-              <li>Revisa que tu cuenta de GitHub tenga acceso a la organización</li>
-            </ul>
+            {t('recovery.need_help_desc')}
           </AlertDescription>
         </Alert>
       </div>
+
+      {/* Image Dialog */}
+      <Dialog open={imageDialog.open} onOpenChange={(open) => setImageDialog({ ...imageDialog, open })}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>{imageDialog.title}</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <img 
+              src={imageDialog.src} 
+              alt={imageDialog.title}
+              className="w-full h-auto rounded-lg border"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>

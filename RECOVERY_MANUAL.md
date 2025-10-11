@@ -2,6 +2,54 @@
 
 > **Acceso rápido / Quick access:** Este manual está disponible tanto en la aplicación como en GitHub para que siempre tengas acceso, incluso si la aplicación no está disponible.
 
+## 🌐 ¿Cómo acceder a este manual externamente? | How to access this manual externally?
+
+### Español 🇪🇸
+
+**¡Este manual YA está disponible públicamente en GitHub!**
+
+Una vez que tu proyecto esté conectado a GitHub, este archivo (`RECOVERY_MANUAL.md`) se sincroniza automáticamente en tu repositorio. Puedes acceder a él de las siguientes formas:
+
+1. **Directamente desde tu repositorio de GitHub:**
+   - Ve a: `https://github.com/[tu-usuario-u-organizacion]/[nombre-repositorio]/blob/main/RECOVERY_MANUAL.md`
+   - Ejemplo: `https://github.com/wincova/mi-tienda/blob/main/RECOVERY_MANUAL.md`
+
+2. **Copia la URL y guárdala:**
+   - Esta URL es pública y funcional 100%
+   - Puedes compartirla con tus clientes
+   - Funciona incluso si la aplicación está caída
+   - No requiere autenticación para verla (es pública)
+
+3. **Marca como favorito:**
+   - Guarda la URL en tus favoritos del navegador
+   - Compártela con tu equipo
+   - Envíala por email a tus clientes
+
+**💡 Consejo:** Copia la URL del manual ahora y guárdala en un lugar seguro (Google Drive, Notion, email, etc.)
+
+### English 🇺🇸
+
+**This manual is ALREADY publicly available on GitHub!**
+
+Once your project is connected to GitHub, this file (`RECOVERY_MANUAL.md`) is automatically synced to your repository. You can access it in the following ways:
+
+1. **Directly from your GitHub repository:**
+   - Go to: `https://github.com/[your-username-or-organization]/[repo-name]/blob/main/RECOVERY_MANUAL.md`
+   - Example: `https://github.com/wincova/my-store/blob/main/RECOVERY_MANUAL.md`
+
+2. **Copy and save the URL:**
+   - This URL is public and 100% functional
+   - You can share it with your clients
+   - It works even if the application is down
+   - No authentication required to view it (it's public)
+
+3. **Bookmark it:**
+   - Save the URL in your browser bookmarks
+   - Share it with your team
+   - Email it to your clients
+
+**💡 Tip:** Copy the manual URL now and save it in a safe place (Google Drive, Notion, email, etc.)
+
 ---
 
 ## 📋 Índice / Table of Contents
@@ -178,6 +226,59 @@ Sigue estos pasos para estar siempre protegido:
 - ✅ Activa los backups automáticos diarios
 - ✅ Mantén seguras tus credenciales de GitHub
 - ✅ Crea un backup manual antes de cambios importantes
+- ✅ Guarda la URL de este manual en un lugar seguro
+- ✅ Anota la URL de tu repositorio: `github.com/[organizacion]/[repositorio]`
+
+---
+
+## 🔧 Problemas Comunes y Soluciones
+
+### "No veo mi repositorio en GitHub"
+
+**Solución:**
+1. Verifica que estás conectado con la cuenta correcta
+2. Si está en una organización, asegúrate de tener acceso a ella
+3. Revisa la sección "Your organizations" en tu perfil
+
+### "Lovable dice que no puede conectar a GitHub"
+
+**Solución:**
+1. Revoca el acceso de Lovable en: github.com/settings/applications
+2. Vuelve a conectar desde Lovable
+3. Asegúrate de dar todos los permisos necesarios
+
+### "Mi código está en GitHub pero la aplicación no funciona"
+
+**Solución:**
+- GitHub solo guarda el código, no la base de datos
+- Necesitas restaurar los datos desde un backup
+- Sigue el Escenario 3 de este manual
+
+### "Perdí el acceso a mi cuenta de GitHub"
+
+**Solución:**
+1. Usa la recuperación de contraseña de GitHub
+2. Si usas 2FA, usa tus códigos de respaldo
+3. Contacta al soporte de GitHub si es necesario
+
+---
+
+## ❓ Preguntas Frecuentes (FAQ)
+
+**P: ¿Con qué frecuencia se sincroniza el código a GitHub?**  
+R: Cada vez que Lovable guarda cambios, se sincroniza automáticamente en tiempo real.
+
+**P: ¿Puedo tener múltiples backups?**  
+R: Sí, puedes configurar backups automáticos diarios, semanales y crear backups manuales cuando quieras.
+
+**P: ¿Qué pasa si borro algo por error?**  
+R: Puedes restaurar desde un backup o usar el historial de versiones de GitHub.
+
+**P: ¿Los backups incluyen imágenes y archivos?**  
+R: Sí, los backups incluyen toda la base de datos, incluyendo referencias a archivos almacenados.
+
+**P: ¿Puedo descargar el código sin GitHub?**  
+R: No, necesitas tener GitHub conectado para poder descargar tu código.
 
 ---
 
@@ -337,6 +438,59 @@ Follow these steps to always be protected:
 - ✅ Enable automatic daily backups
 - ✅ Keep your GitHub credentials secure
 - ✅ Create a manual backup before major changes
+- ✅ Save this manual's URL in a safe place
+- ✅ Note your repository URL: `github.com/[organization]/[repository]`
+
+---
+
+## 🔧 Common Problems and Solutions
+
+### "I don't see my repository on GitHub"
+
+**Solution:**
+1. Verify you're logged in with the correct account
+2. If it's in an organization, make sure you have access to it
+3. Check the "Your organizations" section in your profile
+
+### "Lovable says it can't connect to GitHub"
+
+**Solution:**
+1. Revoke Lovable's access at: github.com/settings/applications
+2. Reconnect from Lovable
+3. Make sure to grant all necessary permissions
+
+### "My code is on GitHub but the application doesn't work"
+
+**Solution:**
+- GitHub only stores the code, not the database
+- You need to restore data from a backup
+- Follow Scenario 3 in this manual
+
+### "I lost access to my GitHub account"
+
+**Solution:**
+1. Use GitHub's password recovery
+2. If you use 2FA, use your backup codes
+3. Contact GitHub support if necessary
+
+---
+
+## ❓ Frequently Asked Questions (FAQ)
+
+**Q: How often is code synced to GitHub?**  
+A: Every time Lovable saves changes, it syncs automatically in real-time.
+
+**Q: Can I have multiple backups?**  
+A: Yes, you can configure automatic daily, weekly backups and create manual backups whenever you want.
+
+**Q: What happens if I delete something by mistake?**  
+A: You can restore from a backup or use GitHub's version history.
+
+**Q: Do backups include images and files?**  
+A: Yes, backups include the entire database, including references to stored files.
+
+**Q: Can I download the code without GitHub?**  
+A: No, you need to have GitHub connected to be able to download your code.
 
 ---
 
