@@ -31,7 +31,7 @@ export const LanguageCurrencySelector = () => {
     { code: 'MXN', name: t('currency.mxn'), visible: false },
   ];
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const currentLanguage = languages.find(lang => i18n.language?.startsWith(lang.code)) || languages[0];
 
   return (
     <div className="flex items-center gap-1">
@@ -56,7 +56,7 @@ export const LanguageCurrencySelector = () => {
               key={lang.code}
               onClick={() => i18n.changeLanguage(lang.code)}
               className={`cursor-pointer hover:bg-primary/10 transition-colors ${
-                i18n.language === lang.code ? "bg-primary/20 font-semibold" : ""
+                i18n.language?.startsWith(lang.code) ? "bg-primary/20 font-semibold" : ""
               }`}
             >
               <span className="text-xl mr-3">{lang.flag}</span>

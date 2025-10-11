@@ -33,6 +33,7 @@ export const ChangelogCarousel = ({ latestFeatures }: { latestFeatures?: Carouse
   const items = latestFeatures && latestFeatures.length > 0 ? latestFeatures : highlights;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const goToNext = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % items.length);

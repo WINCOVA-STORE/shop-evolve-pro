@@ -21,7 +21,7 @@ i18n
     fallbackLng: 'en',
     debug: false,
     detection: {
-      order: ['navigator', 'localStorage', 'htmlTag'],
+      order: ['localStorage', 'htmlTag', 'navigator'],
       caches: ['localStorage'],
     },
     interpolation: {

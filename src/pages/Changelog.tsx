@@ -36,11 +36,11 @@ export default function Changelog() {
 
   // Get date-fns locale based on current language
   const getDateLocale = () => {
-    switch (i18n.language) {
-      case 'es': return es;
-      case 'fr': return fr;
-      case 'pt': return pt;
-      case 'zh': return zhCN;
+    switch (true) {
+      case i18n.language?.startsWith('es'): return es;
+      case i18n.language?.startsWith('fr'): return fr;
+      case i18n.language?.startsWith('pt'): return pt;
+      case i18n.language?.startsWith('zh'): return zhCN;
       default: return enUS;
     }
   };
@@ -77,8 +77,8 @@ export default function Changelog() {
             const originalName = feature.feature_name;
             const customerBenefit = benefitData?.customerBenefit || feature.description || feature.feature_name;
             
-            // Then translate to current language if not Spanish
-            if (i18n.language !== 'es') {
+            // Then translate to current language if not Spanish (support regional codes like es-ES, es-419)
+            if (!i18n.language?.startsWith('es')) {
               try {
                 const { data: translatedData, error: translationError } = await supabase.functions.invoke('translate-feature', {
                   body: {

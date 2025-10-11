@@ -20,27 +20,17 @@ serve(async (req) => {
 
       console.log(`Translating to ${targetLanguage}:`, featureName);
 
-      // Map language codes to full language names
+      // Normalize and map language codes to full names
+      const baseLang = (targetLanguage || 'en').toLowerCase().split(/[-_]/)[0];
       const languageNames: Record<string, string> = {
-        'en': 'English',
-        'es': 'Spanish',
-        'fr': 'French',
-        'pt': 'Portuguese',
-        'zh': 'Chinese'
+        en: 'English',
+        es: 'Spanish',
+        fr: 'French',
+        pt: 'Portuguese',
+        zh: 'Chinese'
       };
 
-      const targetLangName = languageNames[targetLanguage] || 'English';
-
-      // If already in target language, skip translation
-      if (targetLanguage === 'es') {
-        return new Response(
-          JSON.stringify({ 
-            translatedName: featureName,
-            translatedDescription: description 
-          }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
+      const targetLangName = languageNames[baseLang] || 'English';
 
       // Validate input
       if (!featureName || !description) {
@@ -61,12 +51,14 @@ Your task is to translate feature names and descriptions while maintaining:
 - Natural, friendly tone appropriate for ${targetLangName} speakers
 - Marketing appeal and clarity
 - Cultural appropriateness
+- If the input is already in ${targetLangName}, return it unchanged.
+- Never invent features or details.
 
 Return ONLY a JSON object with this exact structure:
 {
   "translatedName": "translated feature name",
   "translatedDescription": "translated description"
-}`;
+ }`;
 
     const userPrompt = `Translate this e-commerce feature to ${targetLangName}:
 
