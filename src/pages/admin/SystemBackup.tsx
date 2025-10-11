@@ -49,7 +49,7 @@ const SystemBackup = () => {
   const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
   const [backupFrequency, setBackupFrequency] = useState<string>('daily');
   const [backupHour, setBackupHour] = useState<string>('03');
-  const [backupDayOfWeek, setBackupDayOfWeek] = useState<string>('1');
+  const [backupDaysOfWeek, setBackupDaysOfWeek] = useState<string[]>(['1']);
   const [restoring, setRestoring] = useState(false);
 
   useEffect(() => {
@@ -110,7 +110,7 @@ const SystemBackup = () => {
         setAutoBackupEnabled(data.auto_backup_enabled || false);
         setBackupFrequency(data.frequency || 'daily');
         setBackupHour(data.backup_hour || '03');
-        setBackupDayOfWeek(data.backup_day_of_week || '1');
+        setBackupDaysOfWeek(data.backup_days_of_week || ['1']);
       }
     } catch (error) {
       console.error('Error fetching backup settings:', error);
@@ -256,15 +256,21 @@ const SystemBackup = () => {
           auto_backup_enabled: autoBackupEnabled,
           frequency: backupFrequency,
           backup_hour: backupHour,
-          backup_day_of_week: backupDayOfWeek,
+          backup_days_of_week: backupDaysOfWeek,
           updated_at: new Date().toISOString()
         });
 
       if (error) throw error;
 
+      const daysText = backupFrequency === 'weekly' 
+        ? ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+            .filter((_, i) => backupDaysOfWeek.includes(i.toString()))
+            .join(', ')
+        : 'todos los días';
+
       toast({
         title: "Configuración Guardada",
-        description: `Los backups se ejecutarán ${backupFrequency === 'daily' ? 'diariamente' : 'semanalmente'} a las ${backupHour}:00`,
+        description: `Backups programados ${daysText} a las ${backupHour}:00`,
       });
     } catch (error: any) {
       console.error('Error updating backup settings:', error);
@@ -274,6 +280,14 @@ const SystemBackup = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const toggleDay = (day: string) => {
+    setBackupDaysOfWeek(prev => 
+      prev.includes(day) 
+        ? prev.filter(d => d !== day)
+        : [...prev, day]
+    );
   };
 
   const formatFileSize = (bytes: number) => {
@@ -370,122 +384,120 @@ const SystemBackup = () => {
             </CardContent>
           </Card>
 
-          {/* Automatic Backup Card */}
-          <Card className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
-            <CardHeader className="space-y-3">
-              <CardTitle className="flex items-center gap-3 text-2xl">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Settings2 className="h-6 w-6 text-primary" />
+          {/* Automatic Backup Card - Apple-style minimal */}
+          <Card className="border border-border/50 hover:border-primary/30 transition-all duration-300 shadow-sm hover:shadow-md">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl font-medium">
+                    Backups Automáticos
+                  </CardTitle>
+                  <CardDescription className="text-sm mt-1">
+                    Programa backups recurrentes
+                  </CardDescription>
                 </div>
-                Backups Automáticos
-              </CardTitle>
-              <CardDescription className="text-base">
-                Configura backups automáticos programados
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between p-4 rounded-lg border-2 bg-muted/30">
-                <Label htmlFor="auto-backup" className="flex flex-col gap-1 cursor-pointer">
-                  <span className="font-semibold text-base">Activar Backups Automáticos</span>
-                  <span className="text-sm text-muted-foreground">
-                    Los backups se crearán según tu programación
-                  </span>
-                </Label>
                 <Switch
                   id="auto-backup"
                   checked={autoBackupEnabled}
                   onCheckedChange={setAutoBackupEnabled}
-                  className="scale-110"
                 />
               </div>
+            </CardHeader>
 
-              {autoBackupEnabled && (
-                <div className="space-y-5 p-4 rounded-lg border bg-background">
-                  <div className="space-y-3">
-                    <Label className="text-base font-semibold flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-primary" />
-                      Frecuencia
-                    </Label>
-                    <Select value={backupFrequency} onValueChange={setBackupFrequency}>
-                      <SelectTrigger className="h-11">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="daily" className="cursor-pointer">
-                          <div className="flex items-center gap-3 py-1">
-                            <Calendar className="h-4 w-4 text-primary" />
-                            <div>
-                              <p className="font-medium">Diario</p>
-                              <p className="text-xs text-muted-foreground">Cada 24 horas</p>
-                            </div>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="weekly" className="cursor-pointer">
-                          <div className="flex items-center gap-3 py-1">
-                            <Calendar className="h-4 w-4 text-primary" />
-                            <div>
-                              <p className="font-medium">Semanal</p>
-                              <p className="text-xs text-muted-foreground">Cada 7 días</p>
-                            </div>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {backupFrequency === 'weekly' && (
-                    <div className="space-y-3">
-                      <Label className="text-base font-semibold flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-primary" />
-                        Día de la semana
-                      </Label>
-                      <Select value={backupDayOfWeek} onValueChange={setBackupDayOfWeek}>
-                        <SelectTrigger className="h-11">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="0">Domingo</SelectItem>
-                          <SelectItem value="1">Lunes</SelectItem>
-                          <SelectItem value="2">Martes</SelectItem>
-                          <SelectItem value="3">Miércoles</SelectItem>
-                          <SelectItem value="4">Jueves</SelectItem>
-                          <SelectItem value="5">Viernes</SelectItem>
-                          <SelectItem value="6">Sábado</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  <div className="space-y-3">
-                    <Label className="text-base font-semibold flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-primary" />
-                      Hora de ejecución
-                    </Label>
-                    <Select value={backupHour} onValueChange={setBackupHour}>
-                      <SelectTrigger className="h-11">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60">
-                        {Array.from({ length: 24 }, (_, i) => (
-                          <SelectItem key={i} value={i.toString().padStart(2, '0')}>
-                            {i.toString().padStart(2, '0')}:00
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+            {autoBackupEnabled && (
+              <CardContent className="space-y-8 pt-0">
+                {/* Frecuencia */}
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-muted-foreground">
+                    Frecuencia
+                  </Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { value: 'daily', label: 'Diario', desc: 'Cada día' },
+                      { value: 'weekly', label: 'Semanal', desc: 'Cada semana' }
+                    ].map((freq) => (
+                      <button
+                        key={freq.value}
+                        onClick={() => setBackupFrequency(freq.value)}
+                        className={`
+                          p-4 rounded-xl text-left transition-all
+                          ${backupFrequency === freq.value 
+                            ? 'bg-primary text-primary-foreground shadow-md' 
+                            : 'bg-muted/30 hover:bg-muted/50 text-foreground'}
+                        `}
+                      >
+                        <p className="font-medium">{freq.label}</p>
+                        <p className="text-xs opacity-80 mt-0.5">{freq.desc}</p>
+                      </button>
+                    ))}
                   </div>
                 </div>
-              )}
 
-              <Button 
-                onClick={updateBackupSettings}
-                className="w-full h-11 text-base font-semibold"
-                disabled={!autoBackupEnabled}
-              >
-                <Settings2 className="mr-2 h-4 w-4" />
-                Guardar Configuración
-              </Button>
-            </CardContent>
+                {/* Días de la semana - Solo si es semanal */}
+                {backupFrequency === 'weekly' && (
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-muted-foreground">
+                      Días de la semana
+                    </Label>
+                    <div className="grid grid-cols-7 gap-2">
+                      {[
+                        { value: '0', label: 'D' },
+                        { value: '1', label: 'L' },
+                        { value: '2', label: 'M' },
+                        { value: '3', label: 'X' },
+                        { value: '4', label: 'J' },
+                        { value: '5', label: 'V' },
+                        { value: '6', label: 'S' }
+                      ].map((day) => (
+                        <button
+                          key={day.value}
+                          onClick={() => toggleDay(day.value)}
+                          className={`
+                            aspect-square rounded-full font-medium text-sm
+                            transition-all
+                            ${backupDaysOfWeek.includes(day.value)
+                              ? 'bg-primary text-primary-foreground shadow-md scale-105'
+                              : 'bg-muted/30 hover:bg-muted/50 text-muted-foreground hover:text-foreground'}
+                          `}
+                        >
+                          {day.label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Selecciona uno o más días
+                    </p>
+                  </div>
+                )}
+
+                {/* Hora */}
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-muted-foreground">
+                    Hora de ejecución
+                  </Label>
+                  <Select value={backupHour} onValueChange={setBackupHour}>
+                    <SelectTrigger className="h-12 rounded-xl border-border/50">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60">
+                      {Array.from({ length: 24 }, (_, i) => (
+                        <SelectItem key={i} value={i.toString().padStart(2, '0')}>
+                          {i.toString().padStart(2, '0')}:00
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Button 
+                  onClick={updateBackupSettings}
+                  className="w-full h-12 rounded-xl font-medium"
+                  size="lg"
+                >
+                  Guardar Configuración
+                </Button>
+              </CardContent>
+            )}
           </Card>
         </div>
 
