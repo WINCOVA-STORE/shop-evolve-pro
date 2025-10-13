@@ -235,21 +235,33 @@ serve(async (req) => {
           const existingProductId = mappingMap.get(wooProductId);
 
           if (existingProductId) {
-            // Update existing product
+            // Update existing product - ONLY update stock, prices, images, status
+            // DO NOT update name/description (already optimized with AI)
+            const updateData = {
+              price: price,
+              compare_at_price: compareAtPrice,
+              stock: wooProduct.stock_quantity || 0,
+              is_active: wooProduct.status === 'publish',
+              images: wooProduct.images?.map(img => img.src) || [],
+              sku: wooProduct.sku || null,
+              tags: wooProduct.tags?.map(tag => tag.name) || [],
+              updated_at: new Date().toISOString()
+            };
+
             const { error: updateError } = await supabaseClient
               .from('products')
-              .update(productData)
+              .update(updateData)
               .eq('id', existingProductId);
 
             if (updateError) {
               console.error(`Error updating product ${wooProduct.name}:`, updateError);
               productsFailed++;
             } else {
-              console.log(`Updated product: ${wooProduct.name}`);
+              console.log(`✅ Updated product (stock/price): ${wooProduct.name}`);
               productsUpdated++;
             }
           } else {
-            // Create new product
+            // Create new product - includes ALL data for AI optimization
             const { data: newProduct, error: insertError } = await supabaseClient
               .from('products')
               .insert(productData)
@@ -260,7 +272,7 @@ serve(async (req) => {
               console.error(`Error creating product ${wooProduct.name}:`, insertError);
               productsFailed++;
             } else {
-              console.log(`Created product: ${wooProduct.name}`);
+              console.log(`✨ Created NEW product: ${wooProduct.name} (will be translated)`);
               
               // Create mapping
               await supabaseClient
@@ -294,15 +306,16 @@ serve(async (req) => {
         .eq('id', syncLog.id);
 
       console.log(`✅ Sync completed successfully:`);
-      console.log(`   📊 Synced: ${productsSynced}`);
-      console.log(`   ➕ Created: ${productsCreated}`);
-      console.log(`   ♻️ Updated: ${productsUpdated}`);
-      console.log(`   🗑️ Deactivated: ${productsDeactivated}`);
+      console.log(`   📊 Total WooCommerce products: ${productsSynced}`);
+      console.log(`   ✨ NEW products created: ${productsCreated} (will be auto-translated)`);
+      console.log(`   ♻️ Existing updated (stock/price only): ${productsUpdated}`);
+      console.log(`   🗑️ Deactivated (deleted in WooCommerce): ${productsDeactivated}`);
       console.log(`   ❌ Failed: ${productsFailed}`);
+      console.log(`   💰 AI tokens saved: ${productsUpdated * 4} translations (name/desc preserved)`);
 
-      // 🌍 AUTO-TRANSLATE: Trigger batch translation after import (non-blocking)
-      if (productsCreated > 0 || productsUpdated > 0) {
-        console.log('🔄 Triggering automatic batch translation...');
+      // 🌍 AUTO-TRANSLATE: Only translate NEW products (resource optimization)
+      if (productsCreated > 0) {
+        console.log(`🔄 Auto-translating ${productsCreated} NEW products only...`);
         try {
           const translateResponse = await supabaseClient.functions.invoke('batch-translate-products');
           if (translateResponse.error) {
@@ -312,8 +325,9 @@ serve(async (req) => {
           }
         } catch (translateError) {
           console.error('⚠️ Auto-translation failed (non-critical):', translateError);
-          // Don't fail the import if translation fails
         }
+      } else {
+        console.log('⚡ No new products - skipping translation (resource optimization)');
       }
 
       return new Response(
@@ -325,9 +339,10 @@ serve(async (req) => {
             created: productsCreated,
             updated: productsUpdated,
             deactivated: productsDeactivated,
-            failed: productsFailed
+            failed: productsFailed,
+            tokensOptimized: productsUpdated * 4 // AI translations saved
           },
-          message: `✅ Sync complete: ${productsCreated} created, ${productsUpdated} updated, ${productsDeactivated} deactivated`
+          message: `✅ Optimized sync: ${productsCreated} new (translated), ${productsUpdated} updated (preserved), ${productsDeactivated} deactivated`
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
