@@ -2430,6 +2430,7 @@ export type Database = {
           error_message: string | null
           id: string
           products_created: number | null
+          products_deleted: number | null
           products_failed: number | null
           products_synced: number | null
           products_updated: number | null
@@ -2443,6 +2444,7 @@ export type Database = {
           error_message?: string | null
           id?: string
           products_created?: number | null
+          products_deleted?: number | null
           products_failed?: number | null
           products_synced?: number | null
           products_updated?: number | null
@@ -2456,6 +2458,7 @@ export type Database = {
           error_message?: string | null
           id?: string
           products_created?: number | null
+          products_deleted?: number | null
           products_failed?: number | null
           products_synced?: number | null
           products_updated?: number | null

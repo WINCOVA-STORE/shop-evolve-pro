@@ -17,6 +17,7 @@ interface SyncLog {
   products_synced: number;
   products_created: number;
   products_updated: number;
+  products_deleted: number;
   products_failed: number;
   error_message: string | null;
   sync_type: string;
@@ -222,7 +223,7 @@ const WooCommerceSync = () => {
                         )}
                       </div>
                       
-                      <div className="grid grid-cols-4 gap-4 text-sm">
+                      <div className="grid grid-cols-5 gap-4 text-sm">
                         <div>
                           <span className="text-muted-foreground">Synced:</span>
                           <span className="ml-2 font-semibold">{log.products_synced}</span>
@@ -234,6 +235,10 @@ const WooCommerceSync = () => {
                         <div>
                           <span className="text-muted-foreground">Updated:</span>
                           <span className="ml-2 font-semibold text-blue-600">{log.products_updated}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Deactivated:</span>
+                          <span className="ml-2 font-semibold text-orange-600">{log.products_deleted || 0}</span>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Failed:</span>
@@ -264,7 +269,7 @@ const WooCommerceSync = () => {
               <div className="flex items-center justify-between py-2 border-b">
                 <div>
                   <div className="font-medium">WooCommerce URL</div>
-                  <div className="text-sm text-muted-foreground">https://wincova.com</div>
+                  <div className="text-sm text-muted-foreground">catalog.wincova.com</div>
                 </div>
                 <Badge variant="outline" className="bg-green-50">Connected</Badge>
               </div>
