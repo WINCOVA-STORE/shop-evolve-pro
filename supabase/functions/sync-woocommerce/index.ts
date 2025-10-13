@@ -95,12 +95,11 @@ serve(async (req) => {
         throw new Error('WooCommerce credentials not configured');
       }
 
-      // Robust WooCommerce fetch with retries + content-type validation
+      // Robust WooCommerce fetch with retries + content-type validation + adaptive timeouts/page size
       const fetchWooProducts = async (): Promise<WooProduct[]> => {
         const baseUrl = wooUrl.replace(/\/$/, '');
         const hasApiPath = /\/wp-json\/wc\/v\d+$/i.test(baseUrl);
         const apiBase = hasApiPath ? baseUrl : `${baseUrl}/wp-json/wc/v3`;
-        const productsUrlBase = `${apiBase}/products?per_page=100&status=publish`;
 
         const makeRequest = async (url: string, useBasic: boolean, signal: AbortSignal) => {
           const headers: Record<string, string> = { 
@@ -126,9 +125,15 @@ serve(async (req) => {
         };
 
         const attempts = 4;
+        const timeouts = [20000, 30000, 45000, 60000];
+
         for (let i = 0; i < attempts; i++) {
+          const perPage = i >= 1 ? 50 : 100; // shrink payload on retries
+          const productsUrlBase = `${apiBase}/products?per_page=${perPage}&status=publish`;
+
           const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), 45000);
+          const timeoutMs = timeouts[i] ?? 30000;
+          const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
           try {
             // Try Basic first
@@ -157,12 +162,20 @@ serve(async (req) => {
           } catch (err) {
             const isLast = i === attempts - 1;
             const msg = err instanceof Error ? err.message : String(err);
+            const aborted = /AbortError|aborted/i.test(msg);
             console.warn(`WooCommerce fetch attempt ${i + 1} failed: ${msg}`);
-            if (isLast || /401|403/.test(msg)) {
+            if (isLast) {
+              if (aborted) {
+                throw new Error(`WooCommerce timeout after ${timeoutMs}ms (attempt ${i + 1}). The server took too long. Consider allowing our IP or increasing limits on your host.`);
+              }
+              throw err;
+            }
+            if (/401|403/.test(msg)) {
+              // auth issues won't improve with retries
               throw err;
             }
             // backoff
-            const delay = 500 * Math.pow(2, i);
+            const delay = 600 * Math.pow(2, i);
             await new Promise((r) => setTimeout(r, delay));
           } finally {
             clearTimeout(timeout);
