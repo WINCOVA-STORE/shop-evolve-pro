@@ -133,9 +133,29 @@ Return ONLY a JSON array with this EXACT structure:
           continue;
         }
 
-        // Clean response
+        // Clean response - remove markdown, trim, and extract JSON array
         content = content.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
-        const translations = JSON.parse(content);
+        
+        // Extract JSON array if wrapped in text
+        const jsonMatch = content.match(/\[[\s\S]*\]/);
+        if (!jsonMatch) {
+          console.error(`❌ ${lang}: Could not find JSON array in response`);
+          continue;
+        }
+        
+        let translations;
+        try {
+          translations = JSON.parse(jsonMatch[0]);
+        } catch (parseError) {
+          console.error(`❌ ${lang}: JSON parse error:`, parseError);
+          console.error(`Content preview:`, jsonMatch[0].substring(0, 500));
+          continue;
+        }
+        
+        if (!Array.isArray(translations)) {
+          console.error(`❌ ${lang}: Response is not an array`);
+          continue;
+        }
 
         // Update all products in batch
         let updated = 0;

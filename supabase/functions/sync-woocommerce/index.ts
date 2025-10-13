@@ -82,6 +82,7 @@ serve(async (req) => {
     let productsUpdated = 0;
     let productsFailed = 0;
     let productsSynced = 0;
+    let productsDeactivated = 0;
 
     try {
       // WooCommerce credentials
@@ -141,7 +142,34 @@ serve(async (req) => {
 
       const mappingMap = new Map(existingMappings?.map(m => [m.woocommerce_product_id, m.lovable_product_id]) || []);
 
-      // Process each product
+      // 🗑️ STEP 1: Detect and deactivate deleted products
+      console.log('🔍 Checking for deleted products...');
+      const wooProductIds = new Set(wooProducts.map(p => String(p.id)));
+      const mappedProductIds = Array.from(mappingMap.keys());
+      
+      let productsDeactivated = 0;
+      for (const mappedWooId of mappedProductIds) {
+        if (!wooProductIds.has(mappedWooId)) {
+          // Product exists in our DB but not in WooCommerce anymore
+          const lovableProductId = mappingMap.get(mappedWooId);
+          console.log(`⚠️ Product ${mappedWooId} no longer exists in WooCommerce, deactivating...`);
+          
+          const { error: deactivateError } = await supabaseClient
+            .from('products')
+            .update({ is_active: false })
+            .eq('id', lovableProductId);
+          
+          if (!deactivateError) {
+            productsDeactivated++;
+          }
+        }
+      }
+      
+      if (productsDeactivated > 0) {
+        console.log(`✅ Deactivated ${productsDeactivated} deleted products`);
+      }
+
+      // 🔄 STEP 2: Process each product from WooCommerce
       for (const wooProduct of wooProducts) {
         try {
           productsSynced++;
@@ -260,22 +288,32 @@ serve(async (req) => {
           products_synced: productsSynced,
           products_created: productsCreated,
           products_updated: productsUpdated,
-          products_failed: productsFailed
+          products_failed: productsFailed,
+          products_deleted: productsDeactivated
         })
         .eq('id', syncLog.id);
 
-      console.log('Sync completed successfully');
+      console.log(`✅ Sync completed successfully:`);
+      console.log(`   📊 Synced: ${productsSynced}`);
+      console.log(`   ➕ Created: ${productsCreated}`);
+      console.log(`   ♻️ Updated: ${productsUpdated}`);
+      console.log(`   🗑️ Deactivated: ${productsDeactivated}`);
+      console.log(`   ❌ Failed: ${productsFailed}`);
 
-      // 🌍 AUTO-TRANSLATE: Trigger batch translation after import
-      console.log('🔄 Triggering automatic batch translation...');
-      try {
-        const translateResponse = await supabaseClient.functions.invoke('batch-translate-products');
-        if (translateResponse.data?.success) {
-          console.log(`✅ Auto-translation completed: ${translateResponse.data.translated} products translated`);
+      // 🌍 AUTO-TRANSLATE: Trigger batch translation after import (non-blocking)
+      if (productsCreated > 0 || productsUpdated > 0) {
+        console.log('🔄 Triggering automatic batch translation...');
+        try {
+          const translateResponse = await supabaseClient.functions.invoke('batch-translate-products');
+          if (translateResponse.error) {
+            console.error('⚠️ Auto-translation error:', translateResponse.error);
+          } else if (translateResponse.data?.success) {
+            console.log(`✅ Auto-translation completed: ${translateResponse.data.translated} products translated`);
+          }
+        } catch (translateError) {
+          console.error('⚠️ Auto-translation failed (non-critical):', translateError);
+          // Don't fail the import if translation fails
         }
-      } catch (translateError) {
-        console.error('⚠️ Auto-translation failed (non-critical):', translateError);
-        // Don't fail the import if translation fails
       }
 
       return new Response(
@@ -286,9 +324,10 @@ serve(async (req) => {
             synced: productsSynced,
             created: productsCreated,
             updated: productsUpdated,
+            deactivated: productsDeactivated,
             failed: productsFailed
           },
-          message: `Successfully synced ${productsSynced} products and triggered auto-translation`
+          message: `✅ Sync complete: ${productsCreated} created, ${productsUpdated} updated, ${productsDeactivated} deactivated`
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -306,6 +345,7 @@ serve(async (req) => {
           products_synced: productsSynced,
           products_created: productsCreated,
           products_updated: productsUpdated,
+          products_deleted: productsDeactivated,
           products_failed: productsFailed,
           error_message: error instanceof Error ? error.message : String(error)
         })
