@@ -94,6 +94,8 @@ const WooCommerceSync = () => {
 
   const handleSync = async () => {
     setSyncing(true);
+    let syncLogId: string | null = null;
+    
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
@@ -101,35 +103,79 @@ const WooCommerceSync = () => {
         throw new Error('No session found');
       }
 
-      const response = await supabase.functions.invoke('sync-woocommerce', {
-        body: { syncType: 'manual' },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
-      });
+      // Start the sync with a short timeout (the function will continue in background)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
-      if (response.error) {
-        throw response.error;
+      try {
+        const response = await supabase.functions.invoke('sync-woocommerce', {
+          body: { syncType: 'manual' },
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        });
+
+        clearTimeout(timeoutId);
+
+        if (response.error) {
+          throw response.error;
+        }
+
+        if (response.data?.syncLogId) {
+          syncLogId = response.data.syncLogId;
+        }
+      } catch (invokeError: any) {
+        // If it's a timeout, that's expected - the function is still running
+        if (invokeError.name !== 'AbortError' && !invokeError.message?.includes('aborted')) {
+          throw invokeError;
+        }
+        console.log('Function invocation timeout (expected) - sync continues in background');
       }
 
       toast({
         title: "Sync Started",
-        description: "WooCommerce products are being synchronized."
+        description: "WooCommerce products are being synchronized. This may take a few minutes..."
       });
 
-      // Refresh logs after a short delay
-      setTimeout(() => {
-        fetchSyncLogs();
-      }, 2000);
+      // Poll for updates every 3 seconds
+      const pollInterval = setInterval(async () => {
+        await fetchSyncLogs();
+        
+        // Check if latest log is completed
+        const { data: latestLog } = await supabase
+          .from('woocommerce_sync_logs')
+          .select('status')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
 
-    } catch (error) {
+        if (latestLog && (latestLog.status === 'success' || latestLog.status === 'failed')) {
+          clearInterval(pollInterval);
+          setSyncing(false);
+          
+          toast({
+            title: latestLog.status === 'success' ? "Sync Completed" : "Sync Failed",
+            description: latestLog.status === 'success' 
+              ? "All products have been synchronized successfully."
+              : "The synchronization encountered an error.",
+            variant: latestLog.status === 'failed' ? "destructive" : "default"
+          });
+        }
+      }, 3000);
+
+      // Stop polling after 5 minutes max
+      setTimeout(() => {
+        clearInterval(pollInterval);
+        setSyncing(false);
+      }, 300000);
+
+    } catch (error: any) {
       console.error('Error syncing:', error);
       toast({
         variant: "destructive",
         title: "Sync Failed",
         description: error.message || "Failed to start synchronization."
       });
-    } finally {
       setSyncing(false);
     }
   };
