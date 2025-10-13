@@ -95,15 +95,30 @@ serve(async (req) => {
 
       // Fetch products from WooCommerce
       console.log('Fetching products from WooCommerce...');
-      const wooProductsUrl = `${wooUrl}/wp-json/wc/v3/products?per_page=100&status=publish`;
+
+      // Normalize base URL: accept either domain or full /wp-json/wc/v3 path
+      const baseUrl = wooUrl.replace(/\/$/, '');
+      const hasApiPath = /\/wp-json\/wc\/v\d+$/i.test(baseUrl);
+      const apiBase = hasApiPath ? baseUrl : `${baseUrl}/wp-json/wc/v3`;
+      let productsUrlBase = `${apiBase}/products?per_page=100&status=publish`;
+
+      // Try Basic Auth first (may be blocked by some hosts)
       const wooAuth = btoa(`${consumerKey}:${consumerSecret}`);
-      
-      const wooResponse = await fetch(wooProductsUrl, {
+      let wooResponse = await fetch(productsUrlBase, {
         headers: {
           'Authorization': `Basic ${wooAuth}`,
           'Content-Type': 'application/json',
         },
       });
+
+      // If unauthorized or forbidden, retry using query params auth (recommended over HTTPs)
+      if (!wooResponse.ok && (wooResponse.status === 401 || wooResponse.status === 403)) {
+        const urlWithQuery = `${productsUrlBase}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
+        console.warn(`Basic auth rejected (${wooResponse.status}). Retrying with query auth at: ${apiBase}/products?...`);
+        wooResponse = await fetch(urlWithQuery, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
 
       if (!wooResponse.ok) {
         throw new Error(`WooCommerce API error: ${wooResponse.status} ${wooResponse.statusText}`);
