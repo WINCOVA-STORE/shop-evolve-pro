@@ -103,7 +103,11 @@ serve(async (req) => {
         const productsUrlBase = `${apiBase}/products?per_page=100&status=publish`;
 
         const makeRequest = async (url: string, useBasic: boolean, signal: AbortSignal) => {
-          const headers: Record<string, string> = { 'Accept': 'application/json', 'Content-Type': 'application/json' };
+          const headers: Record<string, string> = { 
+            'Accept': 'application/json', 
+            'Content-Type': 'application/json',
+            'User-Agent': 'WincovaSync/1.0 (sync-woocommerce edge function)'
+          };
           if (useBasic) {
             const wooAuth = btoa(`${consumerKey}:${consumerSecret}`);
             headers['Authorization'] = `Basic ${wooAuth}`;
@@ -121,10 +125,10 @@ serve(async (req) => {
           return (await res.json()) as WooProduct[];
         };
 
-        const attempts = 3;
+        const attempts = 4;
         for (let i = 0; i < attempts; i++) {
           const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), 30000);
+          const timeout = setTimeout(() => controller.abort(), 45000);
 
           try {
             // Try Basic first
