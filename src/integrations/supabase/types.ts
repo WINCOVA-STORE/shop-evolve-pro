@@ -2432,6 +2432,7 @@ export type Database = {
           products_created: number | null
           products_deleted: number | null
           products_failed: number | null
+          products_skipped: number | null
           products_synced: number | null
           products_updated: number | null
           started_at: string
@@ -2446,6 +2447,7 @@ export type Database = {
           products_created?: number | null
           products_deleted?: number | null
           products_failed?: number | null
+          products_skipped?: number | null
           products_synced?: number | null
           products_updated?: number | null
           started_at?: string
@@ -2460,6 +2462,7 @@ export type Database = {
           products_created?: number | null
           products_deleted?: number | null
           products_failed?: number | null
+          products_skipped?: number | null
           products_synced?: number | null
           products_updated?: number | null
           started_at?: string

@@ -17,6 +17,7 @@ interface SyncLog {
   products_synced: number;
   products_created: number;
   products_updated: number;
+  products_skipped: number;
   products_deleted: number;
   products_failed: number;
   error_message: string | null;
@@ -223,7 +224,7 @@ const WooCommerceSync = () => {
                         )}
                       </div>
                       
-                      <div className="grid grid-cols-5 gap-4 text-sm">
+                      <div className="grid grid-cols-3 gap-4 text-sm mb-3">
                         <div>
                           <span className="text-muted-foreground">Synced:</span>
                           <span className="ml-2 font-semibold">{log.products_synced}</span>
@@ -236,6 +237,13 @@ const WooCommerceSync = () => {
                           <span className="text-muted-foreground">Updated:</span>
                           <span className="ml-2 font-semibold text-blue-600">{log.products_updated}</span>
                         </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Unchanged:</span>
+                          <span className="ml-2 font-semibold text-gray-600">⚡ {log.products_skipped || 0}</span>
+                        </div>
                         <div>
                           <span className="text-muted-foreground">Deactivated:</span>
                           <span className="ml-2 font-semibold text-orange-600">{log.products_deleted || 0}</span>
@@ -245,6 +253,13 @@ const WooCommerceSync = () => {
                           <span className="ml-2 font-semibold text-red-600">{log.products_failed}</span>
                         </div>
                       </div>
+
+                      {(log.products_skipped > 0 || log.products_updated > 0) && (
+                        <div className="mt-3 p-2 bg-green-50 rounded text-xs text-green-700">
+                          💰 Resources saved: {(log.products_updated * 4) + (log.products_skipped || 0)} operations 
+                          ({log.products_updated * 4} AI translations + {log.products_skipped || 0} DB updates)
+                        </div>
+                      )}
 
                       {log.error_message && (
                         <div className="text-sm text-red-600 bg-red-50 p-2 rounded">

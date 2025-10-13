@@ -373,6 +373,7 @@ serve(async (req) => {
           products_created: productsCreated,
           products_updated: productsUpdated,
           products_failed: productsFailed,
+          products_skipped: productsSkipped,
           products_deleted: productsDeactivated
         })
         .eq('id', syncLog.id);
@@ -441,6 +442,7 @@ serve(async (req) => {
           products_synced: productsSynced,
           products_created: productsCreated,
           products_updated: productsUpdated,
+          products_skipped: productsSkipped,
           products_deleted: productsDeactivated,
           products_failed: productsFailed,
           error_message: error instanceof Error ? error.message : String(error)
