@@ -83,6 +83,7 @@ serve(async (req) => {
     let productsFailed = 0;
     let productsSynced = 0;
     let productsDeactivated = 0;
+    let productsSkipped = 0; // No changes detected
 
     try {
       // WooCommerce credentials
@@ -147,7 +148,19 @@ serve(async (req) => {
       const wooProductIds = new Set(wooProducts.map(p => String(p.id)));
       const mappedProductIds = Array.from(mappingMap.keys());
       
+      // 📦 Pre-load existing products data for smart comparison
+      const existingProductIds = Array.from(mappingMap.values());
+      const { data: existingProducts } = await supabaseClient
+        .from('products')
+        .select('id, price, compare_at_price, stock, is_active, images, sku, tags')
+        .in('id', existingProductIds);
+      
+      const existingProductsMap = new Map(
+        existingProducts?.map(p => [p.id, p]) || []
+      );
+      
       let productsDeactivated = 0;
+      let productsSkipped = 0; // No changes detected
       for (const mappedWooId of mappedProductIds) {
         if (!wooProductIds.has(mappedWooId)) {
           // Product exists in our DB but not in WooCommerce anymore
@@ -235,18 +248,76 @@ serve(async (req) => {
           const existingProductId = mappingMap.get(wooProductId);
 
           if (existingProductId) {
-            // Update existing product - ONLY update stock, prices, images, status
-            // DO NOT update name/description (already optimized with AI)
-            const updateData = {
-              price: price,
-              compare_at_price: compareAtPrice,
-              stock: wooProduct.stock_quantity || 0,
-              is_active: wooProduct.status === 'publish',
-              images: wooProduct.images?.map(img => img.src) || [],
-              sku: wooProduct.sku || null,
-              tags: wooProduct.tags?.map(tag => tag.name) || [],
-              updated_at: new Date().toISOString()
-            };
+            // 🔍 SMART UPDATE: Compare and update ONLY what changed
+            const currentProduct = existingProductsMap.get(existingProductId);
+            
+            if (!currentProduct) {
+              console.warn(`⚠️ Product ${existingProductId} not found in pre-loaded data`);
+              productsFailed++;
+              continue;
+            }
+
+            // Build update data with ONLY changed fields
+            const updateData: any = {};
+            let hasChanges = false;
+
+            // Compare price
+            if (currentProduct.price !== price) {
+              updateData.price = price;
+              hasChanges = true;
+            }
+
+            // Compare compare_at_price
+            if (currentProduct.compare_at_price !== compareAtPrice) {
+              updateData.compare_at_price = compareAtPrice;
+              hasChanges = true;
+            }
+
+            // Compare stock
+            const newStock = wooProduct.stock_quantity || 0;
+            if (currentProduct.stock !== newStock) {
+              updateData.stock = newStock;
+              hasChanges = true;
+            }
+
+            // Compare is_active
+            const newIsActive = wooProduct.status === 'publish';
+            if (currentProduct.is_active !== newIsActive) {
+              updateData.is_active = newIsActive;
+              hasChanges = true;
+            }
+
+            // Compare images (array comparison)
+            const newImages = wooProduct.images?.map(img => img.src) || [];
+            const imagesChanged = JSON.stringify(currentProduct.images) !== JSON.stringify(newImages);
+            if (imagesChanged) {
+              updateData.images = newImages;
+              hasChanges = true;
+            }
+
+            // Compare SKU
+            const newSku = wooProduct.sku || null;
+            if (currentProduct.sku !== newSku) {
+              updateData.sku = newSku;
+              hasChanges = true;
+            }
+
+            // Compare tags (array comparison)
+            const newTags = wooProduct.tags?.map(tag => tag.name) || [];
+            const tagsChanged = JSON.stringify(currentProduct.tags) !== JSON.stringify(newTags);
+            if (tagsChanged) {
+              updateData.tags = newTags;
+              hasChanges = true;
+            }
+
+            if (!hasChanges) {
+              // ⚡ No changes detected - skip update to save resources
+              productsSkipped++;
+              continue;
+            }
+
+            // Add timestamp only if there are real changes
+            updateData.updated_at = new Date().toISOString();
 
             const { error: updateError } = await supabaseClient
               .from('products')
@@ -257,7 +328,8 @@ serve(async (req) => {
               console.error(`Error updating product ${wooProduct.name}:`, updateError);
               productsFailed++;
             } else {
-              console.log(`✅ Updated product (stock/price): ${wooProduct.name}`);
+              const changedFields = Object.keys(updateData).filter(k => k !== 'updated_at');
+              console.log(`✅ Updated: ${wooProduct.name} (changed: ${changedFields.join(', ')})`);
               productsUpdated++;
             }
           } else {
@@ -305,13 +377,17 @@ serve(async (req) => {
         })
         .eq('id', syncLog.id);
 
-      console.log(`✅ Sync completed successfully:`);
+      console.log(`✅ SMART SYNC completed:`);
       console.log(`   📊 Total WooCommerce products: ${productsSynced}`);
       console.log(`   ✨ NEW products created: ${productsCreated} (will be auto-translated)`);
-      console.log(`   ♻️ Existing updated (stock/price only): ${productsUpdated}`);
+      console.log(`   🔄 Products updated (detected changes): ${productsUpdated}`);
+      console.log(`   ⚡ Products skipped (no changes): ${productsSkipped}`);
       console.log(`   🗑️ Deactivated (deleted in WooCommerce): ${productsDeactivated}`);
       console.log(`   ❌ Failed: ${productsFailed}`);
-      console.log(`   💰 AI tokens saved: ${productsUpdated * 4} translations (name/desc preserved)`);
+      console.log(`   💰 Resources optimized:`);
+      console.log(`      - ${productsUpdated * 4} AI translations saved (name/desc preserved)`);
+      console.log(`      - ${productsSkipped} database UPDATEs avoided (no real changes)`);
+      console.log(`      - Total optimization: ${(productsUpdated * 4) + productsSkipped} operations saved`);
 
       // 🌍 AUTO-TRANSLATE: Only translate NEW products (resource optimization)
       if (productsCreated > 0) {
@@ -338,11 +414,16 @@ serve(async (req) => {
             synced: productsSynced,
             created: productsCreated,
             updated: productsUpdated,
+            skipped: productsSkipped,
             deactivated: productsDeactivated,
             failed: productsFailed,
-            tokensOptimized: productsUpdated * 4 // AI translations saved
+            resourcesOptimized: {
+              aiTranslationsSaved: productsUpdated * 4,
+              databaseUpdatesSaved: productsSkipped,
+              totalOperationsSaved: (productsUpdated * 4) + productsSkipped
+            }
           },
-          message: `✅ Optimized sync: ${productsCreated} new (translated), ${productsUpdated} updated (preserved), ${productsDeactivated} deactivated`
+          message: `🎯 Smart sync: ${productsCreated} new, ${productsUpdated} updated, ${productsSkipped} unchanged (skipped)`
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
