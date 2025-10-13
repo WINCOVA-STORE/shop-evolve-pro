@@ -213,7 +213,10 @@ serve(async (req) => {
       console.log(`✅ Fetched ${allProducts.length} products`);
 
       // 🔥 STEP 3: Fetch variations for variable products IN PARALLEL
+      // Store variations separately, not as products
       const variableProducts = allProducts.filter(p => p.type === 'variable');
+      const productVariationsMap = new Map<number, WooVariation[]>();
+      
       if (variableProducts.length > 0) {
         console.log(`🔄 Fetching variations for ${variableProducts.length} variable products...`);
         
@@ -242,32 +245,15 @@ serve(async (req) => {
         
         const variationsData = await Promise.all(variationPromises);
         
-        // Add variations as additional products
-        let variationsCount = 0;
+        let totalVariations = 0;
         variationsData.forEach(({ productId, variations }) => {
-          const parentProduct = allProducts.find(p => p.id === productId);
-          if (!parentProduct) return;
-          
-          variations.forEach((variation) => {
-            const variantProduct: WooProduct = {
-              ...parentProduct,
-              id: variation.id,
-              sku: variation.sku || `${parentProduct.sku}-var-${variation.id}`,
-              price: variation.price || parentProduct.price,
-              regular_price: variation.regular_price || parentProduct.regular_price,
-              sale_price: variation.sale_price || parentProduct.sale_price,
-              stock_quantity: variation.stock_quantity,
-              stock_status: variation.stock_status,
-              name: `${parentProduct.name} - ${variation.attributes.map(a => a.option).join(', ')}`,
-              type: 'variation',
-              images: variation.image ? [variation.image] : parentProduct.images
-            };
-            allProducts.push(variantProduct);
-            variationsCount++;
-          });
+          if (variations.length > 0) {
+            productVariationsMap.set(productId, variations);
+            totalVariations += variations.length;
+          }
         });
         
-        console.log(`✅ Added ${variationsCount} variations (total: ${allProducts.length} products)`);
+        console.log(`✅ Fetched ${totalVariations} variations for ${productVariationsMap.size} variable products`);
       }
 
       // Get existing Lovable categories
@@ -359,7 +345,13 @@ serve(async (req) => {
             }
           }
 
+          // Skip variation products - they're handled separately
+          if (wooProduct.type === 'variation') {
+            continue;
+          }
+
           // Prepare product data with ALL fields
+          const hasVariations = wooProduct.type === 'variable';
           const price = parseFloat(wooProduct.price || wooProduct.regular_price || '0');
           const compareAtPrice = wooProduct.sale_price 
             ? parseFloat(wooProduct.regular_price || '0')
@@ -373,10 +365,11 @@ serve(async (req) => {
             category_id: categoryId,
             images: wooProduct.images?.map(img => img.src) || [],
             stock: wooProduct.stock_quantity || 0,
-            is_active: wooProduct.status === 'publish' && wooProduct.stock_status !== 'outofstock',
+            is_active: wooProduct.status === 'publish',
             sku: wooProduct.sku || null,
             tags: wooProduct.tags?.map(tag => tag.name) || [],
             reward_percentage: 1.00,
+            has_variations: hasVariations,
             updated_at: new Date().toISOString()
           };
 
@@ -453,6 +446,16 @@ serve(async (req) => {
               productsFailed++;
             } else {
               productsUpdated++;
+              
+              // 🔥 Si tiene variaciones, sincronizarlas
+              if (hasVariations && productVariationsMap.has(wooProduct.id)) {
+                await syncProductVariations(
+                  supabaseClient,
+                  existingProductId,
+                  wooProduct.id,
+                  productVariationsMap.get(wooProduct.id)!
+                );
+              }
             }
           } else {
             // Create new product
@@ -476,11 +479,63 @@ serve(async (req) => {
                 });
 
               productsCreated++;
+              
+              // 🔥 Si tiene variaciones, crearlas
+              if (hasVariations && productVariationsMap.has(wooProduct.id)) {
+                await syncProductVariations(
+                  supabaseClient,
+                  newProduct.id,
+                  wooProduct.id,
+                  productVariationsMap.get(wooProduct.id)!
+                );
+              }
             }
           }
         } catch (error) {
           console.error(`Error processing product ${wooProduct.id}:`, error);
           productsFailed++;
+        }
+      }
+      
+      // 🔥 Helper function to sync variations
+      async function syncProductVariations(
+        client: any,
+        productId: string,
+        wooProductId: number,
+        variations: WooVariation[]
+      ) {
+        for (const variation of variations) {
+          try {
+            const variationData = {
+              product_id: productId,
+              woocommerce_variation_id: String(variation.id),
+              sku: variation.sku || null,
+              price: parseFloat(variation.price || '0'),
+              regular_price: variation.regular_price ? parseFloat(variation.regular_price) : null,
+              sale_price: variation.sale_price ? parseFloat(variation.sale_price) : null,
+              stock: variation.stock_quantity || 0,
+              is_active: variation.stock_status !== 'outofstock',
+              images: variation.image ? [variation.image.src] : [],
+              attributes: variation.attributes.map(attr => ({
+                name: attr.name,
+                value: attr.option
+              })),
+              updated_at: new Date().toISOString()
+            };
+
+            // Upsert variation (insert or update)
+            const { error } = await client
+              .from('product_variations')
+              .upsert(variationData, {
+                onConflict: 'product_id,attributes'
+              });
+
+            if (error) {
+              console.error(`Error syncing variation ${variation.id}:`, error);
+            }
+          } catch (err) {
+            console.error(`Error processing variation ${variation.id}:`, err);
+          }
         }
       }
 

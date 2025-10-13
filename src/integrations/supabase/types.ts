@@ -727,6 +727,68 @@ export type Database = {
         }
         Relationships: []
       }
+      product_variations: {
+        Row: {
+          attributes: Json | null
+          created_at: string
+          dimensions: Json | null
+          id: string
+          images: string[] | null
+          is_active: boolean | null
+          price: number
+          product_id: string
+          regular_price: number | null
+          sale_price: number | null
+          sku: string | null
+          stock: number | null
+          updated_at: string
+          weight: string | null
+          woocommerce_variation_id: string | null
+        }
+        Insert: {
+          attributes?: Json | null
+          created_at?: string
+          dimensions?: Json | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          price: number
+          product_id: string
+          regular_price?: number | null
+          sale_price?: number | null
+          sku?: string | null
+          stock?: number | null
+          updated_at?: string
+          weight?: string | null
+          woocommerce_variation_id?: string | null
+        }
+        Update: {
+          attributes?: Json | null
+          created_at?: string
+          dimensions?: Json | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          price?: number
+          product_id?: string
+          regular_price?: number | null
+          sale_price?: number | null
+          sku?: string | null
+          stock?: number | null
+          updated_at?: string
+          weight?: string | null
+          woocommerce_variation_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category_id: string | null
@@ -737,6 +799,7 @@ export type Database = {
           description_fr: string | null
           description_pt: string | null
           description_zh: string | null
+          has_variations: boolean | null
           id: string
           images: string[] | null
           is_active: boolean | null
@@ -762,6 +825,7 @@ export type Database = {
           description_fr?: string | null
           description_pt?: string | null
           description_zh?: string | null
+          has_variations?: boolean | null
           id?: string
           images?: string[] | null
           is_active?: boolean | null
@@ -787,6 +851,7 @@ export type Database = {
           description_fr?: string | null
           description_pt?: string | null
           description_zh?: string | null
+          has_variations?: boolean | null
           id?: string
           images?: string[] | null
           is_active?: boolean | null
@@ -2523,6 +2588,14 @@ export type Database = {
           mode: Database["public"]["Enums"]["shipping_mode"]
           show_free_badge: boolean
         }[]
+      }
+      get_product_min_price: {
+        Args: { p_product_id: string }
+        Returns: number
+      }
+      get_product_price_range: {
+        Args: { p_product_id: string }
+        Returns: string
       }
       get_roadmap_progress: {
         Args: Record<PropertyKey, never>
