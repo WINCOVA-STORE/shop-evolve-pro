@@ -95,38 +95,81 @@ serve(async (req) => {
         throw new Error('WooCommerce credentials not configured');
       }
 
-      // Fetch products from WooCommerce
+      // Robust WooCommerce fetch with retries + content-type validation
+      const fetchWooProducts = async (): Promise<WooProduct[]> => {
+        const baseUrl = wooUrl.replace(/\/$/, '');
+        const hasApiPath = /\/wp-json\/wc\/v\d+$/i.test(baseUrl);
+        const apiBase = hasApiPath ? baseUrl : `${baseUrl}/wp-json/wc/v3`;
+        const productsUrlBase = `${apiBase}/products?per_page=100&status=publish`;
+
+        const makeRequest = async (url: string, useBasic: boolean, signal: AbortSignal) => {
+          const headers: Record<string, string> = { 'Accept': 'application/json', 'Content-Type': 'application/json' };
+          if (useBasic) {
+            const wooAuth = btoa(`${consumerKey}:${consumerSecret}`);
+            headers['Authorization'] = `Basic ${wooAuth}`;
+          }
+          return await fetch(url, { headers, signal });
+        };
+
+        const parseJson = async (res: Response) => {
+          const ct = res.headers.get('content-type') || '';
+          if (!ct.includes('application/json')) {
+            const text = await res.text();
+            const snippet = text.slice(0, 200).replace(/\n/g, ' ');
+            throw new Error(`WooCommerce API non-JSON (${res.status} ${res.statusText}; ct=${ct}): ${snippet}`);
+          }
+          return (await res.json()) as WooProduct[];
+        };
+
+        const attempts = 3;
+        for (let i = 0; i < attempts; i++) {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 30000);
+
+          try {
+            // Try Basic first
+            let res = await makeRequest(productsUrlBase, true, controller.signal);
+
+            if (!res.ok && (res.status === 401 || res.status === 403)) {
+              // Retry with query auth
+              const urlWithQuery = `${productsUrlBase}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
+              console.warn(`Basic auth rejected (${res.status}). Retrying with query auth...`);
+              res = await makeRequest(urlWithQuery, false, controller.signal);
+            }
+
+            if (!res.ok) {
+              // Retry only on transient errors
+              if (res.status >= 500 || res.status === 429 || res.status === 502 || res.status === 503 || res.status === 504) {
+                throw new Error(`Transient WooCommerce error ${res.status} ${res.statusText}`);
+              }
+              // Non-retryable
+              const body = await res.text().catch(() => '');
+              throw new Error(`WooCommerce API error: ${res.status} ${res.statusText} ${body ? '- ' + body.slice(0, 160).replace(/\n/g, ' ') : ''}`);
+            }
+
+            const data = await parseJson(res);
+            return data;
+
+          } catch (err) {
+            const isLast = i === attempts - 1;
+            const msg = err instanceof Error ? err.message : String(err);
+            console.warn(`WooCommerce fetch attempt ${i + 1} failed: ${msg}`);
+            if (isLast || /401|403/.test(msg)) {
+              throw err;
+            }
+            // backoff
+            const delay = 500 * Math.pow(2, i);
+            await new Promise((r) => setTimeout(r, delay));
+          } finally {
+            clearTimeout(timeout);
+          }
+        }
+
+        throw new Error('Unexpected: all WooCommerce fetch attempts exhausted');
+      };
+
       console.log('Fetching products from WooCommerce...');
-
-      // Normalize base URL: accept either domain or full /wp-json/wc/v3 path
-      const baseUrl = wooUrl.replace(/\/$/, '');
-      const hasApiPath = /\/wp-json\/wc\/v\d+$/i.test(baseUrl);
-      const apiBase = hasApiPath ? baseUrl : `${baseUrl}/wp-json/wc/v3`;
-      let productsUrlBase = `${apiBase}/products?per_page=100&status=publish`;
-
-      // Try Basic Auth first (may be blocked by some hosts)
-      const wooAuth = btoa(`${consumerKey}:${consumerSecret}`);
-      let wooResponse = await fetch(productsUrlBase, {
-        headers: {
-          'Authorization': `Basic ${wooAuth}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      // If unauthorized or forbidden, retry using query params auth (recommended over HTTPs)
-      if (!wooResponse.ok && (wooResponse.status === 401 || wooResponse.status === 403)) {
-        const urlWithQuery = `${productsUrlBase}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
-        console.warn(`Basic auth rejected (${wooResponse.status}). Retrying with query auth at: ${apiBase}/products?...`);
-        wooResponse = await fetch(urlWithQuery, {
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-
-      if (!wooResponse.ok) {
-        throw new Error(`WooCommerce API error: ${wooResponse.status} ${wooResponse.statusText}`);
-      }
-
-      const wooProducts: WooProduct[] = await wooResponse.json();
+      const wooProducts: WooProduct[] = await fetchWooProducts();
       console.log(`Fetched ${wooProducts.length} products from WooCommerce`);
 
       // Get existing Lovable categories
