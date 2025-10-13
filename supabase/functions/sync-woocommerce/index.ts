@@ -15,11 +15,29 @@ interface WooProduct {
   regular_price: string;
   sale_price: string;
   stock_quantity: number | null;
-  images: Array<{ src: string }>;
+  stock_status: string;
+  images: Array<{ src: string; name?: string; alt?: string }>;
   categories: Array<{ id: number; name: string }>;
   tags: Array<{ name: string }>;
+  attributes: Array<{ id: number; name: string; options: string[] }>;
   sku: string;
   status: string;
+  type: string; // 'simple' | 'variable' | 'grouped' | 'external'
+  weight?: string;
+  dimensions?: { length: string; width: string; height: string };
+  meta_data?: Array<{ key: string; value: any }>;
+}
+
+interface WooVariation {
+  id: number;
+  sku: string;
+  price: string;
+  regular_price: string;
+  sale_price: string;
+  stock_quantity: number | null;
+  stock_status: string;
+  image: { src: string } | null;
+  attributes: Array<{ name: string; option: string }>;
 }
 
 serve(async (req) => {
@@ -83,7 +101,7 @@ serve(async (req) => {
     let productsFailed = 0;
     let productsSynced = 0;
     let productsDeactivated = 0;
-    let productsSkipped = 0; // No changes detected
+    let productsSkipped = 0;
 
     try {
       // WooCommerce credentials
@@ -95,118 +113,162 @@ serve(async (req) => {
         throw new Error('WooCommerce credentials not configured');
       }
 
-      // Robust WooCommerce fetch with retries + paginación completa
-      const fetchWooProducts = async (): Promise<WooProduct[]> => {
-        const baseUrl = wooUrl.replace(/\/$/, '');
-        const hasApiPath = /\/wp-json\/wc\/v\d+$/i.test(baseUrl);
-        const apiBase = hasApiPath ? baseUrl : `${baseUrl}/wp-json/wc/v3`;
+      const baseUrl = wooUrl.replace(/\/$/, '');
+      const hasApiPath = /\/wp-json\/wc\/v\d+$/i.test(baseUrl);
+      const apiBase = hasApiPath ? baseUrl : `${baseUrl}/wp-json/wc/v3`;
+
+      // Helper: Make authenticated request
+      const makeRequest = async (url: string, useBasic: boolean, timeoutMs: number) => {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), timeoutMs);
         
-        const allProducts: WooProduct[] = [];
-        let page = 1;
-        const perPage = 50; // Smaller page size for faster responses
-        let hasMorePages = true;
-
-        const makeRequest = async (url: string, useBasic: boolean, timeoutMs: number) => {
-          const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          const headers: Record<string, string> = { 
+            'Accept': 'application/json', 
+            'Content-Type': 'application/json',
+            'User-Agent': 'WincovaSync/2.0'
+          };
           
-          try {
-            const headers: Record<string, string> = { 
-              'Accept': 'application/json', 
-              'Content-Type': 'application/json',
-              'User-Agent': 'WincovaSync/1.0'
-            };
-            
-            if (useBasic) {
-              const wooAuth = btoa(`${consumerKey}:${consumerSecret}`);
-              headers['Authorization'] = `Basic ${wooAuth}`;
-            }
-            
-            return await fetch(url, { headers, signal: controller.signal });
-          } finally {
-            clearTimeout(timeout);
+          if (useBasic) {
+            const wooAuth = btoa(`${consumerKey}:${consumerSecret}`);
+            headers['Authorization'] = `Basic ${wooAuth}`;
           }
-        };
-
-        const parseJson = async (res: Response) => {
-          const ct = res.headers.get('content-type') || '';
-          if (!ct.includes('application/json')) {
-            const text = await res.text();
-            throw new Error(`Non-JSON response (${res.status}): ${text.slice(0, 200)}`);
-          }
-          return await res.json() as WooProduct[];
-        };
-
-        // Fetch all pages with pagination
-        while (hasMorePages) {
-          const productsUrl = `${apiBase}/products?per_page=${perPage}&page=${page}&status=publish`;
-          console.log(`📄 Fetching page ${page}...`);
           
-          let success = false;
-          const maxAttempts = 3;
-          
-          for (let attempt = 1; attempt <= maxAttempts && !success; attempt++) {
-            const timeoutMs = 30000 + (attempt * 15000); // 30s, 45s, 60s
-            
-            try {
-              let res = await makeRequest(productsUrl, true, timeoutMs);
-
-              // Retry with query auth if needed
-              if (!res.ok && (res.status === 401 || res.status === 403)) {
-                const urlWithQuery = `${productsUrl}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
-                res = await makeRequest(urlWithQuery, false, timeoutMs);
-              }
-
-              if (!res.ok) {
-                const isRetryable = res.status >= 500 || res.status === 429;
-                if (!isRetryable || attempt === maxAttempts) {
-                  const body = await res.text().catch(() => '');
-                  throw new Error(`API error ${res.status}: ${body.slice(0, 200)}`);
-                }
-                throw new Error(`Transient error ${res.status}, retrying...`);
-              }
-
-              const pageProducts = await parseJson(res);
-              
-              if (pageProducts.length === 0) {
-                hasMorePages = false;
-              } else {
-                allProducts.push(...pageProducts);
-                console.log(`✓ Page ${page}: ${pageProducts.length} products (total: ${allProducts.length})`);
-                
-                // Check if there are more pages
-                if (pageProducts.length < perPage) {
-                  hasMorePages = false;
-                } else {
-                  page++;
-                }
-              }
-              
-              success = true;
-              
-            } catch (err) {
-              const msg = err instanceof Error ? err.message : String(err);
-              const isTimeout = /abort/i.test(msg);
-              
-              if (attempt === maxAttempts) {
-                if (isTimeout) {
-                  throw new Error(`Timeout after ${timeoutMs}ms on page ${page}. WooCommerce is responding too slowly.`);
-                }
-                throw new Error(`Failed to fetch page ${page} after ${maxAttempts} attempts: ${msg}`);
-              }
-              
-              console.warn(`⚠️ Page ${page} attempt ${attempt} failed: ${msg}`);
-              await new Promise(r => setTimeout(r, 1000 * attempt)); // backoff
-            }
-          }
+          return await fetch(url, { headers, signal: controller.signal });
+        } finally {
+          clearTimeout(timeout);
         }
-
-        return allProducts;
       };
 
-      console.log('Fetching products from WooCommerce...');
-      const wooProducts: WooProduct[] = await fetchWooProducts();
-      console.log(`Fetched ${wooProducts.length} products from WooCommerce`);
+      const parseJson = async (res: Response) => {
+        const ct = res.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) {
+          const text = await res.text();
+          throw new Error(`Non-JSON response (${res.status}): ${text.slice(0, 200)}`);
+        }
+        return await res.json();
+      };
+
+      console.log('🚀 Fetching products from WooCommerce...');
+      
+      // 🔥 STEP 1: Get first page to determine total pages
+      const perPage = 100;
+      const firstPageUrl = `${apiBase}/products?per_page=${perPage}&page=1&status=publish`;
+      
+      let firstRes = await makeRequest(firstPageUrl, true, 45000);
+      if (!firstRes.ok && (firstRes.status === 401 || firstRes.status === 403)) {
+        const urlWithQuery = `${firstPageUrl}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
+        firstRes = await makeRequest(urlWithQuery, false, 45000);
+      }
+      
+      if (!firstRes.ok) {
+        throw new Error(`Failed to fetch first page: ${firstRes.status}`);
+      }
+      
+      const allProducts: WooProduct[] = await parseJson(firstRes);
+      const totalPages = parseInt(firstRes.headers.get('X-WP-TotalPages') || '1');
+      const totalProducts = parseInt(firstRes.headers.get('X-WP-Total') || String(allProducts.length));
+      
+      console.log(`📦 Total: ${totalProducts} products across ${totalPages} pages`);
+      console.log(`✓ Page 1/${totalPages}: ${allProducts.length} products`);
+
+      // 🚀 STEP 2: Fetch remaining pages IN PARALLEL
+      if (totalPages > 1) {
+        const pagePromises: Promise<WooProduct[]>[] = [];
+        
+        for (let page = 2; page <= totalPages; page++) {
+          const pageUrl = `${apiBase}/products?per_page=${perPage}&page=${page}&status=publish`;
+          
+          const pagePromise = (async () => {
+            try {
+              let res = await makeRequest(pageUrl, true, 45000);
+              
+              if (!res.ok && (res.status === 401 || res.status === 403)) {
+                const urlWithQuery = `${pageUrl}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
+                res = await makeRequest(urlWithQuery, false, 45000);
+              }
+              
+              if (!res.ok) {
+                console.warn(`⚠️ Page ${page} failed: ${res.status}`);
+                return [];
+              }
+              
+              const pageData = await parseJson(res) as WooProduct[];
+              console.log(`✓ Page ${page}/${totalPages}: ${pageData.length} products`);
+              return pageData;
+            } catch (err) {
+              console.error(`❌ Page ${page} error:`, err);
+              return [];
+            }
+          })();
+          
+          pagePromises.push(pagePromise);
+        }
+        
+        console.log(`🚀 Fetching ${totalPages - 1} pages in PARALLEL...`);
+        const pagesData = await Promise.all(pagePromises);
+        pagesData.forEach(pageData => allProducts.push(...pageData));
+      }
+
+      console.log(`✅ Fetched ${allProducts.length} products`);
+
+      // 🔥 STEP 3: Fetch variations for variable products IN PARALLEL
+      const variableProducts = allProducts.filter(p => p.type === 'variable');
+      if (variableProducts.length > 0) {
+        console.log(`🔄 Fetching variations for ${variableProducts.length} variable products...`);
+        
+        const variationPromises = variableProducts.map(async (product) => {
+          try {
+            const varUrl = `${apiBase}/products/${product.id}/variations?per_page=100`;
+            let res = await makeRequest(varUrl, true, 30000);
+            
+            if (!res.ok && (res.status === 401 || res.status === 403)) {
+              const urlWithQuery = `${varUrl}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
+              res = await makeRequest(urlWithQuery, false, 30000);
+            }
+            
+            if (!res.ok) {
+              console.warn(`⚠️ Variations for product ${product.id} failed: ${res.status}`);
+              return { productId: product.id, variations: [] };
+            }
+            
+            const variations = await parseJson(res) as WooVariation[];
+            return { productId: product.id, variations };
+          } catch (err) {
+            console.error(`❌ Variations for product ${product.id} error:`, err);
+            return { productId: product.id, variations: [] };
+          }
+        });
+        
+        const variationsData = await Promise.all(variationPromises);
+        
+        // Add variations as additional products
+        let variationsCount = 0;
+        variationsData.forEach(({ productId, variations }) => {
+          const parentProduct = allProducts.find(p => p.id === productId);
+          if (!parentProduct) return;
+          
+          variations.forEach((variation) => {
+            const variantProduct: WooProduct = {
+              ...parentProduct,
+              id: variation.id,
+              sku: variation.sku || `${parentProduct.sku}-var-${variation.id}`,
+              price: variation.price || parentProduct.price,
+              regular_price: variation.regular_price || parentProduct.regular_price,
+              sale_price: variation.sale_price || parentProduct.sale_price,
+              stock_quantity: variation.stock_quantity,
+              stock_status: variation.stock_status,
+              name: `${parentProduct.name} - ${variation.attributes.map(a => a.option).join(', ')}`,
+              type: 'variation',
+              images: variation.image ? [variation.image] : parentProduct.images
+            };
+            allProducts.push(variantProduct);
+            variationsCount++;
+          });
+        });
+        
+        console.log(`✅ Added ${variationsCount} variations (total: ${allProducts.length} products)`);
+      }
 
       // Get existing Lovable categories
       const { data: lovableCategories } = await supabaseClient
@@ -222,12 +284,11 @@ serve(async (req) => {
 
       const mappingMap = new Map(existingMappings?.map(m => [m.woocommerce_product_id, m.lovable_product_id]) || []);
 
-      // 🗑️ STEP 1: Detect and deactivate deleted products
+      // 🗑️ STEP 4: Deactivate deleted products
       console.log('🔍 Checking for deleted products...');
-      const wooProductIds = new Set(wooProducts.map(p => String(p.id)));
+      const wooProductIds = new Set(allProducts.map(p => String(p.id)));
       const mappedProductIds = Array.from(mappingMap.keys());
       
-      // 📦 Pre-load existing products data for smart comparison
       const existingProductIds = Array.from(mappingMap.values());
       const { data: existingProducts } = await supabaseClient
         .from('products')
@@ -238,13 +299,10 @@ serve(async (req) => {
         existingProducts?.map(p => [p.id, p]) || []
       );
       
-      let productsDeactivated = 0;
-      let productsSkipped = 0; // No changes detected
       for (const mappedWooId of mappedProductIds) {
         if (!wooProductIds.has(mappedWooId)) {
-          // Product exists in our DB but not in WooCommerce anymore
           const lovableProductId = mappingMap.get(mappedWooId);
-          console.log(`⚠️ Product ${mappedWooId} no longer exists in WooCommerce, deactivating...`);
+          console.log(`⚠️ Product ${mappedWooId} deleted in WooCommerce`);
           
           const { error: deactivateError } = await supabaseClient
             .from('products')
@@ -258,11 +316,13 @@ serve(async (req) => {
       }
       
       if (productsDeactivated > 0) {
-        console.log(`✅ Deactivated ${productsDeactivated} deleted products`);
+        console.log(`✅ Deactivated ${productsDeactivated} products`);
       }
 
-      // 🔄 STEP 2: Process each product from WooCommerce
-      for (const wooProduct of wooProducts) {
+      // 🔄 STEP 5: Process products (create/update)
+      console.log('🔄 Processing products...');
+      
+      for (const wooProduct of allProducts) {
         try {
           productsSynced++;
 
@@ -275,7 +335,6 @@ serve(async (req) => {
             if (categoryMap.has(categoryName)) {
               categoryId = categoryMap.get(categoryName);
             } else {
-              // Create new category in Lovable
               const { data: newCategory } = await supabaseClient
                 .from('categories')
                 .insert({
@@ -289,7 +348,6 @@ serve(async (req) => {
                 categoryId = newCategory.id;
                 categoryMap.set(categoryName, categoryId);
 
-                // Save category mapping
                 await supabaseClient
                   .from('woocommerce_category_mapping')
                   .insert({
@@ -301,7 +359,7 @@ serve(async (req) => {
             }
           }
 
-          // Prepare product data
+          // Prepare product data with ALL fields
           const price = parseFloat(wooProduct.price || wooProduct.regular_price || '0');
           const compareAtPrice = wooProduct.sale_price 
             ? parseFloat(wooProduct.regular_price || '0')
@@ -315,87 +373,74 @@ serve(async (req) => {
             category_id: categoryId,
             images: wooProduct.images?.map(img => img.src) || [],
             stock: wooProduct.stock_quantity || 0,
-            is_active: wooProduct.status === 'publish',
+            is_active: wooProduct.status === 'publish' && wooProduct.stock_status !== 'outofstock',
             sku: wooProduct.sku || null,
             tags: wooProduct.tags?.map(tag => tag.name) || [],
             reward_percentage: 1.00,
             updated_at: new Date().toISOString()
           };
 
-          // Check if product exists in mapping
+          // Check if product exists
           const wooProductId = String(wooProduct.id);
           const existingProductId = mappingMap.get(wooProductId);
 
           if (existingProductId) {
-            // 🔍 SMART UPDATE: Compare and update ONLY what changed
+            // 🔍 SMART UPDATE: Only update changed fields
             const currentProduct = existingProductsMap.get(existingProductId);
             
             if (!currentProduct) {
-              console.warn(`⚠️ Product ${existingProductId} not found in pre-loaded data`);
               productsFailed++;
               continue;
             }
 
-            // Build update data with ONLY changed fields
             const updateData: any = {};
             let hasChanges = false;
 
-            // Compare price
             if (currentProduct.price !== price) {
               updateData.price = price;
               hasChanges = true;
             }
 
-            // Compare compare_at_price
             if (currentProduct.compare_at_price !== compareAtPrice) {
               updateData.compare_at_price = compareAtPrice;
               hasChanges = true;
             }
 
-            // Compare stock
             const newStock = wooProduct.stock_quantity || 0;
             if (currentProduct.stock !== newStock) {
               updateData.stock = newStock;
               hasChanges = true;
             }
 
-            // Compare is_active
-            const newIsActive = wooProduct.status === 'publish';
+            const newIsActive = wooProduct.status === 'publish' && wooProduct.stock_status !== 'outofstock';
             if (currentProduct.is_active !== newIsActive) {
               updateData.is_active = newIsActive;
               hasChanges = true;
             }
 
-            // Compare images (array comparison)
             const newImages = wooProduct.images?.map(img => img.src) || [];
-            const imagesChanged = JSON.stringify(currentProduct.images) !== JSON.stringify(newImages);
-            if (imagesChanged) {
+            if (JSON.stringify(currentProduct.images) !== JSON.stringify(newImages)) {
               updateData.images = newImages;
               hasChanges = true;
             }
 
-            // Compare SKU
             const newSku = wooProduct.sku || null;
             if (currentProduct.sku !== newSku) {
               updateData.sku = newSku;
               hasChanges = true;
             }
 
-            // Compare tags (array comparison)
             const newTags = wooProduct.tags?.map(tag => tag.name) || [];
-            const tagsChanged = JSON.stringify(currentProduct.tags) !== JSON.stringify(newTags);
-            if (tagsChanged) {
+            if (JSON.stringify(currentProduct.tags) !== JSON.stringify(newTags)) {
               updateData.tags = newTags;
               hasChanges = true;
             }
 
             if (!hasChanges) {
-              // ⚡ No changes detected - skip update to save resources
               productsSkipped++;
               continue;
             }
 
-            // Add timestamp only if there are real changes
             updateData.updated_at = new Date().toISOString();
 
             const { error: updateError } = await supabaseClient
@@ -407,12 +452,10 @@ serve(async (req) => {
               console.error(`Error updating product ${wooProduct.name}:`, updateError);
               productsFailed++;
             } else {
-              const changedFields = Object.keys(updateData).filter(k => k !== 'updated_at');
-              console.log(`✅ Updated: ${wooProduct.name} (changed: ${changedFields.join(', ')})`);
               productsUpdated++;
             }
           } else {
-            // Create new product - includes ALL data for AI optimization
+            // Create new product
             const { data: newProduct, error: insertError } = await supabaseClient
               .from('products')
               .insert(productData)
@@ -423,9 +466,8 @@ serve(async (req) => {
               console.error(`Error creating product ${wooProduct.name}:`, insertError);
               productsFailed++;
             } else {
-              console.log(`✨ Created NEW product: ${wooProduct.name} (will be translated)`);
+              console.log(`✨ Created: ${wooProduct.name}`);
               
-              // Create mapping
               await supabaseClient
                 .from('woocommerce_product_mapping')
                 .insert({
@@ -442,7 +484,7 @@ serve(async (req) => {
         }
       }
 
-      // Update sync log with success
+      // Update sync log
       await supabaseClient
         .from('woocommerce_sync_logs')
         .update({
@@ -457,33 +499,28 @@ serve(async (req) => {
         })
         .eq('id', syncLog.id);
 
-      console.log(`✅ SMART SYNC completed:`);
-      console.log(`   📊 Total WooCommerce products: ${productsSynced}`);
-      console.log(`   ✨ NEW products created: ${productsCreated} (will be auto-translated)`);
-      console.log(`   🔄 Products updated (detected changes): ${productsUpdated}`);
-      console.log(`   ⚡ Products skipped (no changes): ${productsSkipped}`);
-      console.log(`   🗑️ Deactivated (deleted in WooCommerce): ${productsDeactivated}`);
+      console.log(`✅ SYNC COMPLETE:`);
+      console.log(`   📊 Total: ${productsSynced} products`);
+      console.log(`   ✨ Created: ${productsCreated}`);
+      console.log(`   🔄 Updated: ${productsUpdated}`);
+      console.log(`   ⚡ Skipped: ${productsSkipped}`);
+      console.log(`   🗑️ Deactivated: ${productsDeactivated}`);
       console.log(`   ❌ Failed: ${productsFailed}`);
-      console.log(`   💰 Resources optimized:`);
-      console.log(`      - ${productsUpdated * 4} AI translations saved (name/desc preserved)`);
-      console.log(`      - ${productsSkipped} database UPDATEs avoided (no real changes)`);
-      console.log(`      - Total optimization: ${(productsUpdated * 4) + productsSkipped} operations saved`);
+      console.log(`   💰 Saved: ${(productsUpdated * 4) + productsSkipped} operations`);
 
-      // 🌍 AUTO-TRANSLATE: Only translate NEW products (resource optimization)
+      // Auto-translate NEW products only
       if (productsCreated > 0) {
-        console.log(`🔄 Auto-translating ${productsCreated} NEW products only...`);
+        console.log(`🔄 Auto-translating ${productsCreated} new products...`);
         try {
           const translateResponse = await supabaseClient.functions.invoke('batch-translate-products');
           if (translateResponse.error) {
-            console.error('⚠️ Auto-translation error:', translateResponse.error);
-          } else if (translateResponse.data?.success) {
-            console.log(`✅ Auto-translation completed: ${translateResponse.data.translated} products translated`);
+            console.error('⚠️ Translation error:', translateResponse.error);
+          } else {
+            console.log(`✅ Translation completed`);
           }
         } catch (translateError) {
-          console.error('⚠️ Auto-translation failed (non-critical):', translateError);
+          console.error('⚠️ Translation failed (non-critical):', translateError);
         }
-      } else {
-        console.log('⚡ No new products - skipping translation (resource optimization)');
       }
 
       return new Response(
@@ -496,14 +533,8 @@ serve(async (req) => {
             updated: productsUpdated,
             skipped: productsSkipped,
             deactivated: productsDeactivated,
-            failed: productsFailed,
-            resourcesOptimized: {
-              aiTranslationsSaved: productsUpdated * 4,
-              databaseUpdatesSaved: productsSkipped,
-              totalOperationsSaved: (productsUpdated * 4) + productsSkipped
-            }
-          },
-          message: `🎯 Smart sync: ${productsCreated} new, ${productsUpdated} updated, ${productsSkipped} unchanged (skipped)`
+            failed: productsFailed
+          }
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -521,22 +552,20 @@ serve(async (req) => {
           products_synced: productsSynced,
           products_created: productsCreated,
           products_updated: productsUpdated,
+          products_failed: productsFailed,
           products_skipped: productsSkipped,
           products_deleted: productsDeactivated,
-          products_failed: productsFailed,
           error_message: error instanceof Error ? error.message : String(error)
         })
         .eq('id', syncLog.id);
 
       throw error;
     }
-
   } catch (error) {
-    console.error('Error in sync-woocommerce function:', error);
+    console.error('Sync error:', error);
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : String(error),
-        details: 'Check function logs for more information'
+      JSON.stringify({
+        error: error instanceof Error ? error.message : 'Unknown error'
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
