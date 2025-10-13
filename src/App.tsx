@@ -37,6 +37,7 @@ import EcommerceRoadmap from "./pages/admin/EcommerceRoadmap";
 import { RoadmapMetrics } from "./pages/admin/RoadmapMetrics";
 import SystemBackup from "./pages/admin/SystemBackup";
 import DisasterRecoveryGuide from "./pages/admin/DisasterRecoveryGuide";
+import WooCommerceIntegration from "./pages/admin/WooCommerceIntegration";
 import Changelog from "./pages/Changelog";
 import NotFound from "./pages/NotFound";
 
@@ -68,6 +69,7 @@ const AppContent = () => {
         <Route path="/return-policy" element={<ReturnPolicy />} />
         <Route path="/track-order" element={<TrackOrder />} />
         <Route path="/admin/woocommerce-sync" element={<WooCommerceSync />} />
+        <Route path="/admin/woocommerce-integration" element={<WooCommerceIntegration />} />
         <Route path="/admin/shipping-settings" element={<ShippingSettings />} />
         <Route path="/admin/rewards-settings" element={<RewardsSettings />} />
         <Route path="/admin/ecommerce-roadmap" element={<EcommerceRoadmap />} />

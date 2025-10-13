@@ -110,6 +110,24 @@ serve(async (req) => {
         });
       }
 
+      // 🚀 Enviar orden a WooCommerce para que AutoDS/Spocket la procesen
+      try {
+        console.log('📦 Sending order to WooCommerce for dropshipping...', order.id);
+        const wooResponse = await supabaseClient.functions.invoke('woocommerce-create-order', {
+          body: { orderId: order.id }
+        });
+
+        if (wooResponse.error) {
+          console.error('⚠️ Error sending to WooCommerce:', wooResponse.error);
+          // No throw - queremos que la orden se complete aunque WooCommerce falle
+        } else {
+          console.log('✅ Order sent to WooCommerce successfully:', wooResponse.data);
+        }
+      } catch (wooError) {
+        console.error('⚠️ WooCommerce integration error:', wooError);
+        // Continuamos - la orden está creada en Lovable
+      }
+
       // Verificar si es primera compra para bono de bienvenida
       const { data: previousOrders } = await supabaseClient
         .from("orders")

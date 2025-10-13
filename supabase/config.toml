@@ -71,3 +71,9 @@ verify_jwt = true
 
 [functions.translate-api]
 verify_jwt = false
+
+[functions.woocommerce-create-order]
+verify_jwt = true
+
+[functions.woocommerce-webhook-handler]
+verify_jwt = false
