@@ -95,94 +95,113 @@ serve(async (req) => {
         throw new Error('WooCommerce credentials not configured');
       }
 
-      // Robust WooCommerce fetch with retries + content-type validation + adaptive timeouts/page size
+      // Robust WooCommerce fetch with retries + paginación completa
       const fetchWooProducts = async (): Promise<WooProduct[]> => {
         const baseUrl = wooUrl.replace(/\/$/, '');
         const hasApiPath = /\/wp-json\/wc\/v\d+$/i.test(baseUrl);
         const apiBase = hasApiPath ? baseUrl : `${baseUrl}/wp-json/wc/v3`;
+        
+        const allProducts: WooProduct[] = [];
+        let page = 1;
+        const perPage = 50; // Smaller page size for faster responses
+        let hasMorePages = true;
 
-        const makeRequest = async (url: string, useBasic: boolean, signal: AbortSignal) => {
-          const headers: Record<string, string> = { 
-            'Accept': 'application/json', 
-            'Content-Type': 'application/json',
-            'User-Agent': 'WincovaSync/1.0 (sync-woocommerce edge function)'
-          };
-          if (useBasic) {
-            const wooAuth = btoa(`${consumerKey}:${consumerSecret}`);
-            headers['Authorization'] = `Basic ${wooAuth}`;
+        const makeRequest = async (url: string, useBasic: boolean, timeoutMs: number) => {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), timeoutMs);
+          
+          try {
+            const headers: Record<string, string> = { 
+              'Accept': 'application/json', 
+              'Content-Type': 'application/json',
+              'User-Agent': 'WincovaSync/1.0'
+            };
+            
+            if (useBasic) {
+              const wooAuth = btoa(`${consumerKey}:${consumerSecret}`);
+              headers['Authorization'] = `Basic ${wooAuth}`;
+            }
+            
+            return await fetch(url, { headers, signal: controller.signal });
+          } finally {
+            clearTimeout(timeout);
           }
-          return await fetch(url, { headers, signal });
         };
 
         const parseJson = async (res: Response) => {
           const ct = res.headers.get('content-type') || '';
           if (!ct.includes('application/json')) {
             const text = await res.text();
-            const snippet = text.slice(0, 200).replace(/\n/g, ' ');
-            throw new Error(`WooCommerce API non-JSON (${res.status} ${res.statusText}; ct=${ct}): ${snippet}`);
+            throw new Error(`Non-JSON response (${res.status}): ${text.slice(0, 200)}`);
           }
-          return (await res.json()) as WooProduct[];
+          return await res.json() as WooProduct[];
         };
 
-        const attempts = 4;
-        const timeouts = [20000, 30000, 45000, 60000];
+        // Fetch all pages with pagination
+        while (hasMorePages) {
+          const productsUrl = `${apiBase}/products?per_page=${perPage}&page=${page}&status=publish`;
+          console.log(`📄 Fetching page ${page}...`);
+          
+          let success = false;
+          const maxAttempts = 3;
+          
+          for (let attempt = 1; attempt <= maxAttempts && !success; attempt++) {
+            const timeoutMs = 30000 + (attempt * 15000); // 30s, 45s, 60s
+            
+            try {
+              let res = await makeRequest(productsUrl, true, timeoutMs);
 
-        for (let i = 0; i < attempts; i++) {
-          const perPage = i >= 1 ? 50 : 100; // shrink payload on retries
-          const productsUrlBase = `${apiBase}/products?per_page=${perPage}&status=publish`;
-
-          const controller = new AbortController();
-          const timeoutMs = timeouts[i] ?? 30000;
-          const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
-          try {
-            // Try Basic first
-            let res = await makeRequest(productsUrlBase, true, controller.signal);
-
-            if (!res.ok && (res.status === 401 || res.status === 403)) {
-              // Retry with query auth
-              const urlWithQuery = `${productsUrlBase}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
-              console.warn(`Basic auth rejected (${res.status}). Retrying with query auth...`);
-              res = await makeRequest(urlWithQuery, false, controller.signal);
-            }
-
-            if (!res.ok) {
-              // Retry only on transient errors
-              if (res.status >= 500 || res.status === 429 || res.status === 502 || res.status === 503 || res.status === 504) {
-                throw new Error(`Transient WooCommerce error ${res.status} ${res.statusText}`);
+              // Retry with query auth if needed
+              if (!res.ok && (res.status === 401 || res.status === 403)) {
+                const urlWithQuery = `${productsUrl}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
+                res = await makeRequest(urlWithQuery, false, timeoutMs);
               }
-              // Non-retryable
-              const body = await res.text().catch(() => '');
-              throw new Error(`WooCommerce API error: ${res.status} ${res.statusText} ${body ? '- ' + body.slice(0, 160).replace(/\n/g, ' ') : ''}`);
-            }
 
-            const data = await parseJson(res);
-            return data;
-
-          } catch (err) {
-            const isLast = i === attempts - 1;
-            const msg = err instanceof Error ? err.message : String(err);
-            const aborted = /AbortError|aborted/i.test(msg);
-            console.warn(`WooCommerce fetch attempt ${i + 1} failed: ${msg}`);
-            if (isLast) {
-              if (aborted) {
-                throw new Error(`WooCommerce timeout after ${timeoutMs}ms (attempt ${i + 1}). The server took too long. Consider allowing our IP or increasing limits on your host.`);
+              if (!res.ok) {
+                const isRetryable = res.status >= 500 || res.status === 429;
+                if (!isRetryable || attempt === maxAttempts) {
+                  const body = await res.text().catch(() => '');
+                  throw new Error(`API error ${res.status}: ${body.slice(0, 200)}`);
+                }
+                throw new Error(`Transient error ${res.status}, retrying...`);
               }
-              throw err;
+
+              const pageProducts = await parseJson(res);
+              
+              if (pageProducts.length === 0) {
+                hasMorePages = false;
+              } else {
+                allProducts.push(...pageProducts);
+                console.log(`✓ Page ${page}: ${pageProducts.length} products (total: ${allProducts.length})`);
+                
+                // Check if there are more pages
+                if (pageProducts.length < perPage) {
+                  hasMorePages = false;
+                } else {
+                  page++;
+                }
+              }
+              
+              success = true;
+              
+            } catch (err) {
+              const msg = err instanceof Error ? err.message : String(err);
+              const isTimeout = /abort/i.test(msg);
+              
+              if (attempt === maxAttempts) {
+                if (isTimeout) {
+                  throw new Error(`Timeout after ${timeoutMs}ms on page ${page}. WooCommerce is responding too slowly.`);
+                }
+                throw new Error(`Failed to fetch page ${page} after ${maxAttempts} attempts: ${msg}`);
+              }
+              
+              console.warn(`⚠️ Page ${page} attempt ${attempt} failed: ${msg}`);
+              await new Promise(r => setTimeout(r, 1000 * attempt)); // backoff
             }
-            if (/401|403/.test(msg)) {
-              // auth issues won't improve with retries
-              throw err;
-            }
-            // backoff
-            const delay = 600 * Math.pow(2, i);
-            await new Promise((r) => setTimeout(r, delay));
-          } finally {
-            clearTimeout(timeout);
           }
         }
 
-        throw new Error('Unexpected: all WooCommerce fetch attempts exhausted');
+        return allProducts;
       };
 
       console.log('Fetching products from WooCommerce...');
