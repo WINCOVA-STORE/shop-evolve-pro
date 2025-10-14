@@ -117,31 +117,67 @@ serve(async (req) => {
       const hasApiPath = /\/wp-json\/wc\/v\d+$/i.test(baseUrl);
       const apiBase = hasApiPath ? baseUrl : `${baseUrl}/wp-json/wc/v3`;
 
-      // Helper: Make authenticated request with browser-like headers
-      const makeRequest = async (url: string, useBasic: boolean, timeoutMs: number) => {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), timeoutMs);
+      // Helper: Make authenticated request with retry logic
+      const makeRequest = async (url: string, maxRetries: number = 3): Promise<Response> => {
+        // SIEMPRE usar query params (más compatible con anti-bots)
+        const separator = url.includes('?') ? '&' : '?';
+        const authUrl = `${url}${separator}consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
         
-        try {
-          const headers: Record<string, string> = { 
-            'Accept': 'application/json, text/plain, */*', 
-            'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Content-Type': 'application/json',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          };
-          
-          if (useBasic) {
-            const wooAuth = btoa(`${consumerKey}:${consumerSecret}`);
-            headers['Authorization'] = `Basic ${wooAuth}`;
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 60000);
+            
+            try {
+              const headers: Record<string, string> = { 
+                'Accept': 'application/json, text/plain, */*', 
+                'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Connection': 'keep-alive',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+                'Sec-Ch-Ua-Mobile': '?0',
+                'Sec-Ch-Ua-Platform': '"Windows"',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'same-origin'
+              };
+              
+              const response = await fetch(authUrl, { 
+                headers, 
+                signal: controller.signal,
+                redirect: 'manual' // No seguir redirects automáticamente
+              });
+              
+              clearTimeout(timeout);
+              
+              // Si es un redirect, es probablemente CAPTCHA
+              if (response.status >= 300 && response.status < 400) {
+                throw new Error('CAPTCHA_REDIRECT');
+              }
+              
+              return response;
+            } finally {
+              clearTimeout(timeout);
+            }
+          } catch (error) {
+            const isLastAttempt = attempt === maxRetries;
+            
+            if (error instanceof Error && error.message === 'CAPTCHA_REDIRECT') {
+              throw new Error('❌ WooCommerce bloqueó la solicitud con CAPTCHA. Debes desactivar temporalmente la protección anti-bot o agregar la IP de Supabase a tu lista blanca.');
+            }
+            
+            if (!isLastAttempt) {
+              const delayMs = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+              console.log(`⚠️ Intento ${attempt} falló, reintentando en ${delayMs}ms...`);
+              await new Promise(resolve => setTimeout(resolve, delayMs));
+            } else {
+              throw error;
+            }
           }
-          
-          return await fetch(url, { headers, signal: controller.signal });
-        } finally {
-          clearTimeout(timeout);
         }
+        
+        throw new Error('Max retries reached');
       };
 
       const parseJson = async (res: Response) => {
@@ -149,8 +185,8 @@ serve(async (req) => {
         const text = await res.text();
         
         // Check for CAPTCHA or HTML response
-        if (text.includes('sgcaptcha') || text.includes('<html>')) {
-          throw new Error(`❌ WooCommerce bloqueó la solicitud con CAPTCHA. Por favor, desactiva temporalmente la protección anti-bot en tu servidor WooCommerce o agrega la IP de Lovable a la lista blanca.`);
+        if (text.includes('sgcaptcha') || text.includes('<html>') || text.includes('<!DOCTYPE')) {
+          throw new Error('CAPTCHA_DETECTED: WooCommerce bloqueó la solicitud. Desactiva temporalmente el plugin anti-bot (SiteGround Security, Wordfence, etc.) o agrega la IP de Supabase a la lista blanca.');
         }
         
         if (!ct.includes('application/json')) {
@@ -170,14 +206,12 @@ serve(async (req) => {
       const perPage = 100;
       const firstPageUrl = `${apiBase}/products?per_page=${perPage}&page=1&status=publish`;
       
-      let firstRes = await makeRequest(firstPageUrl, true, 45000);
-      if (!firstRes.ok && (firstRes.status === 401 || firstRes.status === 403)) {
-        const urlWithQuery = `${firstPageUrl}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
-        firstRes = await makeRequest(urlWithQuery, false, 45000);
-      }
+      const firstRes = await makeRequest(firstPageUrl, 3);
       
       if (!firstRes.ok) {
-        throw new Error(`Failed to fetch first page: ${firstRes.status}`);
+        const errorText = await firstRes.text();
+        console.error(`❌ Error ${firstRes.status}:`, errorText.slice(0, 500));
+        throw new Error(`Failed to fetch products: ${firstRes.status} - ${firstRes.statusText}`);
       }
       
       const allProducts: WooProduct[] = await parseJson(firstRes);
@@ -187,24 +221,17 @@ serve(async (req) => {
       console.log(`📦 Total: ${totalProducts} products across ${totalPages} pages`);
       console.log(`✓ Page 1/${totalPages}: ${allProducts.length} products`);
 
-      // 🚀 STEP 2: Fetch remaining pages with delays to avoid rate limiting
+      // 🚀 STEP 2: Fetch remaining pages with delays
       if (totalPages > 1) {
         console.log(`🚀 Fetching ${totalPages - 1} more pages...`);
         
         for (let page = 2; page <= totalPages; page++) {
           try {
-            // Add small delay between requests to avoid being flagged as bot
-            if (page > 2) {
-              await new Promise(resolve => setTimeout(resolve, 500));
-            }
+            // Delay entre páginas para evitar rate limiting
+            await new Promise(resolve => setTimeout(resolve, 800));
             
             const pageUrl = `${apiBase}/products?per_page=${perPage}&page=${page}&status=publish`;
-            let res = await makeRequest(pageUrl, true, 45000);
-            
-            if (!res.ok && (res.status === 401 || res.status === 403)) {
-              const urlWithQuery = `${pageUrl}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
-              res = await makeRequest(urlWithQuery, false, 45000);
-            }
+            const res = await makeRequest(pageUrl, 3);
             
             if (!res.ok) {
               console.warn(`⚠️ Page ${page} failed: ${res.status}`);
@@ -216,7 +243,7 @@ serve(async (req) => {
             console.log(`✓ Page ${page}/${totalPages}: ${pageData.length} products`);
           } catch (err) {
             console.error(`❌ Page ${page} error:`, err);
-            // Continue with other pages even if one fails
+            // Continue even if one page fails
           }
         }
       }
@@ -233,13 +260,11 @@ serve(async (req) => {
         
         const variationPromises = variableProducts.map(async (product) => {
           try {
-            const varUrl = `${apiBase}/products/${product.id}/variations?per_page=100`;
-            let res = await makeRequest(varUrl, true, 30000);
+            // Pequeño delay aleatorio para distribuir las solicitudes
+            await new Promise(resolve => setTimeout(resolve, Math.random() * 500));
             
-            if (!res.ok && (res.status === 401 || res.status === 403)) {
-              const urlWithQuery = `${varUrl}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
-              res = await makeRequest(urlWithQuery, false, 30000);
-            }
+            const varUrl = `${apiBase}/products/${product.id}/variations?per_page=100`;
+            const res = await makeRequest(varUrl, 2);
             
             if (!res.ok) {
               console.warn(`⚠️ Variations for product ${product.id} failed: ${res.status}`);

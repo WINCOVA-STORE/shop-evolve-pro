@@ -171,10 +171,21 @@ const WooCommerceSync = () => {
 
     } catch (error: any) {
       console.error('Error syncing:', error);
+      
+      // Detectar errores de CAPTCHA
+      let errorTitle = "Sync Failed";
+      let errorDescription = error.message || "Failed to start synchronization.";
+      
+      if (error.message?.includes('CAPTCHA') || error.message?.includes('sgcaptcha') || error.message?.includes('403')) {
+        errorTitle = "🛡️ Security Block Detected";
+        errorDescription = "Tu servidor WooCommerce bloqueó la sincronización con protección anti-bot. Por favor:\n\n1. Desactiva temporalmente plugins de seguridad (SiteGround Security, Wordfence, etc.)\n2. O agrega las IPs de Supabase a tu lista blanca\n3. Vuelve a intentar la sincronización";
+      }
+      
       toast({
         variant: "destructive",
-        title: "Sync Failed",
-        description: error.message || "Failed to start synchronization."
+        title: errorTitle,
+        description: errorDescription,
+        duration: 10000 // 10 segundos para mensajes importantes
       });
       setSyncing(false);
     }
@@ -308,8 +319,29 @@ const WooCommerceSync = () => {
                       )}
 
                       {log.error_message && (
-                        <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-                          Error: {log.error_message}
+                        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg space-y-2">
+                          <div className="flex items-start gap-2">
+                            <XCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                            <div className="flex-1">
+                              <p className="text-sm font-semibold text-red-800">Error Details:</p>
+                              <p className="text-sm text-red-700 mt-1">{log.error_message}</p>
+                              
+                              {(log.error_message.includes('CAPTCHA') || 
+                                log.error_message.includes('sgcaptcha') || 
+                                log.error_message.includes('403') ||
+                                log.error_message.includes('Non-JSON response (202)')) && (
+                                <div className="mt-3 p-2 bg-red-100 border border-red-300 rounded text-xs space-y-1">
+                                  <p className="font-semibold text-red-900">🛡️ Security Block - How to Fix:</p>
+                                  <ol className="list-decimal list-inside space-y-1 text-red-800">
+                                    <li>Go to your WooCommerce hosting panel (SiteGround, Cloudflare, etc.)</li>
+                                    <li>Temporarily disable anti-bot protection or CAPTCHA</li>
+                                    <li>Alternative: Add Supabase IPs to your firewall whitelist</li>
+                                    <li>Try syncing again</li>
+                                  </ol>
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
