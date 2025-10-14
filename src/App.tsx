@@ -9,6 +9,7 @@ import { WishlistProvider } from "@/contexts/WishlistContext";
 import { CompareProvider } from "@/contexts/CompareContext";
 import { TranslationGuard } from "@/components/TranslationGuard";
 import { useAutoTranslate } from "@/hooks/useAutoTranslate";
+import { useCanonicalUrl } from "@/hooks/useCanonicalUrl";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ReferEarn from "./pages/ReferEarn";
@@ -43,9 +44,10 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-// Component that initializes auto-translation
+// Component that initializes auto-translation and canonical URLs
 const AppContent = () => {
   useAutoTranslate();
+  useCanonicalUrl();
 
   return (
     <TranslationGuard>
