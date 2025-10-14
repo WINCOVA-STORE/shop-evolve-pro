@@ -117,16 +117,20 @@ serve(async (req) => {
       const hasApiPath = /\/wp-json\/wc\/v\d+$/i.test(baseUrl);
       const apiBase = hasApiPath ? baseUrl : `${baseUrl}/wp-json/wc/v3`;
 
-      // Helper: Make authenticated request
+      // Helper: Make authenticated request with browser-like headers
       const makeRequest = async (url: string, useBasic: boolean, timeoutMs: number) => {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), timeoutMs);
         
         try {
           const headers: Record<string, string> = { 
-            'Accept': 'application/json', 
+            'Accept': 'application/json, text/plain, */*', 
+            'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
+            'Accept-Encoding': 'gzip, deflate, br',
             'Content-Type': 'application/json',
-            'User-Agent': 'WincovaSync/2.0'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
           };
           
           if (useBasic) {
@@ -142,11 +146,22 @@ serve(async (req) => {
 
       const parseJson = async (res: Response) => {
         const ct = res.headers.get('content-type') || '';
+        const text = await res.text();
+        
+        // Check for CAPTCHA or HTML response
+        if (text.includes('sgcaptcha') || text.includes('<html>')) {
+          throw new Error(`❌ WooCommerce bloqueó la solicitud con CAPTCHA. Por favor, desactiva temporalmente la protección anti-bot en tu servidor WooCommerce o agrega la IP de Lovable a la lista blanca.`);
+        }
+        
         if (!ct.includes('application/json')) {
-          const text = await res.text();
           throw new Error(`Non-JSON response (${res.status}): ${text.slice(0, 200)}`);
         }
-        return await res.json();
+        
+        try {
+          return JSON.parse(text);
+        } catch (e) {
+          throw new Error(`Invalid JSON response: ${text.slice(0, 200)}`);
+        }
       };
 
       console.log('🚀 Fetching products from WooCommerce...');
@@ -172,42 +187,38 @@ serve(async (req) => {
       console.log(`📦 Total: ${totalProducts} products across ${totalPages} pages`);
       console.log(`✓ Page 1/${totalPages}: ${allProducts.length} products`);
 
-      // 🚀 STEP 2: Fetch remaining pages IN PARALLEL
+      // 🚀 STEP 2: Fetch remaining pages with delays to avoid rate limiting
       if (totalPages > 1) {
-        const pagePromises: Promise<WooProduct[]>[] = [];
+        console.log(`🚀 Fetching ${totalPages - 1} more pages...`);
         
         for (let page = 2; page <= totalPages; page++) {
-          const pageUrl = `${apiBase}/products?per_page=${perPage}&page=${page}&status=publish`;
-          
-          const pagePromise = (async () => {
-            try {
-              let res = await makeRequest(pageUrl, true, 45000);
-              
-              if (!res.ok && (res.status === 401 || res.status === 403)) {
-                const urlWithQuery = `${pageUrl}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
-                res = await makeRequest(urlWithQuery, false, 45000);
-              }
-              
-              if (!res.ok) {
-                console.warn(`⚠️ Page ${page} failed: ${res.status}`);
-                return [];
-              }
-              
-              const pageData = await parseJson(res) as WooProduct[];
-              console.log(`✓ Page ${page}/${totalPages}: ${pageData.length} products`);
-              return pageData;
-            } catch (err) {
-              console.error(`❌ Page ${page} error:`, err);
-              return [];
+          try {
+            // Add small delay between requests to avoid being flagged as bot
+            if (page > 2) {
+              await new Promise(resolve => setTimeout(resolve, 500));
             }
-          })();
-          
-          pagePromises.push(pagePromise);
+            
+            const pageUrl = `${apiBase}/products?per_page=${perPage}&page=${page}&status=publish`;
+            let res = await makeRequest(pageUrl, true, 45000);
+            
+            if (!res.ok && (res.status === 401 || res.status === 403)) {
+              const urlWithQuery = `${pageUrl}&consumer_key=${encodeURIComponent(consumerKey)}&consumer_secret=${encodeURIComponent(consumerSecret)}`;
+              res = await makeRequest(urlWithQuery, false, 45000);
+            }
+            
+            if (!res.ok) {
+              console.warn(`⚠️ Page ${page} failed: ${res.status}`);
+              continue;
+            }
+            
+            const pageData = await parseJson(res) as WooProduct[];
+            allProducts.push(...pageData);
+            console.log(`✓ Page ${page}/${totalPages}: ${pageData.length} products`);
+          } catch (err) {
+            console.error(`❌ Page ${page} error:`, err);
+            // Continue with other pages even if one fails
+          }
         }
-        
-        console.log(`🚀 Fetching ${totalPages - 1} pages in PARALLEL...`);
-        const pagesData = await Promise.all(pagePromises);
-        pagesData.forEach(pageData => allProducts.push(...pageData));
       }
 
       console.log(`✅ Fetched ${allProducts.length} products`);
