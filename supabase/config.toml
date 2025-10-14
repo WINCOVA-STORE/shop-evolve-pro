@@ -77,3 +77,15 @@ verify_jwt = true
 
 [functions.woocommerce-webhook-handler]
 verify_jwt = false
+
+[functions.translate-secure]
+verify_jwt = true
+
+[functions.cart-storage]
+verify_jwt = false
+
+[functions.get-csrf-token]
+verify_jwt = false
+
+[functions.referral-storage]
+verify_jwt = false

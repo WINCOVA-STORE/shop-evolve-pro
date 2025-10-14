@@ -27,39 +27,35 @@ export const TranslationAPIManager = () => {
   const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set());
   const [deleteKeyId, setDeleteKeyId] = useState<string | null>(null);
 
+  // 🔒 SECURE: All API key operations go through Edge Function
   const { data: apiKeys, isLoading } = useQuery({
     queryKey: ['translation-api-keys'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('translation_api_keys')
-        .select('*')
-        .eq('store_id', 'wincova_main')
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase.functions.invoke('translate-secure', {
+        body: { action: 'list-keys' }
+      });
       
       if (error) throw error;
-      return data;
+      if (!data.success) throw new Error(data.error || 'Failed to fetch keys');
+      
+      return data.keys;
     }
   });
 
   const createKeyMutation = useMutation({
     mutationFn: async (name: string) => {
-      // Generate random API key
-      const randomKey = `wt_${Array.from({ length: 32 }, () => 
-        Math.random().toString(36).charAt(2)
-      ).join('')}`;
+      // 🔒 Generate key on server-side only
+      const { data, error } = await supabase.functions.invoke('translate-secure', {
+        body: { 
+          action: 'create-key',
+          name 
+        }
+      });
 
-      const { error } = await supabase
-        .from('translation_api_keys')
-        .insert({
-          store_id: 'wincova_main',
-          api_key: randomKey,
-          name,
-          is_active: true,
-          rate_limit_per_minute: 60
-        });
-      
       if (error) throw error;
-      return randomKey;
+      if (!data.success) throw new Error(data.error || 'Failed to create key');
+      
+      return data.key; // Only returned once
     },
     onSuccess: (newKey) => {
       queryClient.invalidateQueries({ queryKey: ['translation-api-keys'] });
@@ -88,12 +84,15 @@ export const TranslationAPIManager = () => {
 
   const deleteKeyMutation = useMutation({
     mutationFn: async (keyId: string) => {
-      const { error } = await supabase
-        .from('translation_api_keys')
-        .delete()
-        .eq('id', keyId);
-      
+      const { data, error } = await supabase.functions.invoke('translate-secure', {
+        body: { 
+          action: 'delete-key',
+          keyId 
+        }
+      });
+
       if (error) throw error;
+      if (!data.success) throw new Error(data.error || 'Failed to delete key');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['translation-api-keys'] });
@@ -166,26 +165,12 @@ export const TranslationAPIManager = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <code className="text-sm bg-muted px-2 py-1 rounded font-mono">
-                        {revealedKeys.has(key.id) ? key.api_key : maskKey(key.api_key)}
+                        {/* 🔒 Keys are never exposed to frontend */}
+                        •••••••••••••••••••••••••••••••
                       </code>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleReveal(key.id)}
-                      >
-                        {revealedKeys.has(key.id) ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => copyToClipboard(key.api_key)}
-                      >
-                        <Copy className="w-4 h-4" />
-                      </Button>
+                      <span className="text-xs text-muted-foreground">
+                        (Oculta por seguridad)
+                      </span>
                     </div>
                     <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
                       <span>Creada: {new Date(key.created_at).toLocaleDateString()}</span>
