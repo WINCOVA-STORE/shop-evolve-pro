@@ -126,7 +126,7 @@ serve(async (req) => {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
           try {
             const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 60000);
+            const timeout = setTimeout(() => controller.abort(), 90000); // Aumentado a 90s
             
             try {
               const headers: Record<string, string> = { 
@@ -227,8 +227,8 @@ serve(async (req) => {
         
         for (let page = 2; page <= totalPages; page++) {
           try {
-            // Delay entre páginas para evitar rate limiting
-            await new Promise(resolve => setTimeout(resolve, 800));
+            // Delay reducido para acelerar sync
+            await new Promise(resolve => setTimeout(resolve, 300));
             
             const pageUrl = `${apiBase}/products?per_page=${perPage}&page=${page}&status=publish`;
             const res = await makeRequest(pageUrl, 3);
@@ -260,8 +260,8 @@ serve(async (req) => {
         
         const variationPromises = variableProducts.map(async (product) => {
           try {
-            // Pequeño delay aleatorio para distribuir las solicitudes
-            await new Promise(resolve => setTimeout(resolve, Math.random() * 500));
+            // Delay reducido para acelerar
+            await new Promise(resolve => setTimeout(resolve, Math.random() * 200));
             
             const varUrl = `${apiBase}/products/${product.id}/variations?per_page=100`;
             const res = await makeRequest(varUrl, 2);
@@ -533,45 +533,48 @@ serve(async (req) => {
         }
       }
       
-      // 🔥 Helper function to sync variations
+      // 🔥 Helper function to sync variations IN BATCH
       async function syncProductVariations(
         client: any,
         productId: string,
         wooProductId: number,
         variations: WooVariation[]
       ) {
-        for (const variation of variations) {
-          try {
-            const variationData = {
-              product_id: productId,
-              woocommerce_variation_id: String(variation.id),
-              sku: variation.sku || null,
-              price: parseFloat(variation.price || '0'),
-              regular_price: variation.regular_price ? parseFloat(variation.regular_price) : null,
-              sale_price: variation.sale_price ? parseFloat(variation.sale_price) : null,
-              stock: variation.stock_quantity || 0,
-              is_active: variation.stock_status !== 'outofstock',
-              images: variation.image ? [variation.image.src] : [],
-              attributes: variation.attributes.map(attr => ({
-                name: attr.name,
-                value: attr.option
-              })),
-              updated_at: new Date().toISOString()
-            };
+        if (variations.length === 0) return;
+        
+        try {
+          const variationsData = variations.map(variation => ({
+            product_id: productId,
+            woocommerce_variation_id: String(variation.id),
+            sku: variation.sku || null,
+            price: parseFloat(variation.price || '0'),
+            regular_price: variation.regular_price ? parseFloat(variation.regular_price) : null,
+            sale_price: variation.sale_price ? parseFloat(variation.sale_price) : null,
+            stock: variation.stock_quantity || 0,
+            is_active: variation.stock_status !== 'outofstock',
+            images: variation.image ? [variation.image.src] : [],
+            attributes: variation.attributes.map(attr => ({
+              name: attr.name,
+              value: attr.option
+            })),
+            updated_at: new Date().toISOString()
+          }));
 
-            // Upsert variation (insert or update)
-            const { error } = await client
-              .from('product_variations')
-              .upsert(variationData, {
-                onConflict: 'product_id,attributes'
-              });
+          // BATCH UPSERT: Mucho más rápido
+          const { error } = await client
+            .from('product_variations')
+            .upsert(variationsData, {
+              onConflict: 'woocommerce_variation_id',
+              ignoreDuplicates: false
+            });
 
-            if (error) {
-              console.error(`Error syncing variation ${variation.id}:`, error);
-            }
-          } catch (err) {
-            console.error(`Error processing variation ${variation.id}:`, err);
+          if (error) {
+            console.error(`Error batch-syncing ${variations.length} variations for product ${wooProductId}:`, error);
+          } else {
+            console.log(`✓ Synced ${variations.length} variations for product ${wooProductId}`);
           }
+        } catch (err) {
+          console.error(`Error batch-processing variations for product ${wooProductId}:`, err);
         }
       }
 
