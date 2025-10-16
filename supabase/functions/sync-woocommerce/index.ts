@@ -102,6 +102,13 @@ serve(async (req) => {
     let productsSynced = 0;
     let productsDeactivated = 0;
     let productsSkipped = 0;
+    
+    // ⏱️ Performance tracking
+    const perfStart = Date.now();
+    const perfLog = (step: string) => {
+      const elapsed = ((Date.now() - perfStart) / 1000).toFixed(2);
+      console.log(`⏱️ [${elapsed}s] ${step}`);
+    };
 
     try {
       // WooCommerce credentials
@@ -201,6 +208,7 @@ serve(async (req) => {
       };
 
       console.log('🚀 Fetching products from WooCommerce...');
+      perfLog('Start fetching products');
       
       // 🔥 STEP 1: Get first page to determine total pages
       const perPage = 100;
@@ -249,6 +257,7 @@ serve(async (req) => {
       }
 
       console.log(`✅ Fetched ${allProducts.length} products`);
+      perfLog(`Fetched ${allProducts.length} products`);
 
       // 🔥 STEP 3: Fetch variations for variable products IN PARALLEL
       // Store variations separately, not as products
@@ -290,6 +299,7 @@ serve(async (req) => {
         });
         
         console.log(`✅ Fetched ${totalVariations} variations for ${productVariationsMap.size} variable products`);
+        perfLog(`Fetched ${totalVariations} total variations`);
       }
 
       // Get existing Lovable categories
@@ -343,6 +353,7 @@ serve(async (req) => {
 
       // 🔄 STEP 5: Process products (create/update)
       console.log('🔄 Processing products...');
+      perfLog('Start processing products');
       
       for (const wooProduct of allProducts) {
         try {
@@ -601,6 +612,7 @@ serve(async (req) => {
       console.log(`   🗑️ Deactivated: ${productsDeactivated}`);
       console.log(`   ❌ Failed: ${productsFailed}`);
       console.log(`   💰 Saved: ${(productsUpdated * 4) + productsSkipped} operations`);
+      perfLog('Processing complete');
 
       // Auto-translate NEW products only
       if (productsCreated > 0) {
