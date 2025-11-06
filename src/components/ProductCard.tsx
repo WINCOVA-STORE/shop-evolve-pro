@@ -59,7 +59,7 @@ export const ProductCard = (product: ProductCardProps) => {
 
   return (
     <div
-      className="group relative bg-card rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl border border-border hover:-translate-y-1"
+      className="group relative bg-card rounded-lg overflow-hidden transition-all duration-500 hover:shadow-2xl border border-border hover:-translate-y-2 hover:border-primary/30"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -72,7 +72,7 @@ export const ProductCard = (product: ProductCardProps) => {
           src={image}
           alt={name}
           loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          className="w-full h-full object-cover transition-all duration-500 ease-out group-hover:scale-125 group-hover:brightness-105"
         />
         
         {/* Badge */}
@@ -91,7 +91,7 @@ export const ProductCard = (product: ProductCardProps) => {
         {/* Quick Actions - always visible on mobile, hover on desktop */}
         <div
           className={cn(
-            "absolute top-3 right-3 flex flex-col gap-2 transition-all duration-300 opacity-100 md:opacity-0",
+            "absolute top-3 right-3 flex flex-col gap-2 transition-all duration-500 opacity-100 md:opacity-0 md:translate-x-4",
             isHovered && "md:opacity-100 md:translate-x-0"
           )}
         >
@@ -99,20 +99,20 @@ export const ProductCard = (product: ProductCardProps) => {
             size="icon"
             variant="secondary"
             className={cn(
-              "h-9 w-9 rounded-full shadow-lg",
-              inWishlist && "text-red-500"
+              "h-10 w-10 rounded-full shadow-xl backdrop-blur-sm bg-background/90 hover:bg-background hover:scale-110 transition-all duration-300",
+              inWishlist && "text-red-500 bg-red-50"
             )}
             onClick={handleWishlistToggle}
             title={inWishlist ? t("wishlist.remove") : t("wishlist.add")}
           >
-            <Heart className={cn("h-4 w-4", inWishlist && "fill-current")} />
+            <Heart className={cn("h-4 w-4 transition-all", inWishlist && "fill-current scale-110")} />
           </Button>
           <Button
             size="icon"
             variant="secondary"
             className={cn(
-              "h-9 w-9 rounded-full shadow-lg",
-              inCompare && "text-primary"
+              "h-10 w-10 rounded-full shadow-xl backdrop-blur-sm bg-background/90 hover:bg-background hover:scale-110 transition-all duration-300",
+              inCompare && "text-primary bg-primary/10"
             )}
             onClick={handleCompareToggle}
             title={t("compare.add")}
@@ -156,10 +156,10 @@ export const ProductCard = (product: ProductCardProps) => {
 
         {/* Add to Cart Button */}
         <Button 
-          className="w-full group-hover:shadow-lg transition-all"
+          className="w-full group-hover:shadow-xl group-hover:scale-[1.02] transition-all duration-300"
           onClick={handleAddToCart}
         >
-          <ShoppingCart className="h-4 w-4 mr-2" />
+          <ShoppingCart className="h-4 w-4 mr-2 transition-transform group-hover:rotate-12" />
           {t('products.add_to_cart')}
         </Button>
       </div>

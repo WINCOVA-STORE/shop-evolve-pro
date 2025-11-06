@@ -21,6 +21,7 @@ import { useTranslatedProduct } from "@/hooks/useTranslatedProduct";
 import { toast as sonnerToast } from "sonner";
 import { useRewardsCalculation } from "@/hooks/useRewardsCalculation";
 import DOMPurify from 'dompurify';
+import { ProductImageZoom } from "@/components/ProductImageZoom";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -224,38 +225,33 @@ const ProductDetail = () => {
         <div className="grid lg:grid-cols-2 gap-8 mb-12">
           {/* Images Section */}
           <div className="space-y-4">
-            <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
-              <img
-                src={product.images[selectedImage]}
-                alt={translatedName}
-                className="w-full h-full object-cover"
-              />
-              {discount > 0 && (
-                <Badge className="absolute top-4 left-4 bg-destructive text-destructive-foreground">
-                  -{discount}%
-                </Badge>
-              )}
-              {product.stock < 10 && product.stock > 0 && (
-                <Badge className="absolute top-4 right-4 bg-orange-500">
-                  Solo quedan {product.stock}
-                </Badge>
-              )}
-            </div>
+            {/* Amazon-Style Zoom Image */}
+            <ProductImageZoom
+              image={product.images[selectedImage]}
+              alt={translatedName}
+              discount={discount}
+              stock={product.stock}
+            />
 
+            {/* Thumbnail Gallery */}
             {product.images.length > 1 && (
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-5 gap-2">
                 {product.images.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                      selectedImage === index ? 'border-primary' : 'border-transparent'
+                    onMouseEnter={() => setSelectedImage(index)}
+                    className={`group aspect-square rounded-lg overflow-hidden border-2 transition-all duration-300 hover:shadow-lg hover:scale-105 ${
+                      selectedImage === index 
+                        ? 'border-primary ring-2 ring-primary/20' 
+                        : 'border-border hover:border-primary/50'
                     }`}
                   >
                     <img
                       src={image}
                       alt={`${translatedName} ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     />
                   </button>
                 ))}
@@ -377,7 +373,7 @@ const ProductDetail = () => {
               <div className="flex gap-3">
                 <Button
                   size="lg"
-                  className="flex-1"
+                  className="flex-1 hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
                   onClick={handleAddToCart}
                   disabled={product.stock === 0}
                 >
@@ -388,15 +384,15 @@ const ProductDetail = () => {
                   size="lg" 
                   variant={isInWishlist(product.id) ? "default" : "outline"}
                   onClick={handleWishlist}
-                  className="transition-all"
+                  className="hover:shadow-lg hover:scale-110 transition-all duration-300"
                 >
-                  <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
+                  <Heart className={`h-5 w-5 transition-all ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
                 </Button>
                 <Button 
                   size="lg" 
                   variant={isInCompare(product.id) ? "default" : "outline"}
                   onClick={handleCompare}
-                  className="transition-all"
+                  className="hover:shadow-lg hover:scale-110 transition-all duration-300"
                 >
                   <GitCompare className="h-5 w-5" />
                 </Button>
@@ -404,7 +400,7 @@ const ProductDetail = () => {
                   size="lg" 
                   variant="outline"
                   onClick={handleShare}
-                  className="transition-all"
+                  className="hover:shadow-lg hover:scale-110 transition-all duration-300"
                 >
                   {copied ? <Check className="h-5 w-5 text-green-500" /> : <Share2 className="h-5 w-5" />}
                 </Button>
