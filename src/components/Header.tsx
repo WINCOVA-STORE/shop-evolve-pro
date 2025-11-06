@@ -66,10 +66,10 @@ export const Header = () => {
   };
 
   return (
-    <header className="border-b bg-secondary sticky top-0 z-50 shadow-lg">
+    <header className="border-b bg-secondary sticky top-0 z-50 shadow-md">
       <div className="container mx-auto px-4">
         {/* Top bar */}
-        <div className="flex items-center justify-between py-3 gap-4">
+        <div className="flex items-center justify-between py-2.5 gap-3">
           <Button variant="ghost" size="icon" className="lg:hidden text-secondary-foreground hover:bg-secondary/80">
             <Menu className="h-6 w-6" />
           </Button>
@@ -78,23 +78,25 @@ export const Header = () => {
             <img 
               src={logoWhite} 
               alt="Wincova" 
-              className="h-9 w-auto object-contain hover:scale-105 transition-transform"
+              className="h-8 w-auto object-contain hover:scale-105 transition-transform"
+              loading="eager"
+              decoding="async"
             />
           </Link>
 
-          <div className="hidden lg:flex items-center flex-1 max-w-xl mx-4">
+          <div className="hidden lg:flex items-center flex-1 max-w-2xl mx-4">
             <form onSubmit={handleSearch} className="relative w-full">
               <Input
                 type="search"
                 placeholder={t('header.search_placeholder')}
-                className="pr-24 bg-background border-primary/20 focus:border-primary"
+                className="pr-20 bg-background border-input focus:border-primary h-10"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Button
                 type="submit"
                 size="sm"
-                className="absolute right-0 top-0 h-full rounded-l-none hover:scale-105 transition-transform"
+                className="absolute right-0 top-0 h-full rounded-l-none"
               >
                 {t('header.search_button')}
               </Button>
@@ -109,18 +111,18 @@ export const Header = () => {
               <Button
                 variant="outline"
                 size="sm"
-                className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-primary/10 to-secondary/5 border-primary/30 hover:border-primary hover:scale-105 hover:shadow-lg text-primary font-bold transition-all px-3"
+                className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-primary/10 to-accent/5 border-primary/30 hover:border-primary hover:shadow-md text-primary font-bold transition-all px-2.5 py-1"
                 onClick={() => navigate("/profile")}
               >
-                <Gift className="h-4 w-4 text-secondary" />
-                <span className="text-sm">{availablePoints.toLocaleString()}</span>
-                <span className="text-xs opacity-80">pts</span>
+                <Gift className="h-3.5 w-3.5 text-primary" />
+                <span className="text-xs font-semibold">{availablePoints.toLocaleString()}</span>
+                <span className="text-[10px] opacity-80">pts</span>
               </Button>
             )}
             
-            <Button variant="ghost" size="icon" className="text-secondary-foreground hover:bg-secondary/80 hover:scale-105 transition-all relative">
-              <Heart className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">
+            <Button variant="ghost" size="icon" className="text-secondary-foreground hover:bg-secondary/80 transition-all relative h-9 w-9">
+              <Heart className="h-4 w-4" />
+              <span className="absolute -top-0.5 -right-0.5 bg-primary text-white text-[10px] rounded-full h-3.5 w-3.5 flex items-center justify-center font-bold">
                 0
               </span>
             </Button>
@@ -166,23 +168,23 @@ export const Header = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="hidden lg:flex items-center gap-6 py-3 border-t border-secondary-foreground/10">
-          <Link to="/" className="text-secondary-foreground hover:text-primary transition-colors font-medium">
+        <nav className="hidden lg:flex items-center gap-4 py-2.5 border-t border-secondary-foreground/10">
+          <Link to="/" className="text-secondary-foreground hover:text-primary transition-colors font-medium text-sm">
             {t('nav.home')}
           </Link>
-          <Link to="/category/men" className="text-secondary-foreground hover:text-primary transition-colors">
+          <Link to="/category/men" className="text-secondary-foreground hover:text-primary transition-colors text-sm">
             {t('nav.men')}
           </Link>
-          <Link to="/category/women" className="text-secondary-foreground hover:text-primary transition-colors">
+          <Link to="/category/women" className="text-secondary-foreground hover:text-primary transition-colors text-sm">
             {t('nav.women')}
           </Link>
-          <Link to="/category/kids" className="text-secondary-foreground hover:text-primary transition-colors">
+          <Link to="/category/kids" className="text-secondary-foreground hover:text-primary transition-colors text-sm">
             {t('nav.kids')}
           </Link>
-          <Link to="/category/electronics" className="text-secondary-foreground hover:text-primary transition-colors">
+          <Link to="/category/electronics" className="text-secondary-foreground hover:text-primary transition-colors text-sm">
             {t('nav.electronics')}
           </Link>
-          <Link to="/refer-earn" className="text-primary hover:text-primary/80 transition-colors font-semibold">
+          <Link to="/refer-earn" className="text-primary hover:text-primary/80 transition-colors font-semibold text-sm">
             {t('nav.refer_earn')}
           </Link>
         </nav>

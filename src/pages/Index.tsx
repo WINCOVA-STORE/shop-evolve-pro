@@ -45,9 +45,9 @@ const Index = () => {
       <Header />
 
       {/* Hero Banner */}
-      <section className="relative bg-gradient-to-br from-background to-muted text-foreground h-[70vh] md:h-[85vh] overflow-hidden flex items-center">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200')] bg-cover bg-center"></div>
-        <div className="absolute inset-0 bg-background/70"></div>
+      <section className="relative bg-gradient-to-br from-background to-muted text-foreground h-[60vh] md:h-[70vh] overflow-hidden flex items-center">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1920&q=80')] bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-background/75"></div>
         <div className="container mx-auto px-4 text-center space-y-6 relative z-10 animate-fade-in">
           <Badge variant="secondary" className="mb-4 animate-scale-in">
             {t('hero.new_products_badge')}
@@ -70,35 +70,35 @@ const Index = () => {
       </section>
 
       {/* Benefits Bar */}
-      <section className="border-y bg-muted/30">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="flex items-center gap-3">
-              <Truck className="h-10 w-10 text-primary" />
+      <section className="border-y bg-muted/50 shadow-sm">
+        <div className="container mx-auto px-4 py-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="flex items-center gap-2.5">
+              <Truck className="h-8 w-8 text-primary flex-shrink-0" />
               <div>
-                <h3 className="font-semibold">{t('benefits.free_shipping')}</h3>
-                <p className="text-sm text-muted-foreground">{t('benefits.free_shipping_desc')}</p>
+                <h3 className="font-semibold text-sm">{t('benefits.free_shipping')}</h3>
+                <p className="text-xs text-muted-foreground">{t('benefits.free_shipping_desc')}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Shield className="h-10 w-10 text-primary" />
+            <div className="flex items-center gap-2.5">
+              <Shield className="h-8 w-8 text-primary flex-shrink-0" />
               <div>
-                <h3 className="font-semibold">{t('benefits.secure_purchase')}</h3>
-                <p className="text-sm text-muted-foreground">{t('benefits.secure_purchase_desc')}</p>
+                <h3 className="font-semibold text-sm">{t('benefits.secure_purchase')}</h3>
+                <p className="text-xs text-muted-foreground">{t('benefits.secure_purchase_desc')}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Package className="h-10 w-10 text-primary" />
+            <div className="flex items-center gap-2.5">
+              <Package className="h-8 w-8 text-primary flex-shrink-0" />
               <div>
-                <h3 className="font-semibold">{t('benefits.returns')}</h3>
-                <p className="text-sm text-muted-foreground">{t('benefits.returns_desc')}</p>
+                <h3 className="font-semibold text-sm">{t('benefits.returns')}</h3>
+                <p className="text-xs text-muted-foreground">{t('benefits.returns_desc')}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Gift className="h-10 w-10 text-primary" />
+            <div className="flex items-center gap-2.5">
+              <Gift className="h-8 w-8 text-primary flex-shrink-0" />
               <div>
-                <h3 className="font-semibold">{t('benefits.rewards')}</h3>
-                <p className="text-sm text-muted-foreground">{t('benefits.rewards_desc')}</p>
+                <h3 className="font-semibold text-sm">{t('benefits.rewards')}</h3>
+                <p className="text-xs text-muted-foreground">{t('benefits.rewards_desc')}</p>
               </div>
             </div>
           </div>
@@ -111,9 +111,9 @@ const Index = () => {
       </section>
 
       {/* Categories */}
-      <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-foreground mb-12 text-center">{t('categories.title')}</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8 max-w-5xl mx-auto">
+      <section className="container mx-auto px-4 py-12">
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8 text-center">{t('categories.title')}</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 max-w-6xl mx-auto">
           {categoriesLoading ? (
             [...Array(12)].map((_, i) => (
               <div key={i} className="space-y-2">
@@ -139,19 +139,19 @@ const Index = () => {
       </section>
 
       {/* Featured Products with Sidebar */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="flex items-center justify-between mb-12">
+      <section className="container mx-auto px-4 py-12 bg-background">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-foreground">{t('products.featured')}</h2>
-            <p className="text-muted-foreground mt-2">{t('products.featured_subtitle')}</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t('products.featured')}</h2>
+            <p className="text-sm text-muted-foreground mt-1">{t('products.featured_subtitle')}</p>
           </div>
-          <Button variant="outline">{t('products.view_all')}</Button>
+          <Button variant="outline" className="hidden md:flex">{t('products.view_all')}</Button>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5">
           {/* Products Grid - Responsive */}
           <div className="lg:col-span-9 order-1">
-            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
               {isLoading ? (
                 [...Array(8)].map((_, i) => (
                   <div key={i} className="space-y-3">
@@ -180,9 +180,9 @@ const Index = () => {
       </section>
 
       {/* Value Proposition */}
-      <section className="bg-secondary/5 py-16">
+      <section className="bg-muted/30 py-12">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <div className="text-center space-y-3">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
                 <Shield className="h-8 w-8 text-primary" />
@@ -209,9 +209,9 @@ const Index = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">{t('testimonials.title')}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <section className="container mx-auto px-4 py-12">
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">{t('testimonials.title')}</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {[
             {
               name: t('testimonials.customer_1'),
@@ -243,14 +243,14 @@ const Index = () => {
       </section>
 
       {/* Newsletter CTA */}
-      <section className="bg-primary text-primary-foreground py-16">
+      <section className="bg-primary text-primary-foreground py-12">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto text-center space-y-6">
-            <Mail className="h-12 w-12 mx-auto mb-4" />
-            <h2 className="text-3xl md:text-4xl font-bold">
+          <div className="max-w-2xl mx-auto text-center space-y-4">
+            <Mail className="h-10 w-10 mx-auto" />
+            <h2 className="text-2xl md:text-3xl font-bold">
               {t('newsletter.title')}
             </h2>
-            <p className="text-lg text-primary-foreground/90">
+            <p className="text-base text-primary-foreground/90">
               {t('newsletter.description')}
             </p>
             <form onSubmit={handleNewsletterSubmit} className="flex gap-3 max-w-md mx-auto">

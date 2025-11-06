@@ -59,7 +59,7 @@ export const ProductCard = (product: ProductCardProps) => {
 
   return (
     <div
-      className="group relative bg-card rounded-lg overflow-hidden transition-all duration-500 hover:shadow-2xl border border-border hover:-translate-y-2 hover:border-primary/30"
+      className="group relative bg-card rounded-lg overflow-hidden transition-all duration-300 hover:shadow-2xl border border-border/50 hover:-translate-y-1 hover:border-primary/40 hover:shadow-primary/10"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -72,16 +72,17 @@ export const ProductCard = (product: ProductCardProps) => {
           src={image}
           alt={name}
           loading="lazy"
-          className="w-full h-full object-cover transition-all duration-500 ease-out group-hover:scale-125 group-hover:brightness-105"
+          decoding="async"
+          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
         />
         
         {/* Badge */}
         {badge && (
           <Badge
             className={cn(
-              "absolute top-3 left-3 z-10",
-              badge === "sale" && "bg-destructive text-destructive-foreground",
-              badge === "new" && "bg-primary text-primary-foreground"
+              "absolute top-2 left-2 z-10 font-semibold text-xs",
+              badge === "sale" && "bg-destructive text-destructive-foreground shadow-lg",
+              badge === "new" && "bg-primary text-primary-foreground shadow-lg"
             )}
           >
             {badge === "sale" ? t('products.sale') : t('products.new')}
@@ -123,23 +124,23 @@ export const ProductCard = (product: ProductCardProps) => {
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-3">
+      <div className="p-3 space-y-2.5">
         {/* Title */}
         <h3 
-          className="font-medium text-sm line-clamp-3 min-h-[60px] text-foreground hover:text-primary transition-colors cursor-pointer"
+          className="font-medium text-sm line-clamp-2 min-h-[40px] text-foreground hover:text-primary transition-colors cursor-pointer leading-tight"
           onClick={() => navigate(`/product/${id}`)}
         >
           {name}
         </h3>
 
         {/* Price */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 min-h-[24px]">
-            <span className="text-lg font-bold text-foreground">
+        <div className="space-y-1.5">
+          <div className="flex items-baseline gap-2 min-h-[28px]">
+            <span className="text-xl font-bold text-destructive">
               {formatPrice(price)}
             </span>
             {compare_at_price && compare_at_price > price && (
-              <span className="text-sm text-muted-foreground line-through">
+              <span className="text-xs text-muted-foreground line-through">
                 {formatPrice(compare_at_price)}
               </span>
             )}
@@ -156,10 +157,10 @@ export const ProductCard = (product: ProductCardProps) => {
 
         {/* Add to Cart Button */}
         <Button 
-          className="w-full group-hover:shadow-xl group-hover:scale-[1.02] transition-all duration-300"
+          className="w-full group-hover:shadow-lg transition-all duration-300 font-semibold"
           onClick={handleAddToCart}
         >
-          <ShoppingCart className="h-4 w-4 mr-2 transition-transform group-hover:rotate-12" />
+          <ShoppingCart className="h-4 w-4 mr-2" />
           {t('products.add_to_cart')}
         </Button>
       </div>
