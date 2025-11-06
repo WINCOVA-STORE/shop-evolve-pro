@@ -33,20 +33,21 @@ export const FeaturedSidebar = () => {
   }
 
   return (
-    <aside className="lg:col-span-3 space-y-4 max-w-full lg:max-w-[280px]">
+    <aside className="lg:col-span-3 space-y-3 w-full">
       {/* Featured Products - Compact */}
-      <Card className="p-3 border-2">
-        <h3 className="font-bold text-sm mb-3 text-primary">{t('sidebar.featured')}</h3>
-        <div className="space-y-2">
+      <Card className="p-2.5 border">
+        <h3 className="font-bold text-xs mb-2.5 text-primary flex items-center gap-1.5">
+          <span className="text-sm">⭐</span>
+          {t('sidebar.featured')}
+        </h3>
+        <div className="space-y-1.5">
           {products?.slice(0, 4).map((product) => (
             <FeaturedSidebarProduct key={product.id} product={product} />
           ))}
         </div>
       </Card>
 
-      <Separator className="hidden lg:block" />
-
-      {/* Sponsored Ads Section */}
+      {/* Sponsored Ads Section - Hidden on mobile */}
       <div className="hidden lg:block">
         <SponsoredAds />
       </div>

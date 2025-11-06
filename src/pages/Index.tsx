@@ -148,10 +148,10 @@ const Index = () => {
           <Button variant="outline">{t('products.view_all')}</Button>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Products Grid - Amazon-level responsive grid */}
-          <div className="lg:col-span-9 order-1 lg:order-1">
-            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
+          {/* Products Grid - Responsive */}
+          <div className="lg:col-span-9 order-1">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               {isLoading ? (
                 [...Array(8)].map((_, i) => (
                   <div key={i} className="space-y-3">
@@ -172,8 +172,8 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Featured Sidebar - Mobile: al final, Desktop: lateral */}
-          <div className="order-2 lg:order-2">
+          {/* Featured Sidebar - Hidden on mobile, visible on desktop */}
+          <div className="hidden lg:block lg:col-span-3 order-2">
             <FeaturedSidebar />
           </div>
         </div>

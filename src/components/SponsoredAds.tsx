@@ -44,42 +44,43 @@ export const SponsoredAds = () => {
   ];
 
   return (
-    <Card className="p-4 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">
-      <div className="flex items-center gap-2 mb-4">
-        <Sparkles className="h-5 w-5 text-primary" />
-        <h3 className="font-bold text-lg text-primary">{t('ads.sponsored')}</h3>
+    <Card className="p-2.5 border border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">
+      <div className="flex items-center gap-1.5 mb-3">
+        <Sparkles className="h-4 w-4 text-primary" />
+        <h3 className="font-bold text-xs text-primary">{t('ads.sponsored')}</h3>
       </div>
       
-      <div className="space-y-4">
-        {ads.map((ad) => (
+      <div className="space-y-2.5">
+        {ads.slice(0, 2).map((ad) => (
           <Card 
             key={ad.id} 
-            className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer group"
+            className="overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer group"
           >
             <div className="relative aspect-video overflow-hidden">
               <img 
                 src={ad.image} 
                 alt={ad.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
               />
               {ad.badge && (
-                <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground">
+                <Badge className="absolute top-1.5 right-1.5 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5">
                   {ad.badge}
                 </Badge>
               )}
             </div>
-            <div className="p-3 space-y-2">
-              <h4 className="font-semibold text-sm line-clamp-1">{ad.title}</h4>
-              <p className="text-xs text-muted-foreground line-clamp-2">{ad.description}</p>
+            <div className="p-2 space-y-1.5">
+              <h4 className="font-semibold text-xs line-clamp-1">{ad.title}</h4>
+              <p className="text-[10px] text-muted-foreground line-clamp-2 leading-tight">{ad.description}</p>
               <Button 
                 size="sm" 
                 variant="outline" 
-                className="w-full text-xs"
+                className="w-full text-[10px] h-7"
                 asChild
               >
                 <a href={ad.link} target="_blank" rel="noopener noreferrer">
                   {t('ads.learn_more')}
-                  <ExternalLink className="ml-1 h-3 w-3" />
+                  <ExternalLink className="ml-1 h-2.5 w-2.5" />
                 </a>
               </Button>
             </div>
