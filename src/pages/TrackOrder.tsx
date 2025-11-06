@@ -562,7 +562,7 @@ const TrackOrder = () => {
           <div className="flex flex-wrap justify-center gap-4 mt-8">
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30">
               <Truck className="h-4 w-4 text-primary" />
-              <span className="text-sm font-semibold">Envío 2-5 días</span>
+              <span className="text-sm font-semibold">Envío Rápido</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/30">
               <CheckCircle className="h-4 w-4 text-secondary-foreground" />
@@ -806,7 +806,7 @@ const TrackOrder = () => {
                 <div className="flex gap-3 p-4 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors">
                   <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-sm">
-                    Los envíos desde nuestros proveedores en <strong>US/EU tardan 2-5 días hábiles</strong>.
+                    Trabajamos con <strong>proveedores en Estados Unidos y diferentes partes del mundo</strong>. Los tiempos de entrega varían según la ubicación del proveedor y el producto.
                   </span>
                 </div>
                 

@@ -63,8 +63,8 @@ const ReturnPolicy = () => {
               <div>
                 <h3 className="font-bold text-xl mb-2">Nuestro Modelo de Negocio</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Wincova trabaja con proveedores certificados en <span className="font-semibold text-foreground">US y Europa</span>. 
-                  <span className="text-primary font-semibold"> Envíos ultra-rápidos (2-5 días)</span> con políticas claras que protegen tus derechos.
+                  Wincova trabaja con <span className="font-semibold text-foreground">proveedores certificados en diferentes partes de Estados Unidos y el mundo</span>. 
+                  <span className="text-primary font-semibold"> Los tiempos de entrega varían según la ubicación del proveedor y el producto</span>, con políticas claras que protegen tus derechos.
                 </p>
               </div>
             </div>

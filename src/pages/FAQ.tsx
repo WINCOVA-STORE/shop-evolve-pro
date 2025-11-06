@@ -52,7 +52,7 @@ const FAQ = () => {
           <div className="flex flex-wrap justify-center gap-4 mt-8">
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20">
               <span className="text-2xl">⚡</span>
-              <span className="text-sm font-semibold">Envío 2-5 días</span>
+              <span className="text-sm font-semibold">Envío Rápido</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20">
               <span className="text-2xl">🛡️</span>
@@ -75,7 +75,7 @@ const FAQ = () => {
               </div>
               <div>
                 <h2 className="text-2xl font-bold">Envíos Rápidos</h2>
-                <p className="text-sm text-muted-foreground">Entrega garantizada en 2-5 días</p>
+                <p className="text-sm text-muted-foreground">Tiempos de entrega según proveedor y ubicación</p>
               </div>
             </div>
             
