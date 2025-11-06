@@ -167,9 +167,9 @@ const ProductDetail = () => {
           </Button>
         )}
 
-        <div className="grid lg:grid-cols-[550px_1fr_380px] gap-8 mb-12 max-w-[1800px] mx-auto">
+        <div className="grid lg:grid-cols-[550px_1fr_380px] gap-4 mb-12 max-w-[1800px]">
           {/* Left: Images Section with Amazon-style zoom */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 lg:pl-0">
             <ProductImageZoom
               images={product.images}
               alt={translatedName}
