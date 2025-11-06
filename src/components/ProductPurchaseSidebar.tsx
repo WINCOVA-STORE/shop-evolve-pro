@@ -16,6 +16,7 @@ interface ProductPurchaseSidebarProps {
   quantity: number;
   onQuantityChange: (quantity: number) => void;
   onAddToCart: () => void;
+  onBuyNow?: () => void;
   translatedName: string;
   translatedDescription: string | null;
 }
@@ -25,6 +26,7 @@ export const ProductPurchaseSidebar = ({
   quantity,
   onQuantityChange,
   onAddToCart,
+  onBuyNow,
   translatedName,
   translatedDescription,
 }: ProductPurchaseSidebarProps) => {
@@ -194,6 +196,7 @@ export const ProductPurchaseSidebar = ({
         <Button
           size="lg"
           className="w-full bg-[#FFA724] hover:bg-[#FA8900] text-gray-900 font-semibold shadow-md hover:shadow-lg transition-all"
+          onClick={onBuyNow}
           disabled={product.stock === 0}
         >
           {t('products.buy_now', { defaultValue: 'Comprar ahora' })}
@@ -252,9 +255,8 @@ export const ProductPurchaseSidebar = ({
       </div>
 
       {/* Seller Info */}
-      <div className="text-xs text-muted-foreground space-y-1 pt-3 border-t">
+      <div className="text-xs text-muted-foreground pt-3 border-t">
         <p><span className="font-medium">{t('products.sold_by', { defaultValue: 'Vendido por' })}:</span> WinCova</p>
-        <p><span className="font-medium">{t('products.returns', { defaultValue: 'Devoluciones' })}:</span> {t('products.returns_desc', { defaultValue: 'Reembolzo GRATUITO hasta el 31 de enero' })}</p>
       </div>
     </Card>
   );
