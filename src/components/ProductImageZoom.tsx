@@ -38,7 +38,7 @@ export const ProductImageZoom = ({
   const currentImage = images[selectedImage] || images[0];
 
   return (
-    <div className={cn("flex gap-4", className)}>
+    <div className={cn("flex gap-4 relative", className)}>
       {/* Thumbnails Sidebar - Vertical */}
       {images.length > 1 && (
         <div className="flex flex-col gap-3 w-20">
@@ -63,7 +63,7 @@ export const ProductImageZoom = ({
         </div>
       )}
 
-      {/* Main Image Container with Super Zoom */}
+      {/* Main Image Container */}
       <div className="flex-1">
         <div
           ref={imageRef}
@@ -75,46 +75,24 @@ export const ProductImageZoom = ({
           }}
           onMouseMove={handleMouseMove}
         >
-          {/* Original Image - Hidden when zooming */}
-          <div
-            className={cn(
-              "absolute inset-0 w-full h-full transition-opacity duration-200",
-              isZooming ? "opacity-0" : "opacity-100"
-            )}
-          >
-            <img
-              src={currentImage}
-              alt={alt}
-              className="w-full h-full object-contain p-4"
-              loading="eager"
-            />
-          </div>
-          
-          {/* SUPER ZOOMED Background - Visible when zooming */}
-          <div
-            className={cn(
-              "absolute inset-0 transition-opacity duration-200",
-              isZooming ? "opacity-100" : "opacity-0"
-            )}
-            style={{
-              backgroundImage: `url(${currentImage})`,
-              backgroundPosition: `${position.x}% ${position.y}%`,
-              backgroundSize: '400%',
-              backgroundRepeat: 'no-repeat',
-            }}
+          {/* Original Image */}
+          <img
+            src={currentImage}
+            alt={alt}
+            className="w-full h-full object-contain p-4"
+            loading="eager"
           />
 
-          {/* Zoom Lens Circle */}
+          {/* Zoom Lens Indicator */}
           <div
             className={cn(
-              "absolute w-36 h-36 border-[3px] border-primary/50 rounded-full pointer-events-none shadow-xl transition-opacity duration-200",
+              "absolute w-32 h-32 border-2 border-primary/60 bg-white/10 pointer-events-none transition-opacity duration-200",
               isZooming ? "opacity-100" : "opacity-0"
             )}
             style={{
               left: `${position.x}%`,
               top: `${position.y}%`,
               transform: 'translate(-50%, -50%)',
-              background: 'radial-gradient(circle, rgba(255,153,0,0.1) 0%, transparent 70%)',
             }}
           />
 
@@ -130,21 +108,6 @@ export const ProductImageZoom = ({
               Solo {stock}
             </Badge>
           )}
-
-          {/* Hover Hint - Only show when NOT zooming */}
-          {!isZooming && (
-            <div className="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/5 transition-colors duration-300 pointer-events-none">
-              <div className="opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity duration-300 bg-white/95 backdrop-blur-sm px-6 py-4 rounded-2xl shadow-2xl">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">🔍</span>
-                  <div>
-                    <p className="text-sm font-bold text-foreground">Pasa el cursor</p>
-                    <p className="text-xs text-muted-foreground">para ver en detalle</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Instructions Text */}
@@ -153,10 +116,24 @@ export const ProductImageZoom = ({
           isZooming ? "text-primary" : "text-muted-foreground"
         )}>
           {isZooming 
-            ? "Mueve el cursor para explorar cada detalle de la imagen" 
-            : "Coloca el cursor sobre la imagen para ampliar"}
+            ? "Mueve el cursor para explorar cada detalle" 
+            : "Pasa el cursor sobre la imagen para ampliar"}
         </p>
       </div>
+
+      {/* PANEL LATERAL GIGANTE - Visible solo en hover */}
+      <div
+        className={cn(
+          "absolute left-full ml-4 top-0 w-[600px] h-[600px] rounded-xl overflow-hidden bg-white border-2 border-primary shadow-2xl transition-opacity duration-200 pointer-events-none z-50 hidden lg:block",
+          isZooming ? "opacity-100" : "opacity-0"
+        )}
+        style={{
+          backgroundImage: `url(${currentImage})`,
+          backgroundPosition: `${position.x}% ${position.y}%`,
+          backgroundSize: '250%',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
     </div>
   );
 };
