@@ -3,6 +3,9 @@ project_id = "pduhecmerwvmgbdtathh"
 [functions.create-checkout]
 verify_jwt = true
 
+[functions.create-payment-intent]
+verify_jwt = true
+
 [functions.wincova-github-commit]
 verify_jwt = true
 
