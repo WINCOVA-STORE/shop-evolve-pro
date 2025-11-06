@@ -5,23 +5,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
-import { useWishlist } from "@/contexts/WishlistContext";
-import { useCompare } from "@/contexts/CompareContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, ShoppingCart, Heart, Share2, Minus, Plus, Star, Package, Shield, Truck, Gift, Copy, Check, GitCompare } from "lucide-react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Loader2, ArrowLeft, Star } from "lucide-react";
 import { ProductReviews } from "@/components/ProductReviews";
 import { Product } from "@/hooks/useProducts";
 import { useTranslatedProduct } from "@/hooks/useTranslatedProduct";
-import { toast as sonnerToast } from "sonner";
-import { useRewardsCalculation } from "@/hooks/useRewardsCalculation";
-import DOMPurify from 'dompurify';
 import { ProductImageZoom } from "@/components/ProductImageZoom";
+import { ProductPurchaseSidebar } from "@/components/ProductPurchaseSidebar";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -29,32 +22,21 @@ const ProductDetail = () => {
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const { addToCompare, isInCompare } = useCompare();
-  const { formatPrice } = useCurrency();
   const { toast } = useToast();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [copied, setCopied] = useState(false);
   const attemptedTranslateRef = useRef(false);
   const { name: translatedName, description: translatedDescription } = useTranslatedProduct(product);
-  const { 
-    calculateEarningPoints, 
-    formatEarningDisplay, 
-    getEarningDescription,
-    showPercentage,
-    showConversion
-  } = useRewardsCalculation();
 
   useEffect(() => {
     if (id) {
       fetchProduct();
     }
-  }, [id, i18n.language]); // Re-fetch when language changes
+  }, [id, i18n.language]);
 
-  // Ensure translations exist for current language (backfill old products)
+  // Ensure translations exist for current language
   useEffect(() => {
     if (!product) return;
     const baseLang = (i18n.language || 'en').toLowerCase().split(/[-_]/)[0];
@@ -135,55 +117,9 @@ const ProductDetail = () => {
     });
   };
 
-  const handleWishlist = () => {
-    if (!product) return;
-    
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
-    } else {
-      addToWishlist(product);
-    }
-  };
-
-  const handleCompare = () => {
-    if (!product) return;
-    addToCompare(product);
-  };
-
-  const handleShare = async () => {
-    const url = window.location.href;
-    
-    if (navigator.share) {
-      try {
-          await navigator.share({
-            title: translatedName,
-            text: translatedDescription || translatedName,
-            url: url,
-          });
-          sonnerToast.success(t('products.shared_success'));
-        } catch (err) {
-          if (err instanceof Error && err.name !== 'AbortError') {
-            handleCopyLink(url);
-          }
-        }
-      } else {
-        handleCopyLink(url);
-      }
-    };
-
-    const handleCopyLink = (url: string) => {
-      navigator.clipboard.writeText(url);
-      setCopied(true);
-      sonnerToast.success(t('products.link_copied'));
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   const discount = product?.compare_at_price 
     ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
     : 0;
-  
-  // Calculate points to earn based on dynamic rewards config
-  const pointsToEarn = product ? calculateEarningPoints(product.price * quantity) : 0;
 
   if (loading) {
     return (
@@ -201,7 +137,7 @@ const ProductDetail = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 pb-24 lg:pb-8">
         {location.state?.fromOrder ? (
           <Button
             variant="ghost"
@@ -222,10 +158,9 @@ const ProductDetail = () => {
           </Button>
         )}
 
-        <div className="grid lg:grid-cols-2 gap-8 mb-12">
-          {/* Images Section */}
-          <div className="space-y-4">
-            {/* Amazon-Style Zoom Image */}
+        <div className="grid lg:grid-cols-[1fr_2fr_380px] gap-8 mb-12">
+          {/* Left: Images Section */}
+          <div className="space-y-4 lg:col-span-1">
             <ProductImageZoom
               image={product.images[selectedImage]}
               alt={translatedName}
@@ -259,8 +194,8 @@ const ProductDetail = () => {
             )}
           </div>
 
-          {/* Product Info */}
-          <div className="space-y-6">
+          {/* Center: Product Info */}
+          <div className="space-y-6 lg:col-span-1">
             <div>
               <h1 className="text-3xl font-bold mb-2">{translatedName}</h1>
               <div className="flex items-center gap-2 mb-4">
@@ -274,41 +209,6 @@ const ProductDetail = () => {
                 </div>
                 <span className="text-sm text-muted-foreground">(4.0) · 128 reseñas</span>
               </div>
-            </div>
-
-            <div>
-              <div className="flex items-baseline gap-3 mb-3">
-                <span className="text-4xl font-bold">{formatPrice(product.price)}</span>
-                {product.compare_at_price && (
-                  <span className="text-xl text-muted-foreground line-through">
-                    {formatPrice(product.compare_at_price)}
-                  </span>
-                )}
-              </div>
-              
-              {/* Points Reward Card - Only show if visible or has points */}
-              {(showPercentage || showConversion || pointsToEarn > 0) && (
-                <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 rounded-full bg-primary/20">
-                        <Gift className="h-5 w-5 text-primary" />
-                      </div>
-      <div>
-        <p className="text-sm font-medium">Ganas con esta compra</p>
-        <p className="text-xs text-muted-foreground">
-          {typeof getEarningDescription === 'function' ? getEarningDescription() : 'Puntos de recompensa'}
-        </p>
-      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-primary">
-                        {formatEarningDisplay(pointsToEarn)}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              )}
             </div>
 
             <Separator />
@@ -362,107 +262,39 @@ const ProductDetail = () => {
                 )}
               </div>
             </div>
-
-            <Separator />
-
-            {/* Quantity and Add to Cart */}
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">Cantidad</label>
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    disabled={quantity <= 1}
-                  >
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                  <span className="text-xl font-semibold w-12 text-center">{quantity}</span>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                    disabled={quantity >= product.stock}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                    {product.stock} disponibles
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <Button
-                  size="lg"
-                  className="flex-1 hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
-                  onClick={handleAddToCart}
-                  disabled={product.stock === 0}
-                >
-                  <ShoppingCart className="mr-2 h-5 w-5" />
-                  {product.stock === 0 ? 'Agotado' : 'Agregar al Carrito'}
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant={isInWishlist(product.id) ? "default" : "outline"}
-                  onClick={handleWishlist}
-                  className="hover:shadow-lg hover:scale-110 transition-all duration-300"
-                >
-                  <Heart className={`h-5 w-5 transition-all ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant={isInCompare(product.id) ? "default" : "outline"}
-                  onClick={handleCompare}
-                  className="hover:shadow-lg hover:scale-110 transition-all duration-300"
-                >
-                  <GitCompare className="h-5 w-5" />
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  onClick={handleShare}
-                  className="hover:shadow-lg hover:scale-110 transition-all duration-300"
-                >
-                  {copied ? <Check className="h-5 w-5 text-green-500" /> : <Share2 className="h-5 w-5" />}
-                </Button>
-              </div>
-            </div>
-
-            {/* Benefits */}
-            <Card className="p-4 bg-muted/50">
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <Truck className="h-5 w-5 text-primary mt-0.5" />
-                  <div>
-                    <p className="font-medium">{t('product_detail.free_shipping')}</p>
-                    <p className="text-sm text-muted-foreground">{t('product_detail.free_shipping_desc')}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Shield className="h-5 w-5 text-primary mt-0.5" />
-                  <div>
-                    <p className="font-medium">{t('product_detail.protected_purchase')}</p>
-                    <p className="text-sm text-muted-foreground">{t('product_detail.protected_purchase_desc')}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Package className="h-5 w-5 text-primary mt-0.5" />
-                  <div>
-                    <p className="font-medium">{t('product_detail.easy_returns')}</p>
-                    <p className="text-sm text-muted-foreground">{t('product_detail.easy_returns_desc')}</p>
-                  </div>
-                </div>
-              </div>
-            </Card>
           </div>
+
+          {/* Right: Sticky Purchase Sidebar (Desktop Only) */}
+          <div className="hidden lg:block lg:col-span-1">
+            <ProductPurchaseSidebar
+              product={product}
+              quantity={quantity}
+              onQuantityChange={setQuantity}
+              onAddToCart={handleAddToCart}
+              translatedName={translatedName}
+              translatedDescription={translatedDescription}
+            />
+          </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="container py-12">
+          <ProductReviews productId={product.id} />
         </div>
       </div>
 
-      {/* Reviews Section */}
-      <div className="container py-12">
-        <ProductReviews productId={product.id} />
+      {/* Mobile: Sticky Bottom Purchase Sidebar */}
+      <div className="lg:hidden">
+        <div className="pb-6">
+          <ProductPurchaseSidebar
+            product={product}
+            quantity={quantity}
+            onQuantityChange={setQuantity}
+            onAddToCart={handleAddToCart}
+            translatedName={translatedName}
+            translatedDescription={translatedDescription}
+          />
+        </div>
       </div>
 
       <Footer />
