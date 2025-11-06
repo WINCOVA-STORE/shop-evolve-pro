@@ -1,4 +1,4 @@
-import { ShoppingCart, Minus, Plus, X, Loader2, Gift } from "lucide-react";
+import { ShoppingCart, Minus, Plus, X, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -14,8 +14,6 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { useTranslation } from "react-i18next";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useRewards } from "@/hooks/useRewards";
 import { useShippingConfig } from "@/hooks/useShippingConfig";
@@ -87,7 +85,6 @@ export const CartSheet = () => {
   const { items, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
   const { formatPrice } = useCurrency();
   const { t } = useTranslation();
-  const { toast } = useToast();
   const { user } = useAuth();
   const { availablePoints } = useRewards();
   const { config: shippingConfig, calculateShipping } = useShippingConfig();
@@ -101,7 +98,6 @@ export const CartSheet = () => {
     showPercentage,
     showConversion
   } = useRewardsCalculation();
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [pointsToUse, setPointsToUse] = useState(0);
 
   const taxRate = 0.1; // 10% tax
@@ -119,41 +115,13 @@ export const CartSheet = () => {
   // Calculate points that will be earned from this purchase (based on config)
   const pointsToEarn = calculateEarningPoints(cartTotal); // Basado en configuración dinámica
 
-  const handleCheckout = async () => {
-    setIsCheckingOut(true);
-    
-    try {
-      const cartItems = items.map((item) => ({
-        product_name: item.name,
-        product_description: item.description || '',
-        product_price: item.price,
-        quantity: item.quantity,
-      }));
-
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { 
-          cartItems, 
-          total,
-          pointsUsed: pointsToUse,
-          pointsDiscount: pointsDiscount,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error) {
-      console.error("Error creating checkout:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo iniciar el proceso de pago. Por favor, intenta de nuevo.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsCheckingOut(false);
-    }
+  const handleCheckout = () => {
+    // Navigate to embedded checkout page with points info
+    const params = new URLSearchParams({
+      pointsUsed: pointsToUse.toString(),
+      pointsDiscount: pointsDiscount.toString(),
+    });
+    window.location.href = `/checkout?${params.toString()}`;
   };
 
   return (
@@ -306,16 +274,8 @@ export const CartSheet = () => {
                 className="w-full" 
                 size="lg"
                 onClick={handleCheckout}
-                disabled={isCheckingOut}
               >
-                {isCheckingOut ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Procesando...
-                  </>
-                ) : (
-                  t('cart.checkout')
-                )}
+                {t('cart.checkout')}
               </Button>
             </SheetFooter>
           </>

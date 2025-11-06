@@ -27,7 +27,6 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const attemptedTranslateRef = useRef(false);
   const { name: translatedName, description: translatedDescription } = useTranslatedProduct(product);
 
@@ -103,44 +102,14 @@ const ProductDetail = () => {
     }
   };
 
-  const handleBuyNow = async () => {
+  const handleBuyNow = () => {
     if (!product) return;
     
     // Add to cart first
     addToCart(product, quantity);
     
-    // Create checkout session directly
-    setIsCheckingOut(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { 
-          cartItems: [{
-            product_name: translatedName,
-            product_description: translatedDescription || '',
-            product_price: product.price,
-            quantity: quantity,
-          }],
-          total: product.price * quantity * 1.1, // with 10% tax
-          pointsUsed: 0,
-          pointsDiscount: 0,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error) {
-      console.error("Error creating checkout:", error);
-      toast({
-        title: "Error",
-        description: t('cart.checkout_error', { defaultValue: 'No se pudo iniciar el proceso de pago' }),
-        variant: "destructive",
-      });
-    } finally {
-      setIsCheckingOut(false);
-    }
+    // Navigate to checkout page
+    window.location.href = '/checkout?pointsUsed=0&pointsDiscount=0';
   };
 
   const handleAddToCart = () => {

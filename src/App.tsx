@@ -14,6 +14,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ReferEarn from "./pages/ReferEarn";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import Checkout from "./pages/Checkout";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 import ProductDetail from "./pages/ProductDetail";
@@ -56,6 +57,7 @@ const AppContent = () => {
         <Route path="/auth" element={<Auth />} />
         <Route path="/refer-earn" element={<ReferEarn />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/checkout" element={<Checkout />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/product/:id" element={<ProductDetail />} />
