@@ -313,32 +313,55 @@ const ProductDetail = () => {
 
             <Separator />
 
-            <div>
-              <h3 className="font-semibold mb-2">{t('products.description', { defaultValue: 'Descripción' })}</h3>
+            {/* Acerca de este artículo - Amazon Style */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold">{t('products.about_item', { defaultValue: 'Acerca de este artículo' })}</h3>
               {translatedDescription ? (
-                <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(translatedDescription) }} />
+                <ul className="space-y-2 list-none">
+                  {translatedDescription.split(/[.!?]\s+/).filter(sentence => sentence.trim().length > 20).slice(0, 5).map((sentence, idx) => (
+                    <li key={idx} className="flex items-start gap-3 text-sm">
+                      <span className="text-primary mt-1 text-lg">•</span>
+                      <span className="text-foreground/80 leading-relaxed">{sentence.trim()}.</span>
+                    </li>
+                  ))}
+                </ul>
               ) : (
-                <p className="text-muted-foreground">{t('products.no_description', { defaultValue: 'Sin descripción' })}</p>
+                <p className="text-muted-foreground text-sm">{t('products.no_description', { defaultValue: 'Sin descripción' })}</p>
               )}
             </div>
 
-            <div>
-              <h3 className="font-semibold mb-2">SKU</h3>
-              <p className="text-sm text-muted-foreground">{product.sku}</p>
-            </div>
+            <Separator />
 
-            {product.tags && product.tags.length > 0 && (
-              <div>
-                <h3 className="font-semibold mb-2">Etiquetas</h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.tags.map((tag, index) => (
-                    <Badge key={index} variant="outline">
-                      {tag}
-                    </Badge>
-                  ))}
+            {/* Detalles del producto */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-bold">{t('products.product_details', { defaultValue: 'Detalles del producto' })}</h3>
+              <div className="grid grid-cols-1 gap-2 text-sm">
+                {product.sku && (
+                  <div className="flex items-start py-2 border-b border-border/50">
+                    <span className="font-medium text-foreground/70 min-w-[140px]">SKU:</span>
+                    <span className="text-foreground">{product.sku}</span>
+                  </div>
+                )}
+                <div className="flex items-start py-2 border-b border-border/50">
+                  <span className="font-medium text-foreground/70 min-w-[140px]">{t('products.availability', { defaultValue: 'Disponibilidad' })}:</span>
+                  <span className={`font-medium ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {product.stock > 0 ? `${product.stock} ${t('products.in_stock', { defaultValue: 'en stock' })}` : t('products.out_of_stock', { defaultValue: 'Agotado' })}
+                  </span>
                 </div>
+                {product.tags && product.tags.length > 0 && (
+                  <div className="flex items-start py-2 border-b border-border/50">
+                    <span className="font-medium text-foreground/70 min-w-[140px]">{t('products.categories', { defaultValue: 'Categorías' })}:</span>
+                    <div className="flex flex-wrap gap-2">
+                      {product.tags.map((tag, index) => (
+                        <Badge key={index} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
 
             <Separator />
 
