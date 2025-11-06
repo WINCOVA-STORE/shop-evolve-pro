@@ -47,20 +47,20 @@ export const ProductImageZoom = ({
   const currentImage = images[selectedImage] || images[0];
 
   return (
-    <div className={cn("flex gap-2", className)}>
-      {/* THUMBNAILS VERTICALES - Estilo Amazon (pequeños 40px) */}
+    <div className={cn("flex gap-3", className)}>
+      {/* THUMBNAILS VERTICALES - Estilo Amazon (45px) */}
       {images.length > 1 && (
-        <div className="flex flex-col gap-2 w-10 flex-shrink-0">
+        <div className="flex flex-col gap-2 w-12 flex-shrink-0">
           {images.map((img, idx) => (
             <button
               key={idx}
               onClick={() => setSelectedImage(idx)}
               onMouseEnter={() => setSelectedImage(idx)}
               className={cn(
-                "relative w-full aspect-square rounded border transition-all duration-150 overflow-hidden",
+                "relative w-full aspect-square rounded border transition-all duration-150 overflow-hidden hover:opacity-100",
                 selectedImage === idx 
-                  ? "border-[#e77600] border-2" 
-                  : "border-gray-300 hover:border-gray-500"
+                  ? "border-[#e77600] border-2 opacity-100" 
+                  : "border-gray-300 opacity-70"
               )}
             >
               <img
@@ -74,11 +74,11 @@ export const ProductImageZoom = ({
         </div>
       )}
 
-      {/* IMAGEN PRINCIPAL - Tamaño Amazon (max 500px) */}
-      <div className="flex-1 max-w-[500px]">
+      {/* IMAGEN PRINCIPAL - Tamaño optimizado */}
+      <div className="flex-1 max-w-[480px]">
         <div
           ref={imageRef}
-          className="relative w-full aspect-square bg-white border border-gray-200 overflow-hidden"
+          className="relative w-full aspect-square bg-white border border-gray-200 overflow-hidden rounded"
           onMouseEnter={() => setIsZooming(true)}
           onMouseLeave={() => {
             setIsZooming(false);
@@ -91,14 +91,14 @@ export const ProductImageZoom = ({
           <img
             src={currentImage}
             alt={alt}
-            className="w-full h-full object-contain p-6"
+            className="w-full h-full object-contain p-8"
             loading="eager"
           />
 
           {/* LENTE DE ZOOM - Rectángulo semitransparente Amazon */}
           {isZooming && (
             <div
-              className="absolute border-2 border-[#e77600] pointer-events-none bg-white/20"
+              className="absolute border-2 border-[#e77600] pointer-events-none bg-white/10"
               style={{
                 width: '35%',
                 height: '35%',
@@ -111,22 +111,23 @@ export const ProductImageZoom = ({
 
           {/* Badges */}
           {discount && discount > 0 && (
-            <Badge className="absolute top-2 left-2 bg-red-600 text-white z-20 text-xs font-bold px-2 py-1">
+            <Badge className="absolute top-2 left-2 bg-red-600 text-white z-20 text-xs font-bold px-2.5 py-0.5">
               -{discount}%
             </Badge>
           )}
           
           {stock !== undefined && stock < 10 && stock > 0 && (
-            <Badge className="absolute top-2 right-2 bg-orange-500 text-white z-20 text-xs font-semibold px-2 py-1">
+            <Badge className="absolute top-2 right-2 bg-orange-500 text-white z-20 text-xs font-semibold px-2.5 py-0.5">
               Solo {stock}
             </Badge>
           )}
 
           {/* Mensaje hover - Estilo Amazon */}
           {!isZooming && (
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200 bg-black/[0.02] pointer-events-none">
-              <div className="bg-white/95 rounded px-3 py-2 shadow-md border border-gray-200">
-                <p className="text-xs font-medium text-[#e77600] whitespace-nowrap">
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-black/5 to-transparent pointer-events-none">
+              <div className="bg-white/95 backdrop-blur-sm rounded-lg px-4 py-2.5 shadow-lg border border-[#e77600]/20">
+                <p className="text-xs font-medium text-[#e77600] whitespace-nowrap flex items-center gap-2">
+                  <span className="text-base">🔍</span>
                   Mueve el cursor para ampliar
                 </p>
               </div>
@@ -138,7 +139,7 @@ export const ProductImageZoom = ({
       {/* PANEL ZOOM LATERAL FLOTANTE - Position FIXED, estilo Amazon */}
       {isZooming && (
         <div
-          className="hidden xl:block fixed top-20 right-8 w-[550px] h-[550px] bg-white border-2 border-[#e77600] shadow-2xl z-[9999] pointer-events-none"
+          className="hidden xl:block fixed top-32 right-12 w-[520px] h-[520px] bg-white border-[3px] border-[#e77600] shadow-2xl z-[9999] pointer-events-none rounded-lg overflow-hidden"
           style={{
             backgroundImage: `url(${currentImage})`,
             backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
