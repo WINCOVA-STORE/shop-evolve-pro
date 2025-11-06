@@ -45,27 +45,20 @@ export default function Checkout() {
 
     const createPaymentIntent = async () => {
       try {
-        const cartItems = items.map((item) => ({
-          product_name: item.name,
-          product_description: item.description || "",
-          product_price: item.price,
-          quantity: item.quantity,
-        }));
-
-        const { data, error } = await supabase.functions.invoke("create-payment-intent", {
-          body: {
-            cartItems,
-            total,
-            pointsUsed,
-            pointsDiscount,
-          },
+        // MOCK MODE: Simulate payment intent creation
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Generate mock client secret
+        const mockClientSecret = `pi_mock_${Date.now()}_secret_${Math.random().toString(36).substring(7)}`;
+        
+        console.log("MOCK: Payment intent created", {
+          total,
+          pointsUsed,
+          pointsDiscount,
+          items: items.length
         });
 
-        if (error) throw error;
-
-        if (data.clientSecret) {
-          setClientSecret(data.clientSecret);
-        }
+        setClientSecret(mockClientSecret);
       } catch (err) {
         console.error("Error creating payment intent:", err);
         setError("No se pudo iniciar el proceso de pago. Por favor, intenta de nuevo.");

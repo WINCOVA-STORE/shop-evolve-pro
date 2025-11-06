@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { getMockProductVariations } from "@/data/mockData";
 
 export interface ProductVariation {
   id: string;
@@ -18,28 +18,23 @@ export interface ProductVariation {
   updated_at: string;
 }
 
+/**
+ * Hook to get product variations (MOCK MODE)
+ * Returns mock variations from centralized mockData.ts
+ */
 export const useProductVariations = (productId: string | undefined) => {
   return useQuery({
     queryKey: ['product-variations', productId],
     queryFn: async () => {
       if (!productId) return [];
       
-      const { data, error } = await supabase
-        .from('product_variations')
-        .select('*')
-        .eq('product_id', productId)
-        .eq('is_active', true)
-        .order('price', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching product variations:', error);
-        throw error;
-      }
-
-      return (data || []).map(variation => ({
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      return getMockProductVariations(productId).map(variation => ({
         ...variation,
-        attributes: variation.attributes as Array<{ name: string; value: string }>,
-        dimensions: variation.dimensions as any
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       })) as ProductVariation[];
     },
     enabled: !!productId,

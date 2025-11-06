@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { MOCK_PRODUCTS, getFeaturedMockProducts } from "@/data/mockData";
 
 export interface Product {
   id: string;
@@ -27,35 +27,32 @@ export interface Product {
   description_zh?: string | null;
 }
 
+/**
+ * Hook to get all products (MOCK MODE)
+ * Returns mock data from centralized mockData.ts
+ */
 export const useProducts = () => {
   return useQuery({
     queryKey: ['products'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data as Product[];
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return MOCK_PRODUCTS as Product[];
     },
   });
 };
 
+/**
+ * Hook to get featured products (MOCK MODE)
+ * Returns mock featured products from centralized mockData.ts
+ */
 export const useFeaturedProducts = (limit: number = 8) => {
   return useQuery({
     queryKey: ['products', 'featured', limit],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(limit);
-
-      if (error) throw error;
-      return data as Product[];
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return getFeaturedMockProducts(limit) as Product[];
     },
   });
 };

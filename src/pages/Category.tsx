@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
@@ -16,6 +15,7 @@ import { Product } from "@/hooks/useProducts";
 import { categories as staticCategories } from "@/data/categories";
 import { useCategoryTranslation } from "@/hooks/useTranslatedCategory";
 import { useEnsureProductTranslations } from "@/hooks/useEnsureProductTranslations";
+import { getMockProductsByCategory, MOCK_PRODUCTS } from "@/data/mockData";
  
 interface CategoryInfo {
   id: string;
@@ -45,42 +45,37 @@ const Category = () => {
 
   const fetchCategoryAndProducts = async () => {
     try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
       // Find the category from our static list using the slug
       const cat = staticCategories.find(c => c.slug === slug);
       const displayName = cat ? translateCategoryName(cat.slug, cat.name) : (slug || "");
 
-      // Fetch products
-      let query = supabase
-        .from("products")
-        .select("*")
-        .eq("is_active", true)
-        .limit(20);
+      // Get all mock products
+      let data = [...MOCK_PRODUCTS];
 
       // Apply sorting
       switch (sortBy) {
         case "price-asc":
-          query = query.order("price", { ascending: true });
+          data.sort((a, b) => a.price - b.price);
           break;
         case "price-desc":
-          query = query.order("price", { ascending: false });
+          data.sort((a, b) => b.price - a.price);
           break;
         case "newest":
-          query = query.order("created_at", { ascending: false });
+          data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
           break;
         default:
-          query = query.order("created_at", { ascending: false });
+          data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
 
       setCategory({
         id: slug || "",
         name: displayName || "",
         description: t('products.discover_category', { category: (displayName || '').toLowerCase() }),
       });
-      setProducts(data || []);
+      setProducts(data.slice(0, 20) as Product[]);
     } catch (error) {
       console.error("Error fetching category:", error);
       toast({

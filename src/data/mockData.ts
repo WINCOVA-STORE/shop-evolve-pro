@@ -18,6 +18,7 @@ export interface MockProduct {
   tags: string[];
   reward_percentage: number;
   created_at: string;
+  updated_at: string;
   rating: number;
   reviews_count: number;
   // Multi-language fields
@@ -109,6 +110,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
     tags: ['electronics', 'audio', 'wireless', 'featured'],
     reward_percentage: 5,
     created_at: '2024-01-15T10:00:00Z',
+    updated_at: '2024-01-15T10:00:00Z',
     rating: 4.7,
     reviews_count: 234,
     name_es: 'Auriculares Inalámbricos Pro',
@@ -132,6 +134,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
     tags: ['electronics', 'fitness', 'wearable', 'new'],
     reward_percentage: 8,
     created_at: '2024-02-01T10:00:00Z',
+    updated_at: '2024-02-01T10:00:00Z',
     rating: 4.5,
     reviews_count: 189,
     name_es: 'Reloj Inteligente Fitness',
@@ -154,6 +157,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
     tags: ['electronics', 'audio', 'portable', 'sale'],
     reward_percentage: 6,
     created_at: '2024-01-20T10:00:00Z',
+    updated_at: '2024-01-20T10:00:00Z',
     rating: 4.8,
     reviews_count: 456,
     name_es: 'Altavoz Bluetooth Portátil',
@@ -174,6 +178,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
     tags: ['electronics', 'accessories', 'productivity'],
     reward_percentage: 4,
     created_at: '2024-01-25T10:00:00Z',
+    updated_at: '2024-01-25T10:00:00Z',
     rating: 4.6,
     reviews_count: 312,
     name_es: 'Hub USB-C 7 en 1',
@@ -197,6 +202,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
     tags: ['electronics', 'gaming', 'peripherals', 'featured'],
     reward_percentage: 7,
     created_at: '2024-02-05T10:00:00Z',
+    updated_at: '2024-02-05T10:00:00Z',
     rating: 4.9,
     reviews_count: 567,
     name_es: 'Teclado Mecánico Gaming RGB',
@@ -218,6 +224,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
     tags: ['electronics', 'gaming', 'peripherals'],
     reward_percentage: 5,
     created_at: '2024-02-08T10:00:00Z',
+    updated_at: '2024-02-08T10:00:00Z',
     rating: 4.7,
     reviews_count: 423,
     name_es: 'Mouse Gaming Inalámbrico',
@@ -238,6 +245,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
     tags: ['electronics', 'streaming', 'productivity', 'new'],
     reward_percentage: 8,
     created_at: '2024-02-10T10:00:00Z',
+    updated_at: '2024-02-10T10:00:00Z',
     rating: 4.8,
     reviews_count: 201,
     name_es: 'Webcam 4K Pro',
@@ -258,6 +266,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
     tags: ['electronics', 'accessories', 'ergonomic'],
     reward_percentage: 3,
     created_at: '2024-01-28T10:00:00Z',
+    updated_at: '2024-01-28T10:00:00Z',
     rating: 4.5,
     reviews_count: 178,
     name_es: 'Soporte para Laptop Aluminio',

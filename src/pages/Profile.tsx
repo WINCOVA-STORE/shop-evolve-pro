@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Package, Gift, Users, ArrowLeft, User } from "lucide-react";
+import { Loader2, Package, Gift, Users, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -15,6 +14,8 @@ import { RewardsBalance } from "@/components/RewardsBalance";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslation } from "react-i18next";
+import { useMockOrders } from "@/hooks/useMockOrders";
+import { useMockProfile, useMockReferrals, useMockRewards, useUpdateProfile } from "@/hooks/useMockProfile";
 
 interface Order {
   id: string;
@@ -56,12 +57,19 @@ const Profile = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [referrals, setReferrals] = useState<Referral[]>([]);
-  const [rewards, setRewards] = useState<Reward[]>([]);
+  
+  // Use mock hooks
+  const { data: ordersData, isLoading: ordersLoading } = useMockOrders(user?.id);
+  const { data: profileData, isLoading: profileLoading } = useMockProfile(user?.id);
+  const { data: referralsData, isLoading: referralsLoading } = useMockReferrals(user?.id);
+  const { data: rewardsData, isLoading: rewardsLoading } = useMockRewards(user?.id);
+  const updateProfileMutation = useUpdateProfile();
+  
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const loading = ordersLoading || profileLoading || referralsLoading || rewardsLoading;
+  const orders = ordersData || [];
+  const referrals = referralsData || [];
+  const rewards = rewardsData || [];
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -70,59 +78,23 @@ const Profile = () => {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    if (user) {
-      fetchUserData();
+    if (profileData) {
+      setProfile(profileData as Profile);
     }
-  }, [user]);
-
-  const fetchUserData = async () => {
-    try {
-      const [ordersRes, referralsRes, rewardsRes, profileRes] = await Promise.all([
-        supabase.from("orders").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
-        supabase.from("referrals").select("*").eq("referrer_id", user!.id).order("created_at", { ascending: false }),
-        supabase.from("rewards").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
-        supabase.from("profiles").select("*").eq("id", user!.id).single(),
-      ]);
-
-      if (ordersRes.error) throw ordersRes.error;
-      if (referralsRes.error) throw referralsRes.error;
-      if (rewardsRes.error) throw rewardsRes.error;
-      if (profileRes.error) throw profileRes.error;
-
-      setOrders(ordersRes.data || []);
-      setReferrals(referralsRes.data || []);
-      setRewards(rewardsRes.data || []);
-      setProfile(profileRes.data);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      toast({
-        title: "Error",
-        description: t("profile.error_loading"),
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [profileData]);
 
   const handleSaveProfile = async () => {
     if (!profile || !user) return;
     
-    setSaving(true);
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          full_name: profile.full_name,
-          phone: profile.phone,
-          birthday: profile.birthday,
-          address: profile.address,
-          city: profile.city,
-          country: profile.country,
-        })
-        .eq("id", user.id);
-
-      if (error) throw error;
+      await updateProfileMutation.mutateAsync({
+        full_name: profile.full_name,
+        phone: profile.phone,
+        birthday: profile.birthday,
+        address: profile.address,
+        city: profile.city,
+        country: profile.country,
+      });
 
       toast({
         title: t("profile.profile_updated"),
@@ -135,8 +107,6 @@ const Profile = () => {
         description: t("profile.error_updating"),
         variant: "destructive",
       });
-    } finally {
-      setSaving(false);
     }
   };
 
