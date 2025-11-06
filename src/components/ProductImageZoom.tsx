@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 interface ProductImageZoomProps {
-  image: string;
+  images: string[];
   alt: string;
   discount?: number;
   stock?: number;
@@ -11,12 +11,13 @@ interface ProductImageZoomProps {
 }
 
 export const ProductImageZoom = ({ 
-  image, 
+  images, 
   alt, 
   discount, 
   stock,
   className 
 }: ProductImageZoomProps) => {
+  const [selectedImage, setSelectedImage] = useState(0);
   const [isZooming, setIsZooming] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const imageRef = useRef<HTMLDivElement>(null);
@@ -31,69 +32,101 @@ export const ProductImageZoom = ({
     setPosition({ x, y });
   };
 
+  const currentImage = images[selectedImage] || images[0];
+
   return (
-    <div className={cn("relative group", className)}>
+    <div className={cn("flex gap-3", className)}>
+      {/* Thumbnails Sidebar - Amazon Style */}
+      {images.length > 1 && (
+        <div className="flex flex-col gap-2 w-14 md:w-16">
+          {images.map((img, idx) => (
+            <button
+              key={idx}
+              onClick={() => setSelectedImage(idx)}
+              onMouseEnter={() => setSelectedImage(idx)}
+              className={cn(
+                "relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 hover:border-primary hover:shadow-md",
+                selectedImage === idx ? "border-primary shadow-md ring-1 ring-primary/20" : "border-border"
+              )}
+            >
+              <img
+                src={img}
+                alt={`${alt} - vista ${idx + 1}`}
+                className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Main Image Container */}
-      <div
-        ref={imageRef}
-        className="relative aspect-square rounded-lg overflow-hidden bg-muted cursor-crosshair"
-        onMouseEnter={() => setIsZooming(true)}
-        onMouseLeave={() => setIsZooming(false)}
-        onMouseMove={handleMouseMove}
-      >
-        {/* Base Image */}
-        <img
-          src={image}
-          alt={alt}
-          className={cn(
-            "w-full h-full object-cover transition-opacity duration-300",
-            isZooming && "opacity-0"
-          )}
-        />
-        
-        {/* Zoomed Image - Amazon Style */}
+      <div className="flex-1 relative group">
         <div
-          className={cn(
-            "absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none",
-            isZooming && "opacity-100"
-          )}
-          style={{
-            backgroundImage: `url(${image})`,
-            backgroundPosition: `${position.x}% ${position.y}%`,
-            backgroundSize: '200%',
-            backgroundRepeat: 'no-repeat',
-          }}
-        />
-
-        {/* Badges */}
-        {discount && discount > 0 && (
-          <Badge className="absolute top-4 left-4 bg-destructive text-destructive-foreground z-10 shadow-lg">
-            -{discount}%
-          </Badge>
-        )}
-        
-        {stock !== undefined && stock < 10 && stock > 0 && (
-          <Badge className="absolute top-4 right-4 bg-orange-500 z-10 shadow-lg">
-            Solo quedan {stock}
-          </Badge>
-        )}
-
-        {/* Zoom Indicator */}
-        <div
-          className={cn(
-            "absolute bottom-4 right-4 bg-background/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-medium transition-opacity duration-300 shadow-lg",
-            isZooming ? "opacity-100" : "opacity-0"
-          )}
+          ref={imageRef}
+          className="relative aspect-square rounded-lg overflow-hidden bg-white border border-border cursor-zoom-in shadow-sm hover:shadow-md transition-shadow"
+          onMouseEnter={() => setIsZooming(true)}
+          onMouseLeave={() => setIsZooming(false)}
+          onMouseMove={handleMouseMove}
         >
-          🔍 Zoom activo
-        </div>
-      </div>
+          {/* Base Image */}
+          <img
+            src={currentImage}
+            alt={alt}
+            className={cn(
+              "w-full h-full object-contain transition-opacity duration-200",
+              isZooming && "opacity-0"
+            )}
+            loading="eager"
+            decoding="async"
+          />
+          
+          {/* Zoomed Image - Amazon Style */}
+          <div
+            className={cn(
+              "absolute inset-0 bg-white opacity-0 transition-opacity duration-200 pointer-events-none",
+              isZooming && "opacity-100"
+            )}
+            style={{
+              backgroundImage: `url(${currentImage})`,
+              backgroundPosition: `${position.x}% ${position.y}%`,
+              backgroundSize: '200%',
+              backgroundRepeat: 'no-repeat',
+            }}
+          />
 
-      {/* Hover Hint */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="bg-background/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-xl text-sm font-medium">
-          Pasa el mouse para hacer zoom
+          {/* Lens indicator - Amazon style */}
+          {isZooming && (
+            <div
+              className="absolute w-32 h-32 border-2 border-primary/40 bg-primary/5 pointer-events-none shadow-lg"
+              style={{
+                left: `calc(${position.x}% - 64px)`,
+                top: `calc(${position.y}% - 64px)`,
+              }}
+            />
+          )}
+
+          {/* Badges */}
+          {discount && discount > 0 && (
+            <Badge className="absolute top-2 left-2 bg-destructive text-destructive-foreground z-10 shadow-lg text-xs font-bold">
+              -{discount}%
+            </Badge>
+          )}
+          
+          {stock !== undefined && stock < 10 && stock > 0 && (
+            <Badge className="absolute top-2 right-2 bg-orange-500 text-white z-10 shadow-lg text-xs font-semibold">
+              Solo {stock}
+            </Badge>
+          )}
         </div>
+
+        {/* Hover Hint - show when not zooming */}
+        {!isZooming && (
+          <p className="text-xs text-center text-muted-foreground mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            Pasa el cursor para ver en detalle
+          </p>
+        )}
       </div>
     </div>
   );

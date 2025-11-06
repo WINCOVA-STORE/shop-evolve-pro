@@ -26,7 +26,6 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(0);
   const attemptedTranslateRef = useRef(false);
   const { name: translatedName, description: translatedDescription } = useTranslatedProduct(product);
 
@@ -169,39 +168,14 @@ const ProductDetail = () => {
         )}
 
         <div className="grid lg:grid-cols-[1fr_2fr_380px] gap-8 mb-12">
-          {/* Left: Images Section */}
-          <div className="space-y-4 lg:col-span-1">
+          {/* Left: Images Section with Amazon-style zoom */}
+          <div className="lg:col-span-1">
             <ProductImageZoom
-              image={product.images[selectedImage]}
+              images={product.images}
               alt={translatedName}
               discount={discount}
               stock={product.stock}
             />
-
-            {/* Thumbnail Gallery */}
-            {product.images.length > 1 && (
-              <div className="grid grid-cols-5 gap-2">
-                {product.images.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    onMouseEnter={() => setSelectedImage(index)}
-                    className={`group aspect-square rounded-lg overflow-hidden border-2 transition-all duration-300 hover:shadow-lg hover:scale-105 ${
-                      selectedImage === index 
-                        ? 'border-primary ring-2 ring-primary/20' 
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`${translatedName} ${index + 1}`}
-                      loading="lazy"
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Center: Product Info */}
