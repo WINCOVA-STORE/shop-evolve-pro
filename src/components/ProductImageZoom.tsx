@@ -19,44 +19,53 @@ export const ProductImageZoom = ({
 }: ProductImageZoomProps) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isZooming, setIsZooming] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+  const [lensPosition, setLensPosition] = useState({ x: 0, y: 0 });
   const imageRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!imageRef.current) return;
     
     const rect = imageRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
     
-    setPosition({ 
-      x: Math.max(0, Math.min(100, x)), 
-      y: Math.max(0, Math.min(100, y)) 
-    });
+    // Calculate percentages for zoom panel
+    const xPercent = (x / rect.width) * 100;
+    const yPercent = (y / rect.height) * 100;
+    
+    // Calculate lens position (clamped to image bounds)
+    const lensSize = 0.35; // 35% of container
+    const lensHalfSize = lensSize / 2;
+    const lensX = Math.max(lensHalfSize * 100, Math.min((1 - lensHalfSize) * 100, xPercent));
+    const lensY = Math.max(lensHalfSize * 100, Math.min((1 - lensHalfSize) * 100, yPercent));
+    
+    setZoomPosition({ x: xPercent, y: yPercent });
+    setLensPosition({ x: lensX, y: lensY });
   };
 
   const currentImage = images[selectedImage] || images[0];
 
   return (
-    <div className={cn("flex gap-3", className)}>
-      {/* Thumbnails AMAZON STYLE - Vertical y pequeños */}
+    <div className={cn("flex gap-2", className)}>
+      {/* THUMBNAILS VERTICALES - Estilo Amazon (pequeños 40px) */}
       {images.length > 1 && (
-        <div className="flex flex-col gap-2 w-16 flex-shrink-0">
+        <div className="flex flex-col gap-2 w-10 flex-shrink-0">
           {images.map((img, idx) => (
             <button
               key={idx}
               onClick={() => setSelectedImage(idx)}
               onMouseEnter={() => setSelectedImage(idx)}
               className={cn(
-                "relative w-full aspect-square rounded-md overflow-hidden border transition-all duration-150",
+                "relative w-full aspect-square rounded border transition-all duration-150 overflow-hidden",
                 selectedImage === idx 
-                  ? "border-[#e77600] border-2 shadow-sm" 
-                  : "border-gray-300 hover:border-gray-400"
+                  ? "border-[#e77600] border-2" 
+                  : "border-gray-300 hover:border-gray-500"
               )}
             >
               <img
                 src={img}
-                alt={`${alt} thumbnail ${idx + 1}`}
+                alt={`Vista ${idx + 1}`}
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
@@ -65,36 +74,36 @@ export const ProductImageZoom = ({
         </div>
       )}
 
-      {/* Main Image Container - AMAZON SIZE (grande) */}
-      <div className="flex-1 relative max-w-[550px]">
+      {/* IMAGEN PRINCIPAL - Tamaño Amazon (max 500px) */}
+      <div className="flex-1 max-w-[500px]">
         <div
           ref={imageRef}
-          className="relative w-full aspect-square bg-white rounded-lg overflow-hidden border border-gray-200"
+          className="relative w-full aspect-square bg-white border border-gray-200 overflow-hidden"
           onMouseEnter={() => setIsZooming(true)}
           onMouseLeave={() => {
             setIsZooming(false);
-            setPosition({ x: 0, y: 0 });
+            setZoomPosition({ x: 0, y: 0 });
           }}
           onMouseMove={handleMouseMove}
           style={{ cursor: isZooming ? 'crosshair' : 'default' }}
         >
-          {/* Original Image */}
+          {/* Imagen original */}
           <img
             src={currentImage}
             alt={alt}
-            className="w-full h-full object-contain p-8"
+            className="w-full h-full object-contain p-6"
             loading="eager"
           />
 
-          {/* Zoom Lens - Rectángulo transparente tipo Amazon */}
+          {/* LENTE DE ZOOM - Rectángulo semitransparente Amazon */}
           {isZooming && (
             <div
               className="absolute border-2 border-[#e77600] pointer-events-none bg-white/20"
               style={{
                 width: '35%',
                 height: '35%',
-                left: `${position.x}%`,
-                top: `${position.y}%`,
+                left: `${lensPosition.x}%`,
+                top: `${lensPosition.y}%`,
                 transform: 'translate(-50%, -50%)',
               }}
             />
@@ -102,44 +111,37 @@ export const ProductImageZoom = ({
 
           {/* Badges */}
           {discount && discount > 0 && (
-            <Badge className="absolute top-3 left-3 bg-destructive text-destructive-foreground z-20 shadow-md text-sm font-bold px-3 py-1.5">
+            <Badge className="absolute top-2 left-2 bg-red-600 text-white z-20 text-xs font-bold px-2 py-1">
               -{discount}%
             </Badge>
           )}
           
           {stock !== undefined && stock < 10 && stock > 0 && (
-            <Badge className="absolute top-3 right-3 bg-orange-500 text-white z-20 shadow-md text-sm font-semibold px-3 py-1.5">
+            <Badge className="absolute top-2 right-2 bg-orange-500 text-white z-20 text-xs font-semibold px-2 py-1">
               Solo {stock}
             </Badge>
           )}
 
-          {/* Hover instruction overlay - ESTILO AMAZON */}
+          {/* Mensaje hover - Estilo Amazon */}
           {!isZooming && (
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200 bg-black/5 pointer-events-none">
-              <div className="bg-white/95 rounded-lg px-4 py-3 shadow-lg border border-gray-200">
-                <p className="text-sm font-medium text-[#e77600] whitespace-nowrap">
-                  Mueve el cursor para explorar cada detalle
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200 bg-black/[0.02] pointer-events-none">
+              <div className="bg-white/95 rounded px-3 py-2 shadow-md border border-gray-200">
+                <p className="text-xs font-medium text-[#e77600] whitespace-nowrap">
+                  Mueve el cursor para ampliar
                 </p>
               </div>
             </div>
           )}
         </div>
-
-        {/* Text below image - AMAZON STYLE */}
-        <p className="mt-2 text-xs text-gray-600 text-center">
-          {isZooming 
-            ? "Explorando imagen ampliada" 
-            : "Pasa el cursor sobre la imagen para acercar"}
-        </p>
       </div>
 
-      {/* PANEL ZOOM LATERAL - ESTILO AMAZON (aparece a la derecha) */}
+      {/* PANEL ZOOM LATERAL FLOTANTE - Position FIXED, estilo Amazon */}
       {isZooming && (
         <div
-          className="hidden lg:block absolute left-[calc(100%+1rem)] top-0 w-[550px] h-[550px] bg-white rounded-lg shadow-2xl border-2 border-[#e77600] overflow-hidden z-50"
+          className="hidden xl:block fixed top-20 right-8 w-[550px] h-[550px] bg-white border-2 border-[#e77600] shadow-2xl z-[9999] pointer-events-none"
           style={{
             backgroundImage: `url(${currentImage})`,
-            backgroundPosition: `${position.x}% ${position.y}%`,
+            backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
             backgroundSize: '250%',
             backgroundRepeat: 'no-repeat',
           }}
