@@ -29,7 +29,11 @@ export const ProductImageZoom = ({
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     
-    setPosition({ x, y });
+    // Clamp values between 0 and 100
+    const clampedX = Math.max(0, Math.min(100, x));
+    const clampedY = Math.max(0, Math.min(100, y));
+    
+    setPosition({ x: clampedX, y: clampedY });
   };
 
   const currentImage = images[selectedImage] || images[0];
@@ -65,7 +69,7 @@ export const ProductImageZoom = ({
       <div className="flex-1 relative group order-1 md:order-2">
         <div
           ref={imageRef}
-          className="relative aspect-square rounded-lg overflow-hidden bg-white border border-border cursor-zoom-in shadow-sm hover:shadow-md transition-shadow"
+          className="relative aspect-square rounded-lg overflow-hidden bg-white border border-border shadow-sm hover:shadow-md transition-shadow"
           onMouseEnter={() => setIsZooming(true)}
           onMouseLeave={() => setIsZooming(false)}
           onMouseMove={handleMouseMove}
@@ -76,20 +80,20 @@ export const ProductImageZoom = ({
             alt={alt}
             className={cn(
               "w-full h-full object-contain transition-opacity duration-150",
-              isZooming && "opacity-0"
+              isZooming ? "opacity-0" : "opacity-100"
             )}
             loading="eager"
             decoding="async"
           />
           
-          {/* Super Zoomed Image - Amazon Style (400% zoom) */}
+          {/* Super Zoomed Image - Amazon Style (300% zoom) */}
           {isZooming && (
             <div
-              className="absolute inset-0 bg-white"
+              className="absolute inset-0 bg-white pointer-events-none"
               style={{
                 backgroundImage: `url(${currentImage})`,
                 backgroundPosition: `${position.x}% ${position.y}%`,
-                backgroundSize: '400%',
+                backgroundSize: '300%',
                 backgroundRepeat: 'no-repeat',
               }}
             />
@@ -98,10 +102,10 @@ export const ProductImageZoom = ({
           {/* Zoom Lens Indicator - Amazon style */}
           {isZooming && (
             <div
-              className="absolute w-24 h-24 md:w-32 md:h-32 border-2 border-primary/40 bg-white/30 backdrop-blur-[1px] pointer-events-none shadow-xl"
+              className="absolute w-28 h-28 md:w-36 md:h-36 border-2 border-gray-400/60 bg-white/20 pointer-events-none shadow-lg"
               style={{
-                left: `calc(${position.x}% - 48px)`,
-                top: `calc(${position.y}% - 48px)`,
+                left: `${position.x}%`,
+                top: `${position.y}%`,
                 transform: 'translate(-50%, -50%)',
               }}
             />
@@ -122,10 +126,10 @@ export const ProductImageZoom = ({
 
           {/* Zoom Hint */}
           {!isZooming && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/5 transition-all duration-300 pointer-events-none">
+            <div className="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/5 transition-colors duration-300 pointer-events-none">
               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-xl">
                 <p className="text-xs font-semibold text-foreground flex items-center gap-2">
-                  <span className="text-lg">🔍</span>
+                  <span className="text-base">🔍</span>
                   Pasa el cursor para ampliar
                 </p>
               </div>
@@ -134,8 +138,8 @@ export const ProductImageZoom = ({
         </div>
 
         {/* Instructions Text */}
-        <p className="text-[11px] text-center text-muted-foreground mt-2 hidden md:block">
-          {isZooming ? 'Mueve el cursor para explorar' : 'Pasa el cursor sobre la imagen para ampliar'}
+        <p className="text-[11px] text-center text-muted-foreground mt-2">
+          {isZooming ? 'Mueve el cursor para explorar los detalles' : 'Coloca el cursor sobre la imagen'}
         </p>
       </div>
     </div>
