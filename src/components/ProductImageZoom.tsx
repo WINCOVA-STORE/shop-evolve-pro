@@ -80,8 +80,8 @@ export const ProductImageZoom = ({
           maxImages={8}
         />
 
-        {/* IMAGEN PRINCIPAL - Más grande como Amazon */}
-        <div className="flex-1 max-w-[600px] w-full">
+        {/* IMAGEN PRINCIPAL - Más grande */}
+        <div className="flex-1 max-w-[700px] w-full">
           <div
             ref={imageRef}
             className="relative w-full aspect-square border border-border overflow-hidden rounded-sm shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
