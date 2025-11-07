@@ -161,13 +161,15 @@ export const ProductImageZoom = ({
           )}
         </div>
 
-        {/* PANEL ZOOM - Posicionado a la derecha SIN cubrir otros elementos */}
+        {/* PANEL ZOOM - Entre imagen y panel de precio, hasta el fondo */}
         {isZooming && (
           <div
-            className="hidden xl:block fixed w-[420px] h-[420px] border-[3px] border-primary shadow-2xl pointer-events-none rounded-sm overflow-hidden"
+            className="hidden xl:block fixed border-[3px] border-primary shadow-2xl pointer-events-none rounded-sm overflow-hidden"
             style={{
               top: imageRef.current ? `${imageRef.current.getBoundingClientRect().top}px` : '0',
+              bottom: '0',
               left: imageRef.current ? `${imageRef.current.getBoundingClientRect().right + 16}px` : '0',
+              width: '420px',
               backgroundImage: `url(${currentImage})`,
               backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
               backgroundSize: '250%',
