@@ -95,18 +95,18 @@ export const ProductImageZoom = ({
             onMouseMove={handleMouseMove}
             onClick={() => setIsLightboxOpen(true)}
           >
-            {/* Imagen original con optimización de carga */}
+            {/* Imagen original con optimización de carga - SIN fondo blanco */}
             <img
               src={currentImage}
               alt={alt}
-              className="w-full h-full object-contain p-8 bg-white"
+              className="w-full h-full object-contain p-8"
               loading="eager"
               fetchPriority="high"
               decoding="async"
               srcSet={`${currentImage} 1x, ${currentImage} 2x`}
             />
 
-            {/* LENTE DE ZOOM - Más pequeña 20% */}
+            {/* LENTE DE ZOOM - Más pequeña 20% SIN delay */}
             {isZooming && (
               <div
                 className="absolute border-[3px] border-[#ff9800] pointer-events-none rounded-sm"
@@ -117,7 +117,6 @@ export const ProductImageZoom = ({
                   top: `${zoomPosition.y}%`,
                   transform: 'translate(-50%, -50%)',
                   boxShadow: '0 0 0 9999px rgba(0,0,0,0.25)',
-                  transition: 'all 0.03s ease-out',
                   willChange: 'transform, left, top'
                 }}
               />
@@ -179,19 +178,19 @@ export const ProductImageZoom = ({
           )}
         </div>
 
-        {/* PANEL ZOOM - Posicionado entre imagen y sidebar (estilo Amazon) */}
+        {/* PANEL ZOOM - Alineado perfectamente al borde derecho de la imagen */}
         {isZooming && (
           <div
-            className="hidden xl:block fixed w-[520px] bg-[rgb(255,255,255)] border-[3px] border-primary shadow-2xl pointer-events-none rounded-sm overflow-hidden"
+            className="hidden xl:block fixed w-[520px] border-[3px] border-primary shadow-2xl pointer-events-none rounded-sm overflow-hidden"
             style={{
               top: imageRef.current ? `${imageRef.current.getBoundingClientRect().top}px` : '0',
               bottom: '0',
-              left: imageRef.current ? `${imageRef.current.getBoundingClientRect().right + 16}px` : '0',
+              left: imageRef.current ? `${imageRef.current.getBoundingClientRect().right + 12}px` : '0',
               backgroundImage: `url(${currentImage})`,
               backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
               backgroundSize: '150%',
               backgroundRepeat: 'no-repeat',
-              transition: 'background-position 0.03s ease-out',
+              backgroundColor: 'transparent',
               willChange: 'background-position',
               zIndex: 9999
             }}
