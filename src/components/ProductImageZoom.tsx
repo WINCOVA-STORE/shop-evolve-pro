@@ -1,7 +1,5 @@
 import { useState, useRef, MouseEvent, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Maximize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProductImageThumbnails } from './ProductImageThumbnails';
 import { ProductImageLightbox } from './ProductImageLightbox';
@@ -134,21 +132,6 @@ export const ProductImageZoom = ({
                 Solo {stock}
               </Badge>
             )}
-
-            {/* Botón Full Screen - No bloquea clics del contenedor */}
-            <Button
-              variant="secondary"
-              size="icon"
-              className="absolute top-2.5 left-2.5 z-20 w-9 h-9 bg-background/90 hover:bg-background backdrop-blur-sm pointer-events-auto"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsLightboxOpen(true);
-              }}
-              aria-label="Ver en pantalla completa"
-            >
-              <Maximize2 className="h-4 w-4" />
-            </Button>
-
 
             {/* Contador de imágenes - Estilo profesional */}
             {limitedImages.length > 1 && (
