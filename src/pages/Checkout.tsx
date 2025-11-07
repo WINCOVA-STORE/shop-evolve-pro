@@ -45,22 +45,41 @@ export default function Checkout() {
 
     const createPaymentIntent = async () => {
       try {
-        // MOCK MODE: Simulate payment intent creation
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Generate mock client secret
-        const mockClientSecret = `pi_mock_${Date.now()}_secret_${Math.random().toString(36).substring(7)}`;
-        
-        console.log("MOCK: Payment intent created", {
-          total,
-          pointsUsed,
-          pointsDiscount,
-          items: items.length
+        setLoading(true);
+        setError("");
+
+        const { data, error: functionError } = await supabase.functions.invoke('create-payment', {
+          body: {
+            amount: total,
+            currency: 'usd',
+            items: items.map(item => ({
+              id: item.id,
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price
+            })),
+            pointsUsed,
+            pointsDiscount,
+            metadata: {
+              cart_total: cartTotal.toString(),
+              tax_amount: taxAmount.toString(),
+              shipping_cost: shippingCost.toString()
+            }
+          }
         });
 
-        setClientSecret(mockClientSecret);
+        if (functionError) {
+          throw functionError;
+        }
+
+        if (!data?.clientSecret) {
+          throw new Error("No se recibió el client secret");
+        }
+
+        console.log("✅ Payment intent created successfully");
+        setClientSecret(data.clientSecret);
       } catch (err) {
-        console.error("Error creating payment intent:", err);
+        console.error("❌ Error creating payment intent:", err);
         setError("No se pudo iniciar el proceso de pago. Por favor, intenta de nuevo.");
       } finally {
         setLoading(false);
@@ -68,7 +87,7 @@ export default function Checkout() {
     };
 
     createPaymentIntent();
-  }, [items, total, pointsUsed, pointsDiscount, navigate]);
+  }, [items, total, pointsUsed, pointsDiscount, cartTotal, taxAmount, shippingCost, navigate]);
 
   const appearance = {
     theme: 'stripe' as const,

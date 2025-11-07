@@ -6,6 +6,12 @@ verify_jwt = true
 [functions.create-payment-intent]
 verify_jwt = true
 
+[functions.create-payment]
+verify_jwt = false
+
+[functions.ai-cart-suggestions]
+verify_jwt = false
+
 [functions.wincova-github-commit]
 verify_jwt = true
 
