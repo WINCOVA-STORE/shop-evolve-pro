@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
+import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ProductImageLightboxProps {
@@ -20,131 +20,120 @@ export const ProductImageLightbox = ({
   alt 
 }: ProductImageLightboxProps) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [activeTab, setActiveTab] = useState<'images' | 'videos'>('images');
   const [isZoomed, setIsZoomed] = useState(false);
 
-  const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-    setIsZoomed(false);
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-    setIsZoomed(false);
-  };
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowLeft') handlePrevious();
-    if (e.key === 'ArrowRight') handleNext();
     if (e.key === 'Escape') onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="max-w-[95vw] max-h-[95vh] w-full h-full p-0 bg-black/95"
+        className="max-w-[90vw] max-h-[90vh] w-full h-full p-0 bg-background"
         onKeyDown={handleKeyDown}
       >
-        {/* Header con controles */}
-        <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
-          <div className="flex items-center gap-2 text-white">
-            <span className="text-sm font-medium">
-              {currentIndex + 1} / {images.length}
-            </span>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsZoomed(!isZoomed)}
-              className="text-white hover:bg-white/20"
-              aria-label={isZoomed ? "Reducir zoom" : "Ampliar zoom"}
-            >
-              <ZoomIn className="h-5 w-5" />
-            </Button>
+        <div className="flex flex-col h-full">
+          {/* HEADER ESTILO AMAZON - Tabs y botón cerrar */}
+          <div className="flex items-center justify-between border-b border-border bg-background px-6 py-3">
+            <div className="flex gap-6">
+              <button
+                onClick={() => setActiveTab('videos')}
+                className={cn(
+                  "text-sm font-medium pb-3 border-b-2 transition-colors",
+                  activeTab === 'videos'
+                    ? "border-primary text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                )}
+              >
+                VIDEOS
+              </button>
+              <button
+                onClick={() => setActiveTab('images')}
+                className={cn(
+                  "text-sm font-medium pb-3 border-b-2 transition-colors",
+                  activeTab === 'images'
+                    ? "border-primary text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                )}
+              >
+                IMÁGENES
+              </button>
+            </div>
+            
             <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="text-white hover:bg-white/20"
+              className="hover:bg-muted"
               aria-label="Cerrar galería"
             >
               <X className="h-5 w-5" />
             </Button>
           </div>
-        </div>
 
-        {/* Imagen principal */}
-        <div className="relative w-full h-full flex items-center justify-center p-16">
-          <img
-            src={images[currentIndex]}
-            alt={`${alt} - Vista ${currentIndex + 1}`}
-            className={cn(
-              "max-w-full max-h-full object-contain transition-transform duration-300",
-              isZoomed ? "scale-150 cursor-zoom-out" : "cursor-zoom-in"
-            )}
-            onClick={() => setIsZoomed(!isZoomed)}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            srcSet={`${images[currentIndex]} 1x, ${images[currentIndex]} 2x`}
-          />
-        </div>
-
-        {/* Controles de navegación */}
-        {images.length > 1 && (
-          <>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handlePrevious}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/20 w-12 h-12"
-              aria-label="Imagen anterior"
-            >
-              <ChevronLeft className="h-8 w-8" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleNext}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/20 w-12 h-12"
-              aria-label="Siguiente imagen"
-            >
-              <ChevronRight className="h-8 w-8" />
-            </Button>
-          </>
-        )}
-
-        {/* Thumbnails inferiores */}
-        {images.length > 1 && (
-          <div className="absolute bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-black/80 to-transparent">
-            <div className="flex gap-2 justify-center overflow-x-auto">
-              {images.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    setCurrentIndex(idx);
-                    setIsZoomed(false);
-                  }}
+          {/* CONTENIDO - Imagen centrada + Thumbnails a la derecha */}
+          <div className="flex-1 flex overflow-hidden">
+            {/* IMAGEN PRINCIPAL - Estilo Amazon */}
+            <div className="flex-1 flex items-center justify-center p-8 bg-background">
+              <div className="relative max-w-full max-h-full">
+                <img
+                  src={images[currentIndex]}
+                  alt={`${alt} - Vista ${currentIndex + 1}`}
                   className={cn(
-                    "flex-shrink-0 w-16 h-16 rounded border-2 overflow-hidden transition-all",
-                    currentIndex === idx 
-                      ? "border-white scale-110" 
-                      : "border-white/30 hover:border-white/60 opacity-60 hover:opacity-100"
+                    "max-w-full max-h-[calc(90vh-120px)] object-contain transition-transform duration-300 cursor-pointer",
+                    isZoomed ? "scale-150" : "scale-100"
                   )}
-                >
-                  <img
-                    src={img}
-                    alt={`Thumbnail ${idx + 1}`}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </button>
-              ))}
+                  onClick={() => setIsZoomed(!isZoomed)}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                />
+                
+                {/* Contador de imágenes */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm font-medium">
+                  {currentIndex + 1} / {images.length}
+                </div>
+              </div>
             </div>
+
+            {/* THUMBNAILS VERTICALES A LA DERECHA - Estilo Amazon */}
+            {images.length > 1 && (
+              <div className="w-24 border-l border-border bg-muted/20 overflow-y-auto py-4 px-2">
+                <div className="flex flex-col gap-2">
+                  {images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setCurrentIndex(idx);
+                        setIsZoomed(false);
+                      }}
+                      className={cn(
+                        "relative w-full aspect-square rounded border-2 overflow-hidden transition-all hover:scale-105",
+                        currentIndex === idx 
+                          ? "border-primary ring-2 ring-primary/20 scale-105" 
+                          : "border-border hover:border-primary/50 opacity-60 hover:opacity-100"
+                      )}
+                      aria-label={`Ver imagen ${idx + 1} de ${images.length}`}
+                    >
+                      <img
+                        src={img}
+                        alt={`Vista ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      {/* Indicador de selección */}
+                      {currentIndex === idx && (
+                        <div className="absolute inset-0 bg-primary/10 pointer-events-none" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </DialogContent>
     </Dialog>
   );
