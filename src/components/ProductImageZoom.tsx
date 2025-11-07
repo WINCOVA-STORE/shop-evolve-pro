@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface ProductImageZoomProps {
   images: string[];
+  videos?: string[]; // URLs de videos del producto
   alt: string;
   discount?: number;
   stock?: number;
@@ -16,7 +17,8 @@ interface ProductImageZoomProps {
 }
 
 export const ProductImageZoom = ({ 
-  images, 
+  images,
+  videos = [], // Por defecto array vacío
   alt, 
   discount, 
   stock,
@@ -199,6 +201,7 @@ export const ProductImageZoom = ({
       {/* LIGHTBOX MODAL - Fullscreen */}
       <ProductImageLightbox
         images={limitedImages}
+        videos={videos}
         initialIndex={selectedImage}
         isOpen={isLightboxOpen}
         onClose={() => setIsLightboxOpen(false)}
