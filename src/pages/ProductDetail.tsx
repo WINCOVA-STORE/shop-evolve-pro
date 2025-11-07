@@ -15,6 +15,7 @@ import { useTranslatedProduct } from "@/hooks/useTranslatedProduct";
 import { ProductImageZoom } from "@/components/ProductImageZoom";
 import { ProductPurchaseSidebar } from "@/components/ProductPurchaseSidebar";
 import { getMockProductById } from "@/data/mockData";
+import { useImagePreload } from "@/hooks/useImagePreload";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -27,6 +28,9 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const { name: translatedName, description: translatedDescription } = useTranslatedProduct(product);
+
+  // Precargar imágenes del producto para mejor rendimiento
+  useImagePreload(product?.images || [], 3);
 
   useEffect(() => {
     if (id) {
