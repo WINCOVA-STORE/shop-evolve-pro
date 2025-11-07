@@ -59,9 +59,9 @@ export const ProductImageZoom = ({
     let xPercent = (x / rect.width) * 100;
     let yPercent = (y / rect.height) * 100;
     
-    // Aplicar límites suaves para que la lente no salga de la imagen
-    const minPercent = halfLens * 100;
-    const maxPercent = 100 - (halfLens * 100);
+    // Aplicar límites suaves para que la lente no salga de la imagen (ajustado para lente 30%)
+    const minPercent = (lensSize * 0.75) * 100; // 30% / 2 = 15%
+    const maxPercent = 100 - ((lensSize * 0.75) * 100);
     
     xPercent = Math.max(minPercent, Math.min(maxPercent, xPercent));
     yPercent = Math.max(minPercent, Math.min(maxPercent, yPercent));
@@ -111,8 +111,8 @@ export const ProductImageZoom = ({
               <div
                 className="absolute border-[3px] border-primary pointer-events-none bg-white/10 backdrop-blur-[0.5px] rounded-sm"
                 style={{
-                  width: '40%',
-                  height: '40%',
+                  width: '30%',
+                  height: '30%',
                   left: `${zoomPosition.x}%`,
                   top: `${zoomPosition.y}%`,
                   transform: 'translate(-50%, -50%)',
@@ -147,17 +147,6 @@ export const ProductImageZoom = ({
               <Maximize2 className="h-4 w-4" />
             </Button>
 
-            {/* Mensaje hover - Estilo Amazon */}
-            {!isZooming && (
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-black/5 via-transparent to-transparent pointer-events-none">
-                <div className="bg-background/95 backdrop-blur-sm rounded-lg px-4 py-2.5 shadow-xl border border-primary/30">
-                  <p className="text-xs font-semibold text-primary whitespace-nowrap flex items-center gap-2">
-                    <span className="text-base">🔍</span>
-                    Mueve el cursor para ampliar
-                  </p>
-                </div>
-              </div>
-            )}
 
             {/* Contador de imágenes - Estilo profesional */}
             {limitedImages.length > 1 && (
@@ -190,9 +179,10 @@ export const ProductImageZoom = ({
         {/* PANEL ZOOM - Posicionado entre imagen y sidebar (estilo Amazon) */}
         {isZooming && (
           <div
-            className="hidden xl:block fixed w-[420px] h-[420px] bg-[rgb(255,255,255)] border-[3px] border-primary shadow-2xl pointer-events-none rounded-sm overflow-hidden"
+            className="hidden xl:block fixed w-[520px] bg-[rgb(255,255,255)] border-[3px] border-primary shadow-2xl pointer-events-none rounded-sm overflow-hidden"
             style={{
               top: imageRef.current ? `${imageRef.current.getBoundingClientRect().top}px` : '0',
+              bottom: '0',
               left: imageRef.current ? `${imageRef.current.getBoundingClientRect().right + 16}px` : '0',
               backgroundImage: `url(${currentImage})`,
               backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
