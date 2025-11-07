@@ -95,12 +95,15 @@ export const ProductImageZoom = ({
             onMouseMove={handleMouseMove}
             style={{ cursor: isZooming ? 'crosshair' : 'zoom-in' }}
           >
-            {/* Imagen original */}
+            {/* Imagen original con optimización de carga */}
             <img
               src={currentImage}
               alt={alt}
               className="w-full h-full object-contain p-8"
               loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              srcSet={`${currentImage} 1x, ${currentImage} 2x`}
             />
 
             {/* LENTE DE ZOOM - Estilo Amazon con centrado perfecto */}
@@ -184,17 +187,20 @@ export const ProductImageZoom = ({
           )}
         </div>
 
-        {/* PANEL ZOOM SOBRE IMAGEN - Posicionado sobre la imagen principal */}
+        {/* PANEL ZOOM - Posicionado entre imagen y sidebar (estilo Amazon) */}
         {isZooming && (
           <div
-            className="hidden xl:block absolute top-4 left-4 w-[70%] h-[70%] bg-[rgb(255,255,255)] border-[3px] border-primary shadow-2xl z-[9999] pointer-events-none rounded-sm overflow-hidden"
+            className="hidden xl:block fixed w-[420px] h-[420px] bg-[rgb(255,255,255)] border-[3px] border-primary shadow-2xl pointer-events-none rounded-sm overflow-hidden"
             style={{
+              top: imageRef.current ? `${imageRef.current.getBoundingClientRect().top}px` : '0',
+              left: imageRef.current ? `${imageRef.current.getBoundingClientRect().right + 16}px` : '0',
               backgroundImage: `url(${currentImage})`,
               backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
               backgroundSize: '150%',
               backgroundRepeat: 'no-repeat',
               transition: 'background-position 0.03s ease-out',
-              willChange: 'background-position'
+              willChange: 'background-position',
+              zIndex: 9999
             }}
           />
         )}

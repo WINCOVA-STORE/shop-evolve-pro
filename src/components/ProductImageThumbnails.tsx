@@ -53,6 +53,8 @@ export const ProductImageThumbnails = ({
               selectedImage === idx ? "opacity-100" : "opacity-60 group-hover:opacity-100"
             )}
             loading="lazy"
+            decoding="async"
+            fetchPriority="low"
           />
           {/* Indicador de imagen seleccionada */}
           {selectedImage === idx && (

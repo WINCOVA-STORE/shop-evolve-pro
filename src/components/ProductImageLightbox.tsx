@@ -84,6 +84,10 @@ export const ProductImageLightbox = ({
               isZoomed ? "scale-150 cursor-zoom-out" : "cursor-zoom-in"
             )}
             onClick={() => setIsZoomed(!isZoomed)}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            srcSet={`${images[currentIndex]} 1x, ${images[currentIndex]} 2x`}
           />
         </div>
 
@@ -133,6 +137,8 @@ export const ProductImageLightbox = ({
                     src={img}
                     alt={`Thumbnail ${idx + 1}`}
                     className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </button>
               ))}
