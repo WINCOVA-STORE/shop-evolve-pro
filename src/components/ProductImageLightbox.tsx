@@ -75,19 +75,23 @@ export const ProductImageLightbox = ({
           {/* CONTENIDO - Imagen centrada + Thumbnails a la derecha */}
           <div className="flex-1 flex overflow-hidden">
             {/* IMAGEN PRINCIPAL - Estilo Amazon */}
-            <div className="flex-1 flex items-center justify-center p-8 bg-background">
-              <div className="relative max-w-full max-h-full">
+            <div className="flex-1 flex items-center justify-center p-4 bg-background">
+              <div className="relative w-full h-full flex items-center justify-center">
                 <img
                   src={images[currentIndex]}
                   alt={`${alt} - Vista ${currentIndex + 1}`}
                   className={cn(
-                    "max-w-full max-h-[calc(90vh-120px)] object-contain transition-transform duration-300 cursor-pointer",
-                    isZoomed ? "scale-150" : "scale-100"
+                    "w-full h-full object-contain transition-transform duration-300",
+                    isZoomed ? "scale-150 cursor-zoom-out" : "scale-100 cursor-zoom-in"
                   )}
                   onClick={() => setIsZoomed(!isZoomed)}
                   loading="eager"
                   fetchPriority="high"
                   decoding="async"
+                  style={{ 
+                    maxWidth: '100%',
+                    maxHeight: 'calc(90vh - 80px)'
+                  }}
                 />
                 
                 {/* Contador de imágenes */}
