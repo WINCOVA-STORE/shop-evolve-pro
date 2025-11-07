@@ -8,12 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, Star } from "lucide-react";
+import { Loader2, ArrowLeft, Star, HelpCircle } from "lucide-react";
 import { ProductReviews } from "@/components/ProductReviews";
 import { Product } from "@/hooks/useProducts";
 import { useTranslatedProduct } from "@/hooks/useTranslatedProduct";
 import { ProductImageZoom } from "@/components/ProductImageZoom";
 import { ProductPurchaseSidebar } from "@/components/ProductPurchaseSidebar";
+import { ProductVariantSelector, VariantGroup } from "@/components/ProductVariantSelector";
 import { getMockProductById } from "@/data/mockData";
 import { useImagePreload } from "@/hooks/useImagePreload";
 
@@ -27,7 +28,39 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const { name: translatedName, description: translatedDescription } = useTranslatedProduct(product);
+
+  // Mock variant groups - En producción vienen del producto
+  const variantGroups: VariantGroup[] = product ? [
+    {
+      name: "Color",
+      variants: [
+        { id: "black", name: "Negro", value: "#000000", available: true },
+        { id: "white", name: "Blanco", value: "#FFFFFF", available: true },
+        { id: "blue", name: "Azul", value: "#0066CC", available: true },
+        { id: "red", name: "Rojo", value: "#DC2626", available: false },
+      ]
+    },
+    {
+      name: "Talla",
+      variants: [
+        { id: "xs", name: "XS", value: "XS", available: true },
+        { id: "s", name: "S", value: "S", available: true },
+        { id: "m", name: "M", value: "M", available: true },
+        { id: "l", name: "L", value: "L", available: false },
+        { id: "xl", name: "XL", value: "XL", available: true },
+      ]
+    }
+  ] : [];
+
+  const handleVariantChange = (groupName: string, variantId: string) => {
+    setSelectedVariants(prev => ({ ...prev, [groupName]: variantId }));
+    toast({
+      title: "Variante seleccionada",
+      description: `${groupName}: ${variantId}`,
+    });
+  };
 
   // Precargar imágenes del producto para mejor rendimiento
   useImagePreload(product?.images || [], 3);
@@ -165,6 +198,18 @@ const ProductDetail = () => {
 
             <Separator />
 
+            {/* Selector de Variantes */}
+            {variantGroups.length > 0 && (
+              <>
+                <ProductVariantSelector
+                  groups={variantGroups}
+                  selectedVariants={selectedVariants}
+                  onVariantChange={handleVariantChange}
+                />
+                <Separator />
+              </>
+            )}
+
             {/* Acerca de este artículo - Amazon Style */}
             <div className="space-y-4">
               <h3 className="text-lg font-bold">{t('products.about_item', { defaultValue: 'Acerca de este artículo' })}</h3>
@@ -180,6 +225,20 @@ const ProductDetail = () => {
               ) : (
                 <p className="text-muted-foreground text-sm">{t('products.no_description', { defaultValue: 'Sin descripción' })}</p>
               )}
+            </div>
+
+            <Separator />
+
+            {/* Preguntas y Dudas */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-bold">{t('products.questions', { defaultValue: '¿Tienes dudas?' })}</h3>
+              <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border hover:border-primary transition-colors cursor-pointer">
+                <HelpCircle className="h-5 w-5 text-primary shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">{t('products.ask_question', { defaultValue: 'Haz una pregunta sobre este producto' })}</p>
+                  <p className="text-xs text-muted-foreground">{t('products.we_respond_24h', { defaultValue: 'Respondemos en menos de 24h' })}</p>
+                </div>
+              </div>
             </div>
 
             <Separator />

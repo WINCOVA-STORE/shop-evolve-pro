@@ -116,6 +116,18 @@ export const ProductPurchaseSidebar = ({
         )}
       </div>
 
+      {/* Trust Badges - WINCOVA */}
+      <div className="grid grid-cols-2 gap-2 py-3">
+        <Badge variant="outline" className="justify-center py-2 px-3 bg-green-50 border-green-200 text-green-700 hover:bg-green-100">
+          <Truck className="h-4 w-4 mr-1.5" />
+          <span className="text-xs font-semibold">{t('products.fast_delivery', { defaultValue: 'Envío 24h' })}</span>
+        </Badge>
+        <Badge variant="outline" className="justify-center py-2 px-3 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100">
+          <Check className="h-4 w-4 mr-1.5" />
+          <span className="text-xs font-semibold">{t('products.wincova_guarantee', { defaultValue: 'Garantía WINCOVA' })}</span>
+        </Badge>
+      </div>
+
       {/* Shipping Info */}
       <div className="space-y-2 py-4 border-y">
         <div className="flex items-start gap-3">
@@ -130,22 +142,39 @@ export const ProductPurchaseSidebar = ({
         </div>
         <div className="flex items-start gap-3">
           <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-          <p className="text-xs text-primary font-medium">
-            {t('products.delivery_location', { defaultValue: 'Entrega en tu ubicación' })}
+          <div className="flex-1">
+            <p className="text-xs text-primary font-medium">
+              {t('products.delivery_location', { defaultValue: 'Entrega en tu ubicación' })}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start gap-3 pt-2">
+          <Package className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
+          <p className="text-xs text-green-700 font-medium">
+            {t('products.easy_return', { defaultValue: 'Devolución GRATIS en 30 días' })}
           </p>
         </div>
       </div>
 
-      {/* Stock Status */}
+      {/* Stock Status with Urgency */}
       <div>
         {product.stock > 0 ? (
-          <div className="flex items-center gap-2">
-            <Badge variant="default" className="bg-green-600 text-white">
-              {t('products.in_stock', { defaultValue: 'Disponible' })}
-            </Badge>
-            <span className="text-sm text-muted-foreground">
-              {product.stock} {t('products.units_available', { defaultValue: 'unidades' })}
-            </span>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Badge variant="default" className="bg-green-600 text-white">
+                {t('products.in_stock', { defaultValue: 'Disponible' })}
+              </Badge>
+              {product.stock <= 10 && (
+                <Badge variant="destructive" className="animate-pulse">
+                  {t('products.limited_stock', { defaultValue: '¡Últimas unidades!' })}
+                </Badge>
+              )}
+            </div>
+            {product.stock <= 10 && (
+              <p className="text-sm font-medium text-orange-600">
+                {t('products.only_units_left', { defaultValue: `Solo quedan ${product.stock} unidades`, count: product.stock })}
+              </p>
+            )}
           </div>
         ) : (
           <Badge variant="destructive">{t('products.out_of_stock', { defaultValue: 'Agotado' })}</Badge>

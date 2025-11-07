@@ -50,10 +50,21 @@ export const ProductImageZoom = ({
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
-    // CRÍTICO: Calcular porcentaje exacto del cursor para centrado perfecto
-    // Este cálculo asegura que el zoom esté siempre alineado con el cursor
-    const xPercent = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    const yPercent = Math.max(0, Math.min(100, (y / rect.height) * 100));
+    // CRÍTICO: Cálculo perfecto para centrado natural del zoom
+    // Consideramos el tamaño de la lente (40%) para límites suaves
+    const lensSize = 0.4; // 40% de la imagen
+    const halfLens = lensSize / 2;
+    
+    // Calcular porcentaje del cursor con restricción para mantener lente dentro
+    let xPercent = (x / rect.width) * 100;
+    let yPercent = (y / rect.height) * 100;
+    
+    // Aplicar límites suaves para que la lente no salga de la imagen
+    const minPercent = halfLens * 100;
+    const maxPercent = 100 - (halfLens * 100);
+    
+    xPercent = Math.max(minPercent, Math.min(maxPercent, xPercent));
+    yPercent = Math.max(minPercent, Math.min(maxPercent, yPercent));
     
     setZoomPosition({ x: xPercent, y: yPercent });
   };
@@ -95,15 +106,16 @@ export const ProductImageZoom = ({
             {/* LENTE DE ZOOM - Estilo Amazon con centrado perfecto */}
             {isZooming && (
               <div
-                className="absolute border-2 border-primary pointer-events-none bg-white/10 backdrop-blur-[1px]"
+                className="absolute border-[3px] border-primary pointer-events-none bg-white/10 backdrop-blur-[0.5px] rounded-sm"
                 style={{
                   width: '40%',
                   height: '40%',
                   left: `${zoomPosition.x}%`,
                   top: `${zoomPosition.y}%`,
                   transform: 'translate(-50%, -50%)',
-                  boxShadow: '0 0 0 9999px rgba(0,0,0,0.2)',
-                  transition: 'left 0.05s ease-out, top 0.05s ease-out'
+                  boxShadow: '0 0 0 9999px rgba(0,0,0,0.25)',
+                  transition: 'all 0.03s ease-out',
+                  willChange: 'transform, left, top'
                 }}
               />
             )}
@@ -179,13 +191,15 @@ export const ProductImageZoom = ({
             style={{
               backgroundImage: `url(${currentImage})`,
               backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-              backgroundSize: '280%', // Mayor zoom para mejor detalle
+              backgroundSize: '300%', // Zoom aumentado para mayor detalle
               backgroundRepeat: 'no-repeat',
+              transition: 'background-position 0.03s ease-out',
+              willChange: 'background-position'
             }}
           >
             {/* Marca de agua del zoom */}
             <div className="absolute top-3 right-3 bg-primary text-primary-foreground text-xs font-bold px-2.5 py-1 rounded shadow-md">
-              ZOOM 280%
+              ZOOM 300%
             </div>
           </div>
         )}
