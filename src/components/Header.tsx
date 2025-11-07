@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import logoWhite from "@/assets/logo-white.png";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
-import { CartSheet } from "@/components/CartSheet";
+import { WincovaCartDrawer } from "@/components/WincovaCartDrawer";
 import { LanguageCurrencySelector } from "@/components/LanguageCurrencySelector";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
