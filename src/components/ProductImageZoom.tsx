@@ -187,7 +187,7 @@ export const ProductImageZoom = ({
         {/* PANEL ZOOM SOBRE IMAGEN - Posicionado sobre la imagen principal */}
         {isZooming && (
           <div
-            className="hidden xl:block absolute top-0 left-0 w-full h-full bg-[rgb(255,255,255)] border-[3px] border-primary shadow-2xl z-[9999] pointer-events-none rounded-sm overflow-hidden"
+            className="hidden xl:block absolute top-4 left-4 w-[70%] h-[70%] bg-[rgb(255,255,255)] border-[3px] border-primary shadow-2xl z-[9999] pointer-events-none rounded-sm overflow-hidden"
             style={{
               backgroundImage: `url(${currentImage})`,
               backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
