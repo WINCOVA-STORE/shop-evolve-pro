@@ -108,10 +108,10 @@ export const ProductImageZoom = ({
               srcSet={`${currentImage} 1x, ${currentImage} 2x`}
             />
 
-            {/* LENTE DE ZOOM - Estilo Amazon con centrado perfecto */}
+            {/* LENTE DE ZOOM - Estilo Amazon sin fondo blanco */}
             {isZooming && (
               <div
-                className="absolute border-[3px] border-primary pointer-events-none bg-white/10 backdrop-blur-[0.5px] rounded-sm"
+                className="absolute border-[3px] border-primary pointer-events-none rounded-sm"
                 style={{
                   width: '30%',
                   height: '30%',

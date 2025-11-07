@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, MouseEvent } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { X, Play } from 'lucide-react';
@@ -24,9 +24,21 @@ export const ProductImageLightbox = ({
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [activeTab, setActiveTab] = useState<'images' | 'videos'>(videos.length > 0 ? 'videos' : 'images');
   const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
+  const imageContainerRef = useRef<HTMLDivElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') onClose();
+  };
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (!isZoomed || !imageContainerRef.current) return;
+    
+    const rect = imageContainerRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    setZoomPosition({ x, y });
   };
 
   return (
@@ -103,27 +115,38 @@ export const ProductImageLightbox = ({
                   )}
                 </div>
               ) : (
-                // VISTA DE IMÁGENES
-                <div className="relative w-full h-full flex items-center justify-center">
+                // VISTA DE IMÁGENES CON ZOOM INTERACTIVO
+                <div 
+                  ref={imageContainerRef}
+                  className="relative w-full h-full flex items-center justify-center overflow-hidden"
+                  onMouseMove={handleMouseMove}
+                  onMouseEnter={() => setIsZoomed(true)}
+                  onMouseLeave={() => {
+                    setIsZoomed(false);
+                    setZoomPosition({ x: 50, y: 50 });
+                  }}
+                >
                   <img
                     src={images[currentIndex]}
                     alt={`${alt} - Vista ${currentIndex + 1}`}
                     className={cn(
-                      "w-full h-full object-contain transition-transform duration-300",
-                      isZoomed ? "scale-150 cursor-zoom-out" : "scale-100 cursor-zoom-in"
+                      "w-full h-full object-contain transition-transform duration-200",
+                      isZoomed ? "scale-150" : "scale-100"
                     )}
-                    onClick={() => setIsZoomed(!isZoomed)}
                     loading="eager"
                     fetchPriority="high"
                     decoding="async"
                     style={{ 
                       maxWidth: '100%',
-                      maxHeight: 'calc(90vh - 80px)'
+                      maxHeight: 'calc(90vh - 80px)',
+                      transformOrigin: isZoomed ? `${zoomPosition.x}% ${zoomPosition.y}%` : 'center',
+                      cursor: isZoomed ? 'zoom-out' : 'zoom-in'
                     }}
+                    onClick={() => setIsZoomed(!isZoomed)}
                   />
                   
                   {/* Contador de imágenes */}
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm font-medium">
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm font-medium pointer-events-none">
                     {currentIndex + 1} / {images.length}
                   </div>
                 </div>
