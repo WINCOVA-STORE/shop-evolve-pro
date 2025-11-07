@@ -184,24 +184,19 @@ export const ProductImageZoom = ({
           )}
         </div>
 
-        {/* PANEL ZOOM LATERAL FLOTANTE - Centrado perfecto estilo Amazon */}
+        {/* PANEL ZOOM SOBRE IMAGEN - Posicionado sobre la imagen principal */}
         {isZooming && (
           <div
-            className="hidden xl:block fixed top-32 right-8 w-[540px] h-[540px] bg-[rgb(255,255,255)] border-[3px] border-primary shadow-2xl z-[9999] pointer-events-none rounded-lg overflow-hidden"
+            className="hidden xl:block absolute top-0 left-0 w-full h-full bg-[rgb(255,255,255)] border-[3px] border-primary shadow-2xl z-[9999] pointer-events-none rounded-sm overflow-hidden"
             style={{
               backgroundImage: `url(${currentImage})`,
               backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-              backgroundSize: '300%', // Zoom aumentado para mayor detalle
+              backgroundSize: '300%',
               backgroundRepeat: 'no-repeat',
               transition: 'background-position 0.03s ease-out',
               willChange: 'background-position'
             }}
-          >
-            {/* Marca de agua del zoom */}
-            <div className="absolute top-3 right-3 bg-primary text-primary-foreground text-xs font-bold px-2.5 py-1 rounded shadow-md">
-              ZOOM 300%
-            </div>
-          </div>
+          />
         )}
       </div>
 
