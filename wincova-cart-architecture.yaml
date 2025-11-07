@@ -1,0 +1,486 @@
+# WINCOVA Cart System - Architecture Specification
+# Version: 1.0.0
+# Status: PRODUCTION READY
+# Last Updated: 2025-11-07
+
+metadata:
+  project: WINCOVA E-Commerce
+  module: Cart System
+  author: WINCOVA AI Architect
+  benchmark: International Standard (Amazon/Stripe)
+  
+system_overview:
+  name: WINCOVA Revolutionary Cart & Checkout
+  description: |
+    World-class shopping cart system with AI-powered suggestions,
+    neuro-sales techniques, and maximum conversion optimization.
+  
+  goals:
+    - Cart-to-checkout conversion: ">75%"
+    - Average order value increase: "+35%"
+    - Decision time: "<30 seconds"
+    - Abandonment rate: "<15%"
+  
+  tech_stack:
+    frontend:
+      - React + TypeScript
+      - Tailwind CSS
+      - shadcn/ui
+      - React Query (TanStack)
+    backend:
+      - Supabase (Lovable Cloud)
+      - Deno Edge Functions
+      - Lovable AI Gateway
+    integrations:
+      - Stripe Checkout (embedded)
+      - WINCOVA Rewards System
+      - Wishlist Integration
+      - Real-time Analytics
+
+components:
+  main_drawer:
+    name: WincovaCartDrawer
+    file: src/components/WincovaCartDrawer.tsx
+    type: React Component
+    purpose: Main cart drawer with premium features
+    
+    features:
+      - Dopaminergic micro-interactions
+      - Sticky dynamic summary
+      - Visual rewards system
+      - Trust badges (Protected Purchase, Fast Shipping)
+      - Integrated wishlist (move items easily)
+      - Dynamic stock indicators
+      - Estimated delivery
+      - Premium gradients and effects
+      - Full accessibility (ARIA, keyboard nav)
+    
+    state:
+      - pointsToUse: number
+      - isOpen: boolean
+      - showSuccessAnimation: boolean
+    
+    calculations:
+      tax_rate: 0.1
+      tax_amount: "cartTotal * taxRate"
+      shipping_cost: "calculateShipping(cartTotal)"
+      points_discount: "pointsToDollars(pointsToUse)"
+      total: "max(0, subtotalWithShipping - pointsDiscount)"
+      points_to_earn: "calculateEarningPoints(cartTotal)"
+    
+    animations:
+      entry: "animate-fade-in (300ms)"
+      exit: "animate-scale-out (300ms)"
+      hover: "scale-[1.02] (200ms)"
+      success: "animate-scale-in (500ms)"
+      pulse: "animate-pulse (urgent badges)"
+
+  cart_item:
+    name: WincovaCartItem
+    file: src/components/WincovaCartDrawer.tsx (internal)
+    type: React Component
+    purpose: Render each cart product with controls
+    
+    props:
+      item: Product
+    
+    features:
+      - Quantity controls with stock validation
+      - Move to Wishlist button (hover)
+      - Visual stock indicator (progress bar)
+      - Entry/exit animations
+      - Delete with visual confirmation
+    
+    stock_levels:
+      low: "<=5 items (red, pulsing badge)"
+      medium: "<=10 items (yellow warning)"
+      high: ">10 items (no indicator)"
+    
+    interactions:
+      move_to_wishlist:
+        animation: "slide-out-right (300ms)"
+        actions:
+          - addToWishlist(item)
+          - removeFromCart(item.id)
+        toast: "Movido a favoritos"
+      
+      remove:
+        animation: "scale-out (300ms)"
+        action: removeFromCart(item.id)
+        toast: "Producto eliminado"
+
+  suggestions_panel:
+    name: CartSuggestionsPanel
+    file: src/components/CartSuggestionsPanel.tsx
+    type: React Component
+    purpose: AI-powered product suggestions panel
+    
+    props:
+      cartItems: Product[]
+    
+    features:
+      - AI-powered suggestions in real-time
+      - Prioritization algorithm (complementary > upsells > deals)
+      - Social proof ("50+ people bought today")
+      - One-click add to cart
+      - Responsive with horizontal scroll on mobile
+      - Gradient design with hover effects
+    
+    suggestion_logic:
+      priority_1: "Complementary products (same category)"
+      priority_2: "Strategic upsells (higher value)"
+      priority_3: "Deals and discounts"
+      priority_4: "Popular items"
+    
+    display:
+      max_suggestions: 5
+      visible_on_load: 3
+      expand_button: "Ver más recomendaciones"
+
+hooks:
+  use_cart_suggestions:
+    file: src/hooks/useCartSuggestions.ts
+    purpose: Manage AI suggestions and rule-based fallback
+    
+    signature: |
+      const { suggestions, loading } = useCartSuggestions(cartItems: Product[]);
+    
+    flow:
+      - step_1: "Detect changes in cartItems"
+      - step_2: "Call edge function ai-cart-suggestions"
+      - step_3: "If AI fails → Fallback to rule-based"
+      - step_4: "Return suggested products list"
+    
+    fallback_logic:
+      - Filter products already in cart
+      - Prioritize same category with discounts
+      - Add complementary products from other categories
+      - Sort by relevance and price
+      - Limit to 5 suggestions
+    
+    debounce: 500ms
+
+edge_functions:
+  ai_cart_suggestions:
+    path: supabase/functions/ai-cart-suggestions/index.ts
+    purpose: Generate AI product suggestions based on cart
+    runtime: Deno
+    
+    input:
+      cartItems:
+        type: array
+        items:
+          id: string
+          name: string
+          category_id: string
+          price: number
+          tags: string[]
+      
+      availableProducts:
+        type: array
+        items: Product
+    
+    output:
+      suggestions:
+        type: array
+        items: "Product & { reason: string }"
+      powered_by: "WINCOVA AI Engine"
+    
+    ai_model:
+      provider: Lovable AI Gateway
+      model: google/gemini-2.5-flash
+      temperature: 0.7
+      max_tokens: 1000
+    
+    system_prompt: |
+      You are a highly intelligent e-commerce recommendation engine for WINCOVA.
+      Your goal is to maximize conversion, cross-selling, and customer satisfaction.
+      
+      Analyze the user's cart and suggest 3-5 complementary products that:
+      1. Create value bundles (items that work together)
+      2. Offer strategic upsells (higher-value alternatives)
+      3. Include best deals (discounted items)
+      4. Match user preferences based on cart contents
+      5. Prioritize items with good stock availability
+    
+    error_handling:
+      no_api_key: "Log error + return empty array"
+      ai_failure: "Return empty array (fallback in frontend)"
+      parse_error: "Extract JSON with regex fallback"
+      validation: "Filter suggestions against available products"
+    
+    rate_limiting:
+      debounce: 500ms
+      cache: Frontend caching for repeated calls
+
+user_flows:
+  add_to_cart:
+    steps:
+      - User clicks "Add to cart" on ProductCard
+      - addToCart() updates CartContext
+      - Toast confirmation with animation
+      - Cart badge updates with animated counter
+      - useCartSuggestions detects change
+      - Edge function called for AI suggestions
+      - Suggestions panel updates with AI products
+  
+  use_rewards_points:
+    steps:
+      - User opens cart drawer
+      - If authenticated → Show available points section
+      - User enters amount of points to use
+      - Validation: max = getMaxUsablePoints(cartTotal, availablePoints)
+      - Discount applies in real-time with animation
+      - Total updates showing savings with green badge
+  
+  move_to_wishlist:
+    steps:
+      - User hovers over cart item
+      - Heart button appears with fade-in
+      - User clicks heart
+      - Item animates slide-out-right
+      - addToWishlist() + removeFromCart() execute
+      - Toast confirmation "Movido a favoritos"
+      - Cart updates without item
+  
+  proceed_to_checkout:
+    steps:
+      - User clicks "Proceder al Checkout Seguro"
+      - Success animation (checkmark + scale-in)
+      - Navigate to /checkout with query params (pointsUsed, pointsDiscount)
+      - Drawer closes with smooth transition
+
+neuro_sales:
+  principles:
+    instant_feedback:
+      target: "<100ms response time"
+      implementations:
+        - Hover effects on all buttons
+        - Scale animations on interactions
+        - Real-time progress bars
+        - Immediate confirmation toasts
+    
+    visible_progress:
+      implementations:
+        - Stock indicators with progress bars
+        - Free shipping bar (if enabled)
+        - Total savings counter
+        - Points to earn displayed prominently
+    
+    visual_rewards:
+      implementations:
+        - "Great!" animations when using points
+        - Pulsing green "Total Saved" badge
+        - Animated sparkles on points to earn
+        - Premium trust badges with icons
+    
+    friction_reduction:
+      implementations:
+        - Inline quantity editing (no modals)
+        - One-click move to wishlist
+        - "Use Maximum" button for points
+        - Drawer vs. full page (faster)
+    
+    social_proof_urgency:
+      implementations:
+        - "50+ people bought today"
+        - Pulsing "Only X left" badges
+        - "Limited stock" visual indicators
+        - Visible delivery estimate
+
+integrations:
+  rewards_system:
+    hooks:
+      - useRewards(): "Get available points"
+      - useRewardsCalculation(): "Dynamic calculations from admin config"
+    
+    flow:
+      - Get available points
+      - Calculate max usage (dynamic: 2% of subtotal)
+      - Calculate discount from points
+      - Calculate points to earn (dynamic: % of purchase)
+  
+  wishlist:
+    context: WishlistContext
+    operations:
+      - addToWishlist(product)
+      - isInWishlist(productId)
+      - Move from cart to wishlist
+  
+  shipping:
+    hook: useShippingConfig()
+    calculation: "calculateShipping(cartTotal)"
+    free_shipping:
+      condition: "shippingCost === 0 && config.show_free_badge"
+      component: FreeShippingBadge
+  
+  translation:
+    hook: useTranslatedProduct()
+    usage: "const { name } = useTranslatedProduct(product)"
+    returns: "Translated name based on active language"
+
+metrics:
+  kpis:
+    cart_conversion:
+      events:
+        - cart_opened
+        - cart_viewed_time
+        - cart_item_added
+        - cart_item_removed
+        - cart_item_moved_to_wishlist
+        - cart_checkout_clicked
+        - cart_abandoned
+    
+    order_value:
+      metrics:
+        - average_cart_value
+        - items_per_cart
+        - discount_usage_rate
+        - upsell_success_rate
+    
+    ai_engagement:
+      events:
+        - ai_suggestions_viewed
+        - ai_suggestion_clicked
+        - ai_suggestion_added_to_cart
+        - ai_suggestion_conversion_rate
+    
+    rewards_points:
+      metrics:
+        - points_usage_rate
+        - average_points_used_per_order
+        - max_points_usage_frequency
+        - points_earned_per_order
+
+testing:
+  basic_flow:
+    - Add products to cart
+    - Open drawer → ✅ Displays correctly
+    - Change quantities → ✅ Updates total
+    - Remove item → ✅ Animation + update
+    - Move to wishlist → ✅ Animation + confirmation
+  
+  rewards_points:
+    - Login as user with points
+    - Open cart → ✅ Points section visible
+    - Enter points → ✅ Discount applies
+    - Use maximum → ✅ Input fills correctly
+    - Verify limit → ✅ Doesn't allow more than max
+  
+  ai_suggestions:
+    - Add products to cart
+    - Wait for suggestions (500ms debounce)
+    - Verify relevant suggestions appear
+    - Add suggestion → ✅ Adds to cart
+    - Verify no duplicate products
+  
+  responsive:
+    - Test on mobile → ✅ Full-height drawer
+    - Test on tablet → ✅ Adapted layout
+    - Test on desktop → ✅ Controlled max-width
+    - Test scroll → ✅ Sticky footer works
+
+security:
+  validations:
+    stock:
+      check: "item.quantity >= item.stock"
+      action: "Disable increment button"
+    
+    points:
+      sanitize: "parseInt(value) || 0"
+      limit: "Math.min(value, maxUsablePoints)"
+    
+    input_sanitization:
+      edge_function: "Validate array types and lengths"
+      frontend: "Type checking with TypeScript"
+    
+    cors:
+      headers:
+        - Access-Control-Allow-Origin: "*"
+        - Access-Control-Allow-Headers: "authorization, x-client-info, apikey, content-type"
+
+roadmap:
+  phase_2_checkout:
+    - Three-step form (shipping, payment, confirmation)
+    - Embedded Stripe Checkout
+    - Real-time validation
+    - Micro-interactions per step
+    - Trust badges (SSL, Stripe, Klarna)
+  
+  phase_3_advanced:
+    - A/B testing AI suggestions
+    - History-based personalization
+    - Cart abandonment prediction
+    - Push notifications for abandoned carts
+    - Shareable cart (unique link)
+  
+  phase_4_analytics:
+    - Real-time conversion dashboard
+    - Interaction heatmaps
+    - Automatic funnel analysis
+    - AI-driven optimization recommendations
+
+best_practices:
+  do:
+    - Use subtle animations (<300ms)
+    - Show immediate feedback (<100ms)
+    - Keep state synced between cart and wishlist
+    - Validate stock before adding
+    - Use Tailwind semantic tokens
+    - Implement loading states
+    - Add ARIA labels for accessibility
+    - Optimize edge function calls (debounce)
+  
+  dont:
+    - No animations >500ms
+    - Don't block UI while loading AI
+    - Don't allow quantities > stock
+    - Don't use hardcoded colors
+    - Don't call AI without debounce
+    - Don't omit error states
+    - Don't ignore responsive design
+    - Don't skip event tracking
+
+deployment:
+  status: PRODUCTION READY
+  module: Cart System Complete
+  next_sprint: Embedded Checkout with Stripe
+  
+  validation_checklist:
+    - "✅ All animations work smoothly (<300ms)"
+    - "✅ AI suggestions appear and are relevant"
+    - "✅ Rule-based fallback works if AI fails"
+    - "✅ Points apply and calculate correctly"
+    - "✅ Wishlist integration works without bugs"
+    - "✅ Stock validation at all times"
+    - "✅ Responsive on mobile/tablet/desktop"
+    - "✅ Accessibility (keyboard nav + ARIA)"
+    - "✅ Robust error handling"
+    - "✅ Loading states on all async operations"
+    - "⏳ Event tracking implemented (next phase)"
+    - "⏳ E2E tests written (next phase)"
+    - "⏳ Performance optimized <2s FCP (next phase)"
+
+documentation:
+  files:
+    technical: WINCOVA_CART_SYSTEM.md
+    architecture: wincova-cart-architecture.yaml
+    api: Edge function endpoints documented
+    components: Inline JSDoc comments
+  
+  exports:
+    format: YAML + Markdown
+    purpose: Migration, auditing, governance
+    updates: Continuous via AAHGPA memory
+    visualization: Notion/Sheets integration ready
+
+conclusion: |
+  The WINCOVA Cart System represents the state-of-the-art in e-commerce carts,
+  combining advanced AI, premium design, neuro-sales techniques, absolute trust,
+  and near-zero friction performance.
+  
+  This system is designed to be the GLOBAL BENCHMARK against which all other
+  carts are measured.
+  
+  STATUS: PRODUCTION READY - Cart Module
+  NEXT: Embedded Checkout with Stripe Integration

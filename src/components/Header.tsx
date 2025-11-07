@@ -126,7 +126,7 @@ export const Header = () => {
                 0
               </span>
             </Button>
-            <CartSheet />
+            <WincovaCartDrawer />
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
