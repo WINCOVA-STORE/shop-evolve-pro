@@ -191,7 +191,7 @@ export const ProductImageZoom = ({
             style={{
               backgroundImage: `url(${currentImage})`,
               backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-              backgroundSize: '300%',
+              backgroundSize: '150%',
               backgroundRepeat: 'no-repeat',
               transition: 'background-position 0.03s ease-out',
               willChange: 'background-position'
