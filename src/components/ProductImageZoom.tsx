@@ -71,7 +71,7 @@ export const ProductImageZoom = ({
 
   return (
     <>
-      <div className={cn("flex gap-3", className)}>
+      <div className={cn("flex gap-3 max-w-full", className)}>
         {/* THUMBNAILS VERTICALES - Componente modular */}
         <ProductImageThumbnails
           images={limitedImages}
@@ -81,7 +81,7 @@ export const ProductImageZoom = ({
         />
 
         {/* IMAGEN PRINCIPAL - 85% del área visual (estándar WINCOVA) */}
-        <div className="flex-1 max-w-[520px]">
+        <div className="flex-1 max-w-[520px] w-full">
           <div
             ref={imageRef}
             className="relative w-full aspect-square border border-border overflow-hidden rounded-sm shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
@@ -161,21 +161,20 @@ export const ProductImageZoom = ({
           )}
         </div>
 
-        {/* PANEL ZOOM - Alineado perfectamente al borde derecho de la imagen */}
+        {/* PANEL ZOOM - Posicionado a la derecha SIN cubrir otros elementos */}
         {isZooming && (
           <div
-            className="hidden xl:block fixed w-[520px] border-[3px] border-primary shadow-2xl pointer-events-none rounded-sm overflow-hidden"
+            className="hidden xl:block fixed w-[420px] h-[420px] border-[3px] border-primary shadow-2xl pointer-events-none rounded-sm overflow-hidden"
             style={{
               top: imageRef.current ? `${imageRef.current.getBoundingClientRect().top}px` : '0',
-              bottom: '0',
-              left: imageRef.current ? `${imageRef.current.getBoundingClientRect().right + 12}px` : '0',
+              left: imageRef.current ? `${imageRef.current.getBoundingClientRect().right + 16}px` : '0',
               backgroundImage: `url(${currentImage})`,
               backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-              backgroundSize: '150%',
+              backgroundSize: '250%',
               backgroundRepeat: 'no-repeat',
               backgroundColor: 'transparent',
               willChange: 'background-position',
-              zIndex: 9999
+              zIndex: 50
             }}
           />
         )}

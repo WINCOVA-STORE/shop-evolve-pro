@@ -170,12 +170,13 @@ const ProductDetail = () => {
 
         <div className="grid lg:grid-cols-[auto_500px_1fr_380px] gap-6 mb-12 max-w-[1600px]">
           {/* Left: Images Section with Amazon-style zoom */}
-          <div className="lg:col-span-2 flex gap-2">
+          <div className="lg:col-span-2 flex gap-2 overflow-visible">
             <ProductImageZoom
               images={product.images}
               alt={translatedName}
               discount={discount}
               stock={product.stock}
+              className="max-w-[580px]"
             />
           </div>
 
