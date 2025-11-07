@@ -52,18 +52,16 @@ export const ProductImageZoom = ({
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
-    // CRÍTICO: Cálculo perfecto para centrado natural del zoom
-    // Consideramos el tamaño de la lente (40%) para límites suaves
-    const lensSize = 0.4; // 40% de la imagen
-    const halfLens = lensSize / 2;
+    // CRÍTICO: Cálculo perfecto para centrado natural del zoom con lente 20%
+    const lensSize = 0.2; // 20% de la imagen (reducido)
     
     // Calcular porcentaje del cursor con restricción para mantener lente dentro
     let xPercent = (x / rect.width) * 100;
     let yPercent = (y / rect.height) * 100;
     
-    // Aplicar límites suaves para que la lente no salga de la imagen (ajustado para lente 30%)
-    const minPercent = (lensSize * 0.75) * 100; // 30% / 2 = 15%
-    const maxPercent = 100 - ((lensSize * 0.75) * 100);
+    // Aplicar límites suaves para que la lente no salga de la imagen (ajustado para lente 20%)
+    const minPercent = (lensSize * 0.5) * 100; // 10%
+    const maxPercent = 100 - ((lensSize * 0.5) * 100); // 90%
     
     xPercent = Math.max(minPercent, Math.min(maxPercent, xPercent));
     yPercent = Math.max(minPercent, Math.min(maxPercent, yPercent));
@@ -88,33 +86,33 @@ export const ProductImageZoom = ({
         <div className="flex-1 max-w-[520px]">
           <div
             ref={imageRef}
-            className="relative w-full aspect-square bg-[rgb(255,255,255)] border border-border overflow-hidden rounded-sm shadow-sm hover:shadow-md transition-shadow duration-300"
+            className="relative w-full aspect-square border border-border overflow-hidden rounded-sm shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
             onMouseEnter={() => setIsZooming(true)}
             onMouseLeave={() => {
               setIsZooming(false);
               setZoomPosition({ x: 50, y: 50 }); // Reset al centro
             }}
             onMouseMove={handleMouseMove}
-            style={{ cursor: isZooming ? 'crosshair' : 'zoom-in' }}
+            onClick={() => setIsLightboxOpen(true)}
           >
             {/* Imagen original con optimización de carga */}
             <img
               src={currentImage}
               alt={alt}
-              className="w-full h-full object-contain p-8"
+              className="w-full h-full object-contain p-8 bg-white"
               loading="eager"
               fetchPriority="high"
               decoding="async"
               srcSet={`${currentImage} 1x, ${currentImage} 2x`}
             />
 
-            {/* LENTE DE ZOOM - Estilo Amazon sin fondo blanco */}
+            {/* LENTE DE ZOOM - Más pequeña 20% */}
             {isZooming && (
               <div
-                className="absolute border-[3px] border-primary pointer-events-none rounded-sm"
+                className="absolute border-[3px] border-[#ff9800] pointer-events-none rounded-sm"
                 style={{
-                  width: '30%',
-                  height: '30%',
+                  width: '20%',
+                  height: '20%',
                   left: `${zoomPosition.x}%`,
                   top: `${zoomPosition.y}%`,
                   transform: 'translate(-50%, -50%)',
@@ -127,23 +125,26 @@ export const ProductImageZoom = ({
 
             {/* Badges */}
             {discount && discount > 0 && (
-              <Badge className="absolute top-2.5 left-2.5 bg-destructive text-destructive-foreground z-20 text-xs font-bold px-2.5 py-1 shadow-lg">
+              <Badge className="absolute top-2.5 left-2.5 bg-destructive text-destructive-foreground z-20 text-xs font-bold px-2.5 py-1 shadow-lg pointer-events-none">
                 -{discount}%
               </Badge>
             )}
             
             {stock !== undefined && stock < 10 && stock > 0 && (
-              <Badge className="absolute top-2.5 right-2.5 bg-orange-500 text-white z-20 text-xs font-semibold px-2.5 py-1 shadow-lg">
+              <Badge className="absolute top-2.5 right-2.5 bg-orange-500 text-white z-20 text-xs font-semibold px-2.5 py-1 shadow-lg pointer-events-none">
                 Solo {stock}
               </Badge>
             )}
 
-            {/* Botón Full Screen - Top Right */}
+            {/* Botón Full Screen - No bloquea clics del contenedor */}
             <Button
               variant="secondary"
               size="icon"
-              className="absolute top-2.5 left-2.5 z-20 w-9 h-9 bg-background/90 hover:bg-background backdrop-blur-sm"
-              onClick={() => setIsLightboxOpen(true)}
+              className="absolute top-2.5 left-2.5 z-20 w-9 h-9 bg-background/90 hover:bg-background backdrop-blur-sm pointer-events-auto"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsLightboxOpen(true);
+              }}
               aria-label="Ver en pantalla completa"
             >
               <Maximize2 className="h-4 w-4" />
@@ -152,7 +153,7 @@ export const ProductImageZoom = ({
 
             {/* Contador de imágenes - Estilo profesional */}
             {limitedImages.length > 1 && (
-              <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm font-medium">
+              <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm font-medium pointer-events-none">
                 {selectedImage + 1} / {limitedImages.length}
               </div>
             )}
