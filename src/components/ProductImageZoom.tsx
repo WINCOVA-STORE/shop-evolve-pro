@@ -80,8 +80,8 @@ export const ProductImageZoom = ({
           maxImages={8}
         />
 
-        {/* IMAGEN PRINCIPAL - 85% del área visual (estándar WINCOVA) */}
-        <div className="flex-1 max-w-[520px] w-full">
+        {/* IMAGEN PRINCIPAL - Más grande como Amazon */}
+        <div className="flex-1 max-w-[600px] w-full">
           <div
             ref={imageRef}
             className="relative w-full aspect-square border border-border overflow-hidden rounded-sm shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
@@ -161,15 +161,17 @@ export const ProductImageZoom = ({
           )}
         </div>
 
-        {/* PANEL ZOOM - Entre imagen y panel de precio, hasta el fondo */}
+        {/* PANEL ZOOM - Exactamente como Amazon: entre imagen y sidebar, misma altura que imagen */}
         {isZooming && (
           <div
             className="hidden xl:block fixed border-[3px] border-primary shadow-2xl pointer-events-none rounded-sm overflow-hidden"
             style={{
               top: imageRef.current ? `${imageRef.current.getBoundingClientRect().top}px` : '0',
-              bottom: '0',
-              left: imageRef.current ? `${imageRef.current.getBoundingClientRect().right + 16}px` : '0',
-              width: '420px',
+              height: imageRef.current ? `${imageRef.current.getBoundingClientRect().height}px` : '600px',
+              left: imageRef.current ? `${imageRef.current.getBoundingClientRect().right + 24}px` : '0',
+              width: 'calc(100vw - 1080px - 380px - 48px)',
+              minWidth: '300px',
+              maxWidth: '500px',
               backgroundImage: `url(${currentImage})`,
               backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
               backgroundSize: '250%',

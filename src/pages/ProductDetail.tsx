@@ -168,20 +168,20 @@ const ProductDetail = () => {
           </Button>
         )}
 
-        <div className="grid lg:grid-cols-[auto_500px_1fr_380px] gap-6 mb-12 max-w-[1600px]">
+        <div className="grid lg:grid-cols-[auto_1fr_380px] gap-8 mb-12 max-w-[1600px]">
           {/* Left: Images Section with Amazon-style zoom */}
-          <div className="lg:col-span-2 flex gap-2 overflow-visible">
+          <div className="flex gap-2 overflow-visible">
             <ProductImageZoom
               images={product.images}
               alt={translatedName}
               discount={discount}
               stock={product.stock}
-              className="max-w-[580px]"
+              className="max-w-[680px]"
             />
           </div>
 
           {/* Center: Product Info */}
-          <div className="space-y-6 lg:col-span-1">
+          <div className="space-y-6">
             <div>
               <h1 className="text-3xl font-bold mb-2">{translatedName}</h1>
               <div className="flex items-center gap-2 mb-4">
@@ -277,7 +277,7 @@ const ProductDetail = () => {
           </div>
 
           {/* Right: Sticky Purchase Sidebar (Desktop Only) */}
-          <div className="hidden lg:block lg:col-span-1">
+          <div className="hidden lg:block">
           <ProductPurchaseSidebar
             product={product}
             quantity={quantity}
