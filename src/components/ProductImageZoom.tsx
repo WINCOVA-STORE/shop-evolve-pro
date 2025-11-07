@@ -71,7 +71,7 @@ export const ProductImageZoom = ({
 
   return (
     <>
-      <div className={cn("flex gap-3 max-w-full", className)}>
+      <div className={cn("flex gap-3 h-screen max-w-full", className)}>
         {/* THUMBNAILS VERTICALES - Componente modular */}
         <ProductImageThumbnails
           images={limitedImages}
@@ -80,11 +80,11 @@ export const ProductImageZoom = ({
           maxImages={8}
         />
 
-        {/* IMAGEN PRINCIPAL - Más grande */}
-        <div className="flex-1 max-w-[700px] w-full">
+        {/* IMAGEN PRINCIPAL - Altura completa de pantalla */}
+        <div className="flex-1 max-w-[700px] w-full h-full flex items-center">
           <div
             ref={imageRef}
-            className="relative w-full aspect-square border border-border overflow-hidden rounded-sm shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
+            className="relative w-full h-full border border-border overflow-hidden rounded-sm shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
             onMouseEnter={() => setIsZooming(true)}
             onMouseLeave={() => {
               setIsZooming(false);
@@ -109,8 +109,8 @@ export const ProductImageZoom = ({
               <div
                 className="absolute border-[3px] border-[#ff9800] pointer-events-none rounded-sm"
                 style={{
-                  width: '20%',
-                  height: '20%',
+                  width: '15%',
+                  height: '15%',
                   left: `${zoomPosition.x}%`,
                   top: `${zoomPosition.y}%`,
                   transform: 'translate(-50%, -50%)',
@@ -140,41 +140,23 @@ export const ProductImageZoom = ({
               </div>
             )}
           </div>
-
-          {/* Indicador de navegación - Dots */}
-          {limitedImages.length > 1 && (
-            <div className="flex gap-1.5 justify-center mt-3">
-              {limitedImages.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedImage(idx)}
-                  className={cn(
-                    "h-2 rounded-full transition-all duration-300",
-                    selectedImage === idx 
-                      ? "w-8 bg-primary" 
-                      : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/60"
-                  )}
-                  aria-label={`Ver imagen ${idx + 1} de ${limitedImages.length}`}
-                />
-              ))}
-            </div>
-          )}
         </div>
 
-        {/* PANEL ZOOM - Exactamente como Amazon: entre imagen y sidebar, misma altura que imagen */}
+        {/* PANEL ZOOM - Entre imagen principal y panel de precio */}
         {isZooming && (
           <div
             className="hidden xl:block fixed border-[3px] border-primary shadow-2xl pointer-events-none rounded-sm overflow-hidden"
             style={{
               top: imageRef.current ? `${imageRef.current.getBoundingClientRect().top}px` : '0',
-              height: imageRef.current ? `${imageRef.current.getBoundingClientRect().height}px` : '600px',
+              height: imageRef.current ? `${imageRef.current.getBoundingClientRect().height}px` : '100vh',
               left: imageRef.current ? `${imageRef.current.getBoundingClientRect().right + 24}px` : '0',
-              width: 'calc(100vw - 1080px - 380px - 48px)',
+              right: 'calc(380px + 48px)',
+              width: 'auto',
               minWidth: '300px',
               maxWidth: '500px',
               backgroundImage: `url(${currentImage})`,
               backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-              backgroundSize: '250%',
+              backgroundSize: '300%',
               backgroundRepeat: 'no-repeat',
               backgroundColor: 'transparent',
               willChange: 'background-position',

@@ -147,7 +147,7 @@ const ProductDetail = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <div className="container mx-auto px-4 py-8 pb-24 lg:pb-8">
+      <div className="container mx-auto px-4 py-8 pb-24 lg:pb-8 h-screen overflow-y-auto">
         {location.state?.fromOrder ? (
           <Button
             variant="ghost"
